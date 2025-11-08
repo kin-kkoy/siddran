@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Sidebar from "./components/Bars/Sidebar.jsx"
 import NotePage from "./pages/NotePage.jsx"
 import NotesHub from "./pages/NotesHub.jsx"
+import LoginPage from "./pages/LoginPage.jsx"
+import RegisterPage from "./pages/RegisterPage.jsx"
 
 function App() {
 
@@ -10,11 +12,20 @@ function App() {
 
   const API = import.meta.env.VITE_API_URL || 'http://localhost:3000' 
 
+  // get token first and foremost
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token')
+    return{
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    }
+  }
+
   // Insta GET notes
   useEffect(() => {
     async function fetchNotes() {
       try{
-        const res = await fetch(`${API}/notes`)
+        const res = await fetch(`${API}/notes`, {headers: getAuthHeaders()})
         if(!res.ok) throw new Error(`Failed to fetch notes`)
         const data = await res.json()
         setNotes(data)
@@ -31,7 +42,7 @@ function App() {
     try{
       const res = await fetch(`${API}/notes`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: getAuthHeaders(),
         body: JSON.stringify({ title, body: '' })
       })
       if(!res.ok) throw new Error('Failed to add note')
@@ -45,7 +56,7 @@ function App() {
   // delete
   const handleDeleteNote = async (id) => {
     try {
-      const rest = await fetch(`${API}/notes/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${API}/notes/${id}`, { method: 'DELETE', headers: getAuthHeaders() })
       if(!res.ok) throw new Error('Failed to add note')
       setNotes(previousNotes => previousNotes.filter(n => n.id !== id))
     } catch (error) {
@@ -58,7 +69,7 @@ function App() {
     try {
       const res = await fetch(`${API}/notes/${id}`, {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: getAuthHeaders(),
         body: JSON.stringify({ title: newTitle })
       })
       if(!res.ok) throw new Error('Failed to add note')
@@ -74,7 +85,7 @@ function App() {
     try {
       const res = await fetch(`${API}/notes/${id}`, {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: getAuthHeaders(),
         body: JSON.stringify({ body: newBody })
       })
       if(!res.ok) throw new Error('Failed to add note')
@@ -114,6 +125,8 @@ function App() {
     <div style={style}>
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/notes" element={notesHubElement} />
           <Route path="/notes/:id" element={notePageElement} />
           {/* <Route path="add" element={}/> */}
