@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Card from '../components/NoteCard/Card'
 import HorizontalCard from '../components/NoteCard/HorizontalCard'
 import AddCard from '../components/NoteCard/AddCard'
@@ -10,14 +9,13 @@ function NotesHub({ notes, addNote, deleteNote }) {
 
   const [viewMode, setViewMode] = useState("list")
 
-  const navigate = useNavigate()
-
   const changeView = () => viewMode === "list" ? setViewMode("grid") : setViewMode("list")
 
 
   return (
     <div>
         <h1>NotesHub</h1>
+        <h3>Your notes, userID: {notes[0]?.user_id} | debug purposes</h3>
         <button onClick={changeView}>Toggle View</button>
         <p>Mode: {viewMode}  |  Debug purposes</p>
 

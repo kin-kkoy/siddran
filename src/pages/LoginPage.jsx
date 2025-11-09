@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-function LoginPage() {
+function LoginPage({ setIsAuthed }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -35,6 +35,7 @@ function LoginPage() {
 
             // if loggin in worked well, store the obtained token
             localStorage.setItem(`token`, data.token)
+            setIsAuthed(true)
 
             // then redirect
             navigate('/notes')

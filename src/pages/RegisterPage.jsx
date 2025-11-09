@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-function RegisterPage() {
+function RegisterPage({ setIsAuthed }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -27,7 +27,7 @@ function RegisterPage() {
             return;
         }
 
-        setLoading('true');
+        setLoading(true);
         setError('');
 
         try {
@@ -43,6 +43,8 @@ function RegisterPage() {
 
             // Change alert to toast later soon
             alert('Registration successful! Going in now')
+            localStorage.setItem(`token`, data.token)
+            setIsAuthed(true)
             navigate('/notes')
 
         } catch (error) {

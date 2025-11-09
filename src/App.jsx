@@ -9,10 +9,17 @@ import RegisterPage from "./pages/RegisterPage.jsx"
 function App() {
 
   const [notes, setNotes] = useState([])
+  const [isAuthed, setIsAuthed] = useState(false)
+
+  // first and foremost check if user already has token
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if(token) setIsAuthed(true)
+  }, [])
 
   const API = import.meta.env.VITE_API_URL || 'http://localhost:3000' 
 
-  // get token first and foremost
+  // get token and attach to `Authentication` header
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token')
     return{
@@ -21,11 +28,33 @@ function App() {
     }
   }
 
+  // helper function for AUTHENTICATED FETCH
+  const authFetch = async (URL, reqProps = {}) => {
+    const res = await fetch(URL, {
+      ...reqProps,
+      headers: {
+        ...getAuthHeaders(),
+        ...reqProps.headers
+      },
+    })
+
+    // this is auto logout if invalid token (logout/expired)
+    if(res.status === 401) {
+      localStorage.removeItem(`token`)
+      setIsAuthed(false)
+      throw new Error('Session expired. Please login again.')
+    }
+
+    return res
+  }
+
   // Insta GET notes
   useEffect(() => {
+    if(!isAuthed) return // don't fetch if not logged in / invalid session
+
     async function fetchNotes() {
       try{
-        const res = await fetch(`${API}/notes`, {headers: getAuthHeaders()})
+        const res = await authFetch(`${API}/notes`)
         if(!res.ok) throw new Error(`Failed to fetch notes`)
         const data = await res.json()
         setNotes(data)
@@ -35,14 +64,13 @@ function App() {
     }
 
     fetchNotes()
-  }, [])
+  }, [isAuthed])
 
   // add
   const handleAddNote = async (title = 'Untitled') => {
     try{
-      const res = await fetch(`${API}/notes`, {
+      const res = await authFetch(`${API}/notes`, {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify({ title, body: '' })
       })
       if(!res.ok) throw new Error('Failed to add note')
@@ -56,7 +84,7 @@ function App() {
   // delete
   const handleDeleteNote = async (id) => {
     try {
-      const res = await fetch(`${API}/notes/${id}`, { method: 'DELETE', headers: getAuthHeaders() })
+      const res = await authFetch(`${API}/notes/${id}`, { method: 'DELETE' })
       if(!res.ok) throw new Error('Failed to add note')
       setNotes(previousNotes => previousNotes.filter(n => n.id !== id))
     } catch (error) {
@@ -67,9 +95,8 @@ function App() {
   // update (edit) title
   const handleEditTitle = async (id, newTitle) => {
     try {
-      const res = await fetch(`${API}/notes/${id}`, {
+      const res = await authFetch(`${API}/notes/${id}`, {
         method: "PUT",
-        headers: getAuthHeaders(),
         body: JSON.stringify({ title: newTitle })
       })
       if(!res.ok) throw new Error('Failed to add note')
@@ -83,9 +110,8 @@ function App() {
   // update (edit) body
   const handleEditBody = async (id, newBody) => {
     try {
-      const res = await fetch(`${API}/notes/${id}`, {
+      const res = await authFetch(`${API}/notes/${id}`, {
         method: "PUT",
-        headers: getAuthHeaders(),
         body: JSON.stringify({ body: newBody })
       })
       if(!res.ok) throw new Error('Failed to add note')
@@ -124,11 +150,18 @@ function App() {
   return (
     <div style={style}>
       <BrowserRouter>
+        {isAuthed && <Sidebar />}
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/notes" element={notesHubElement} />
-          <Route path="/notes/:id" element={notePageElement} />
+          <Route path="/login" element={<LoginPage setIsAuthed={setIsAuthed} />} />
+          <Route path="/register" element={<RegisterPage setIsAuthed={setIsAuthed} />} />
+          {isAuthed ? (
+            <>
+              <Route path="/notes" element={notesHubElement} />
+              <Route path="/notes/:id" element={notePageElement} />
+            </>
+          ) : (
+            <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} />} />
+          )}
           {/* <Route path="add" element={}/> */}
         </Routes>
       </BrowserRouter>
