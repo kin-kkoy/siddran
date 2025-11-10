@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import styles from './Auth.module.css'
 
 function LoginPage({ setIsAuthed }) {
     const [username, setUsername] = useState('')
@@ -49,28 +50,63 @@ function LoginPage({ setIsAuthed }) {
     }
 
     return (
-        <div>
+        <div className={styles.authContainer}>
+            <div className={styles.authCard}>
 
-            <h1>Login Page</h1>
+                <div className={styles.authHeader}>
+                    <div className={styles.authLogo}>🔥</div>
+                    <h1 className={styles.authTitle}>Welcome to Cinder</h1>
+                </div>
 
-            <label>Username: </label>
-            <input type='text' onChange={e => setUsername(e.target.value)}/>
-            <br/>
 
-            <label>Password: </label>
-            <input type='password' onChange={e => setPassword(e.target.value)}/>
-            <br/>
+                {error && <div className={styles.authError}>{error}</div>}
 
-            <button onClick={login}>{loading ? `Logging in...` : `Login`}</button>
-            <br />
-            <p>
-                Don't have an account? <a href='/register'>Register now</a>
-            </p>
-            
-            <p>User: {username}</p>
-            <p>Pass: {password}</p>
-            <p>Error: {error}</p>
 
+                <div className={styles.authForm}>
+
+                    {/* username input field */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Username</label>
+                        <input 
+                            type="text" 
+                            className={styles.formInput}
+                            placeholder="Enter your username"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            onFocus={e => e.target.select()}
+                        />
+                    </div>
+
+                    {/* password input field */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Password</label>
+                        <input
+                            className={styles.formInput}
+                            type='password' 
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            onFocus={e => e.target.select()}
+                        />
+                    </div>
+
+                    <button
+                        className={styles.authButton} 
+                        onClick={login}
+                        disabled={loading} // this simply makes the button unclickable when pressed.
+                    >
+                        {loading ? `Logging in...` : `Login`}
+                    </button>
+                    
+                </div>
+
+                {/* redirect to register page */}
+                <div className={styles.authFooter}>
+                    <p className={styles.authFooterText}>
+                        Don't have an account? <a href="/register" className={styles.authLink}>Register now</a>
+                    </p>
+                </div>
+
+            </div>
         </div>
     )
 }

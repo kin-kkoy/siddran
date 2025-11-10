@@ -141,29 +141,39 @@ function App() {
     color: "#ffffff",            // white text
     minHeight: "100vh",          // full height
     margin: 0,
-    padding: "20px",
+    padding: 0,
     fontFamily: "Arial, sans-serif",
-
   };
 
 
   return (
     <div style={style}>
       <BrowserRouter>
-        {isAuthed && <Sidebar />}
-        <Routes>
-          <Route path="/login" element={<LoginPage setIsAuthed={setIsAuthed} />} />
-          <Route path="/register" element={<RegisterPage setIsAuthed={setIsAuthed} />} />
-          {isAuthed ? (
-            <>
-              <Route path="/notes" element={notesHubElement} />
-              <Route path="/notes/:id" element={notePageElement} />
-            </>
-          ) : (
-            <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} />} />
-          )}
-          {/* <Route path="add" element={}/> */}
-        </Routes>
+        <div style={{display: "flex", flexDirection: "row", margin: 0, padding: 0, backgroundColor: '#121212'}}>
+
+          {/* Only show sidebar when logged in */}
+          {isAuthed && <Sidebar />}
+
+
+          {/* The main page/s (the contents on the right, not sidebar) */}
+          <div style={{flex: 1, padding: isAuthed ? '20px' : '0', overflowY: 'auto', backgroundColor: '#121212'}}>
+
+            <Routes>
+              <Route path="/login" element={<LoginPage setIsAuthed={setIsAuthed} />} />
+              <Route path="/register" element={<RegisterPage setIsAuthed={setIsAuthed} />} />
+              {isAuthed ? (
+                <>
+                  <Route path="/notes" element={notesHubElement} />
+                  <Route path="/notes/:id" element={notePageElement} />
+                </>
+              ) : (
+                <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} />} />
+              )}
+              {/* <Route path="add" element={}/> */}
+            </Routes>
+
+          </div>
+        </div>
       </BrowserRouter>
     </div>
   )

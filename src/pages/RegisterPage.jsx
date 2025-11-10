@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import styles from './Auth.module.css'
 
 function RegisterPage({ setIsAuthed }) {
     const [username, setUsername] = useState('')
@@ -56,29 +57,68 @@ function RegisterPage({ setIsAuthed }) {
     }
 
     return (
-        <div>
+        <div className={styles.authContainer}>
+            <div className={styles.authCard}>
+                <div className={styles.authHeader}>
+                    <div className={styles.authLogo}>🔥</div>
+                    <h1 className={styles.authTitle}>Join Cinder | CHANGE THIS TOO CRINGE LOL</h1>
+                    <p className={styles.authSubtitle}>Create your account</p>
+                </div>
 
-            <h1>Register Page</h1>
+                {error && <div className={styles.authError}>{error}</div>}
 
-            <label>Username: </label>
-            <input type='text' onChange={e => setUsername(e.target.value)}/>
-            <br/>
+                <div className={styles.authForm}>
+                    <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Username</label>
+                        <input 
+                            type="text" 
+                            className={styles.formInput}
+                            placeholder="Choose a username"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            onFocus={e => e.target.select()}
+                        />
+                    </div>
 
-            <label>Password: </label>
-            <input type='password' onChange={e => setPassword(e.target.value)}/>
-            <br/>
-            <label>Confirm Password: </label>
-            <input type='password' onChange={e => setConfirmPassword(e.target.value)}/>
-            <br/>
+                    <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Password</label>
+                        <input 
+                            type="password" 
+                            className={styles.formInput}
+                            placeholder="Create a password"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            onFocus={e => e.target.select()}
+                        />
+                    </div>
 
-            <button onClick={register}>{loading ? `Registering...` : `Register`}</button>
-            <br/>
-            <p>
-                Already have an account? <a href='/login'>Login now</a>
-            </p>
-            
-            <p>Error: {error}</p>
+                    <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Confirm Password</label>
+                        <input 
+                            type="password" 
+                            className={styles.formInput}
+                            placeholder="Confirm your password"
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
+                            onFocus={e => e.target.select()}
+                        />
+                    </div>
 
+                    <button 
+                        className={styles.authButton} 
+                        onClick={register}
+                        disabled={loading}
+                    >
+                        {loading ? 'Registering...' : 'Register'}
+                    </button>
+                </div>
+
+                <div className={styles.authFooter}>
+                    <p className={styles.authFooterText}>
+                        Already have an account? <a href="/login" className={styles.authLink}>Login now</a>
+                    </p>
+                </div>
+            </div>
         </div>
     )
 }

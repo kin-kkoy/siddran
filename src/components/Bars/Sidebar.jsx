@@ -1,6 +1,7 @@
 import { useState } from "react"
 import LogoutBtn from "../Buttons/LogoutBtn";
 import { useNavigate } from "react-router-dom";
+import styles from './Sidebar.module.css'
 
 
 // CHANGE EVERYTHING THERE!! WHAT SHOULD HAPPEN:
@@ -23,6 +24,7 @@ function Sidebar() {
 
     // for now stay in default mode unless it's time to implement sidebar
     const [currentState, setCurrentState] = useState('def'); // value: def(default)|notes|note|todo|mod
+    const [isCollapsed, setIsCollapsed] = useState(false); // sidebar design
 
     const navigate = useNavigate()
 
@@ -49,14 +51,38 @@ function Sidebar() {
     }
 
 
+    const toggleSidebar = () => setIsCollapsed(!isCollapsed)
+
+
     return (
-        <div className="sidebar">
-            <button>Replace with: hide/show button</button>
-            <button onClick={() => alert(`to be implemented!`)}>Replace this to user icon later</button>
-            <p>---- Modal window shows these: ----</p>
-            <button onClick={() => alert(`to be implemented`)}>Profile</button>
-            <button onClick={() => alert(`to be implemented`)}>Settings</button>
-            <LogoutBtn handleLogout={handleLogout}/>
+        <div className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''}`}>
+
+            <div className={styles.topSection}>
+                <button className={styles.toggleBtn} onClick={toggleSidebar}>{isCollapsed ? '→' : '☰'}</button>
+            </div>
+
+            <div className={styles.menuSection}>
+                {!isCollapsed && (<p className={styles.sectionLabel}>---- Dropdown-like window shows these: ----</p>)}
+                <button className={styles.menuBtn}
+                    onClick={() => alert(`to be implemented`)}
+                    title="Profile"  // Tooltip for collapsed state
+                >
+                    <span className={styles.icon}>👤</span>
+                    {!isCollapsed && <span>Profile</span>}
+                </button>
+                <button className={styles.menuBtn}
+                    onClick={() => alert(`to be implemented`)}
+                    title="Settings"
+                >
+                    <span className={styles.icon}>⚙️</span>
+                    {!isCollapsed && <span>Settings</span>}
+                </button>
+            </div>
+
+            <div className={styles.bottomSection}>
+                <LogoutBtn handleLogout={handleLogout} isCollapsed={isCollapsed} />
+            </div>
+
         </div>
     )
 }

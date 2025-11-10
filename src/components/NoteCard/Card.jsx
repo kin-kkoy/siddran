@@ -20,17 +20,13 @@ import { useNavigate } from 'react-router-dom'
 function Card({ note, deleteNote }) {
   const navigate = useNavigate()
 
-
-  // For now, style of card is placed shere
-
-
   return (
     <div onClick={ () => navigate(`/notes/${note.id}`) } className={styles.card}>
       <h2>{note.title}</h2>
+      <p>placeholder for now, maybe a category here? Just keep this for now.</p>
       <button onClick={ e => { 
         e.stopPropagation()
         deleteNote(note.id) }}>Delete Note</button>
-      <p>placeholder for now, maybe a category here? Just keep this for now.</p>
     </div>
   )
 }

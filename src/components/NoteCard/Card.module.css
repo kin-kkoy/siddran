@@ -1,30 +1,170 @@
-.card{
-  border: 1px solid black;
-  width: 200px; /* Adjust this value to make it bigger or smaller */
-  height: 200px; /* Adjust this value to make it bigger or smaller */
-  object-fit: cover; /* This will ensure the image covers the area without distortion */
-  border-radius: 8px; /* Slightly rounded corners for a softer look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* A subtle shadow for depth */
-  transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+/* Grid Card */
+.card {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
   padding: 20px;
-  margin: 10px;
-  text-align: center;
-  max-width: 250px;
-  display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 150px;
 }
 
-.card .cardImg{
-  max-width: 60%;
-  height: auto;
+.card:hover {
+  border-color: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.card .cardTitle{
-  font-family: Arial, Helvetica, sans-serif;
+.card h2 {
+  font-size: 18px;
+  font-weight: 500;
   margin: 0;
-  color: black;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.card .cardDesc{
-  font-family: Arial, Helvetica, sans-serif;
-  color: darkslategrey;
+.card p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+.card button {
+  background-color: #dc3545;
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+  margin-top: auto;
+}
+
+.card button:hover {
+  background-color: #c82333;
+}
+
+/* Horizontal Card (List View) */
+.horizontalCard {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.horizontalCard:hover {
+  border-color: #555;
+  background-color: #252525;
+}
+
+.horizontalCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.horizontalCard h4 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #ffffff;
+}
+
+.horizontalCard p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+.horizontalCard button {
+  background-color: #dc3545;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.horizontalCard button:hover {
+  background-color: #c82333;
+}
+
+/* Add Card (Grid) */
+.addCard {
+  background-color: #2a2a2a;
+  border: 2px dashed #555;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 150px;
+  text-align: center;
+}
+
+.addCard:hover {
+  border-color: #777;
+  background-color: #333;
+}
+
+.addCard h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: #aaa;
+}
+
+.addCardIcon {
+  font-size: 32px;
+  color: #aaa;
+}
+
+/* Add Card (List) */
+.addCardList {
+  background-color: #2a2a2a;
+  border: 2px dashed #555;
+  border-radius: 6px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.addCardList:hover {
+  border-color: #777;
+  background-color: #333;
+}
+
+.addCardList h4 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #aaa;
+}
+
+.addCardListIcon {
+  font-size: 24px;
+  color: #aaa;
 }

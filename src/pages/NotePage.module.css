@@ -1,0 +1,81 @@
+/* Obsidian-style centered editor */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    min-height: 100vh;
+}
+
+.backBtn {
+    background-color: #2a2a2a;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 20px;
+    transition: background-color 0.2s;
+}
+
+.backBtn:hover {
+    background-color: #3a3a3a;
+}
+
+/* Title input */
+.titleInput {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 42px;
+    font-weight: 700;
+    padding: 0;
+    margin-bottom: 30px;
+    outline: none;
+    font-family: inherit;
+}
+
+.titleInput::placeholder {
+    color: #555;
+}
+
+/* Body textarea */
+.bodyTextarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #e0e0e0;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 0;
+    outline: none;
+    resize: none;
+    min-height: calc(100vh - 300px);
+    font-family: inherit;
+}
+
+.bodyTextarea::placeholder {
+    color: #555;
+}
+
+/* Debug section */
+.debugSection {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+}
+
+.debugSection h1 {
+    font-size: 18px;
+    color: #888;
+    margin: 0 0 8px 0;
+}
+
+.debugSection p {
+    font-size: 14px;
+    color: #666;
+    margin: 4px 0;
+}
