@@ -16,7 +16,7 @@ import styles from './Sidebar.module.css'
 //       settings, profile page, logout
 
 
-function Sidebar() {
+function Sidebar({ isCollapsed, toggleSidebar }) {
 
     // Contents depend on whether on notes/note(specific)/todo/mod page
     //  you will use the concept of *mounting* and `useEffect` 
@@ -24,7 +24,6 @@ function Sidebar() {
 
     // for now stay in default mode unless it's time to implement sidebar
     const [currentState, setCurrentState] = useState('def'); // value: def(default)|notes|note|todo|mod
-    const [isCollapsed, setIsCollapsed] = useState(false); // sidebar design
 
     const navigate = useNavigate()
 
@@ -51,14 +50,11 @@ function Sidebar() {
     }
 
 
-    const toggleSidebar = () => setIsCollapsed(!isCollapsed)
-
-
     return (
         <div className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''}`}>
 
             <div className={styles.topSection}>
-                <button className={styles.toggleBtn} onClick={toggleSidebar}>{isCollapsed ? '→' : '☰'}</button>
+                <button className={styles.toggleBtn} onClick={() => toggleSidebar(!isCollapsed)}>{isCollapsed ? '→' : '☰'}</button>
             </div>
 
             <div className={styles.menuSection}>

@@ -10,6 +10,7 @@ function App() {
 
   const [notes, setNotes] = useState([])
   const [isAuthed, setIsAuthed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false) // for sidebar's margin. It's setter logic will be done on the sidebar (which is the child)
 
   // first and foremost check if user already has token
   useEffect(() => {
@@ -147,16 +148,38 @@ function App() {
 
 
   return (
+
     <div style={style}>
       <BrowserRouter>
-        <div style={{display: "flex", flexDirection: "row", margin: 0, padding: 0, backgroundColor: '#121212'}}>
+        <div style={{ display: "flex", 
+          flexDirection: "row", 
+          margin: 0, 
+          padding: 0, 
+          backgroundColor: '#121212'
+        }}>
 
           {/* Only show sidebar when logged in */}
-          {isAuthed && <Sidebar />}
+          {isAuthed && <Sidebar isCollapsed={isCollapsed} toggleSidebar={setIsCollapsed}/>}
+
+
+          {/* blank space reserved for fixed sidebar */}
+          {isAuthed && (
+            <div style={{
+              width: isCollapsed ? '70px' : '250px',
+              flexShrink: 0,  /* Prevents this from shrinking */
+              transition: 'width 0.3s ease'
+            }} />
+          )}
 
 
           {/* The main page/s (the contents on the right, not sidebar) */}
-          <div style={{flex: 1, padding: isAuthed ? '20px' : '0', overflowY: 'auto', backgroundColor: '#121212'}}>
+          <div style={{ flex: 1, 
+            padding: isAuthed ? '20px 40px' : '0', 
+            overflowY: 'auto', 
+            backgroundColor: '#121212',
+            minWidth: 0  /* Allows flex item to shrink below content size */
+          }}>
+
 
             <Routes>
               <Route path="/login" element={<LoginPage setIsAuthed={setIsAuthed} />} />
@@ -176,6 +199,7 @@ function App() {
         </div>
       </BrowserRouter>
     </div>
+
   )
 }
 
