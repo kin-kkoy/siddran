@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './Auth.module.css'
 
-function LoginPage({ setIsAuthed }) {
+function LoginPage({ setIsAuthed, setAppUsername }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -37,6 +37,10 @@ function LoginPage({ setIsAuthed }) {
 
             // if loggin in worked well, store the obtained token
             localStorage.setItem(`accessToken`, data.accessToken)
+
+            const payload = JSON.parse(atob(data.accessToken.split('.')[1]))
+            setAppUsername(payload.username)
+
             setIsAuthed(true)
 
             // then redirect

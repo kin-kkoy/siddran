@@ -6,6 +6,9 @@ import NotesHub from "../../pages/NotesHub";
 import TasksHub from "../../pages/TasksHub";
 import SidebarList from "./SidebarList";
 import ProfileDropdown from "../Menus/ProfileDropdown";
+import { LuNotepadText } from "react-icons/lu";
+import { BiTask, BiPackage } from "react-icons/bi";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 
 // CHANGE EVERYTHING THERE!! WHAT SHOULD HAPPEN:
@@ -20,14 +23,12 @@ import ProfileDropdown from "../Menus/ProfileDropdown";
 //       settings, profile page, logout
 
 
-function Sidebar({ isCollapsed, toggleSidebar, notes, currentNoteID }) {
+function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID }) {
 
     // Contents depend on whether on notes/note(specific)/todo/mod page
     //  you will use the concept of *mounting* and `useEffect` 
     //      - useEffect to observe when pathname changes like if it's /notes or not
 
-    // for now stay in default mode unless it's time to implement sidebar
-    const [currentState, setCurrentState] = useState('def'); // value: def(default)|notes|note|todo|mod
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -74,26 +75,25 @@ function Sidebar({ isCollapsed, toggleSidebar, notes, currentNoteID }) {
             <div className={styles.topSection}>
 
                 {/* this is the toggle button */}
-                <button className={styles.toggleBtn} onClick={() => toggleSidebar(!isCollapsed)}>{isCollapsed ? '→' : '☰'}</button>
+                <button className={styles.toggleBtn} onClick={() => toggleSidebar(!isCollapsed)}><RxHamburgerMenu /></button>
 
                 {/* Navigation area */}
                 {!isCollapsed && <p className={styles.sectionLabel}>Links</p>}
-                <p>this is a reminder: maybe switch to icons instead of emojis</p>
                 <Link to="/notes"
                     className={`${styles.menuBtn} ${location.pathname.startsWith('/notes') ? styles.active : ''}`}
                     title="Notes"> 
-                        <span className={styles.icon}>📝</span>
+                        <span className={styles.icon}><LuNotepadText /></span>
                         {!isCollapsed && <span>Notes</span>}
                 </Link>
                 <Link to="/tasks" 
                     className={`${styles.menuBtn} ${location.pathname === '/tasks' ? styles.active : ''}`} title="Tasks">
-                        <span className={styles.icon}>📋</span>
+                        <span className={styles.icon}><BiTask /></span>
                         {!isCollapsed && <span>Tasks</span>}
                 </Link>
                 <Link to="/mods" 
                     className={`${styles.menuBtn} ${location.pathname === '/mods' ? styles.active : ''}`} 
                     title="Mods">
-                        <span className={styles.icon}>📦</span>
+                        <span className={styles.icon}><BiPackage /></span>
                         {!isCollapsed && <span>Mods</span>}
                 </Link>
 
@@ -116,7 +116,7 @@ function Sidebar({ isCollapsed, toggleSidebar, notes, currentNoteID }) {
 
             {/* BOTTOM SECTION: user & settings */}
             <div className={styles.bottomSection}>
-                <ProfileDropdown isCollapsed={isCollapsed} handleLogout={handleLogout} />
+                <ProfileDropdown username={username} isCollapsed={isCollapsed} handleLogout={handleLogout} />
             </div>
 
         </div>

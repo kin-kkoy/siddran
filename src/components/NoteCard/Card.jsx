@@ -1,3 +1,4 @@
+import { FaTrash } from 'react-icons/fa'
 import styles from './Card.module.css'
 import { Link } from 'react-router-dom'
 
@@ -38,7 +39,7 @@ function Card({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect })
 
       <div className={styles.footer}>
         {!isSelectionMode && (
-          <button onClick={handleDelete}>🗑️ Delete Note</button>
+          <button onClick={handleDelete}><FaTrash /></button>
         )}
 
 

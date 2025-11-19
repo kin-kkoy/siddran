@@ -16,16 +16,33 @@ function App() {
   const [isAuthed, setIsAuthed] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false) // for sidebar's margin. It's setter logic will be done on the sidebar (which is the child)
   const [currentNoteID, setCurrentNoteID] = useState(null)
+  const [username, setUsername] = useState(null)
+
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:3000' 
+
+
+  // helper function for getting username from token
+  const getUsernameToken = token => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      return payload.username
+    } catch (error) {
+      return null
+    }
+  }
 
   // first and foremost check if user already has token
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken')
-    if(accessToken) setIsAuthed(true)
+    if(accessToken){
+      setIsAuthed(true)
+      // get username from the token
+      const getUsername = getUsernameToken(accessToken)
+      if(getUsername) setUsername(getUsername)
+    }
   }, [])
 
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:3000' 
-
-  // get token and attach to `Authentication` header
+  // get token and attach to `Authentication` header AS WELL AS the username
   const getAuthHeaders = () => {
     const accessToken = localStorage.getItem('accessToken')
     return{
@@ -287,7 +304,8 @@ function App() {
 
           {/* Only show sidebar when logged in */}
           {isAuthed && (
-            <Sidebar isCollapsed={isCollapsed} 
+            <Sidebar username={username}
+              isCollapsed={isCollapsed} 
               toggleSidebar={setIsCollapsed} 
               notes={notes} 
               currentNoteID={currentNoteID} 
@@ -315,8 +333,8 @@ function App() {
 
 
             <Routes>
-              <Route path="/login" element={<LoginPage setIsAuthed={setIsAuthed} />} />
-              <Route path="/register" element={<RegisterPage setIsAuthed={setIsAuthed} />} />
+              <Route path="/login" element={<LoginPage setIsAuthed={setIsAuthed} setAppUsername={setUsername} />} />
+              <Route path="/register" element={<RegisterPage setIsAuthed={setIsAuthed} setAppUsername={setUsername} />} />
               {isAuthed ? (
                 <>
                   <Route path="/notes" element={notesHubElement} />

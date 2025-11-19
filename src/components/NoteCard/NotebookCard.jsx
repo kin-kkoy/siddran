@@ -1,4 +1,6 @@
+import { LuNotebook } from 'react-icons/lu';
 import styles from './NotebookCard.module.css'
+import { FaTrash } from "react-icons/fa";
 
 function NotebookCard({ notebook, deleteNotebook, onOpen }) {
 
@@ -18,7 +20,7 @@ function NotebookCard({ notebook, deleteNotebook, onOpen }) {
         <div onClick={handleClick} className={styles.cardLink} style={{ cursor: 'pointer' }}>
 
             <div className={styles.card}>
-                <div className={styles.icon}>📁</div>
+                <div className={styles.icon}><LuNotebook /></div>
                 <h3 className={styles.title}>{notebook.name}</h3>
                 <div className={styles.footer}>
                     <span className={styles.date}>
@@ -26,7 +28,7 @@ function NotebookCard({ notebook, deleteNotebook, onOpen }) {
                         {/* {new Date(notebook.created_at).toLocaleDateString()} */}
                     </span>
                     <button onClick={handleDelete} className={styles.deleteBtn}>
-                        🗑️
+                        <FaTrash />
                     </button>
                 </div>
             </div>

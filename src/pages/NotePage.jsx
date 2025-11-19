@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import styles from './NotePage.module.css'
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function NotePage({ notes, editTitle, editBody }) {
   
@@ -50,7 +51,7 @@ function NotePage({ notes, editTitle, editBody }) {
   return (
     <div className={styles.container}>
 
-      <button onClick={handleGoBackBtn} className={styles.backBtn}>← Back to Notes</button>
+      <button onClick={handleGoBackBtn} className={styles.backBtn}><IoMdArrowRoundBack /> Back to Notes</button>
 
       {/* Show warning if title is Untitled */}
       {newTitle === "Untitled" && (
@@ -58,14 +59,6 @@ function NotePage({ notes, editTitle, editBody }) {
           💡 Tip: Give your note a title to easily find it later
         </div>
       )}
-
-      <div className={styles.debugSection}>
-        <p>---------- Debug Purposes only-----------</p>
-        <p> === DON'T FORGET TO REMOVE THIS IN CODE AND IN THE CSS</p>
-        <h1>Title: {note.title}</h1>
-        <p>Body: {note.body}</p>
-        <p>-----------------------------------------</p>
-      </div>
 
       <input
         ref={titleInputReference}

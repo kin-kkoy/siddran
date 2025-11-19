@@ -2,8 +2,11 @@ import { useRef, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { useNavigate } from "react-router-dom"
 import styles from './ProfileDropdown.module.css'
+import { FaRegUser } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { TbLogout2 } from "react-icons/tb";
 
-function ProfileDropdown({ isCollapsed, handleLogout }) {
+function ProfileDropdown({ username, isCollapsed, handleLogout }) {
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef(null)
     const buttonRef = useRef(null) // This refers to the profile button
@@ -78,8 +81,8 @@ function ProfileDropdown({ isCollapsed, handleLogout }) {
                 onClick={() => setIsOpen(!isOpen)}
                 title={isCollapsed ? "Profile" : undefined}
             >
-                <span className={styles.icon}>👤</span>
-                {!isCollapsed && <span>Profile</span>}
+                <span className={styles.icon}><FaRegUser /></span>
+                {!isCollapsed && <span>{username}</span>}
                 {!isCollapsed && (
                     <span className={`${styles.arrow} ${isOpen ? styles.arrowUp : ''}`}>▼</span>
                 )}
@@ -97,12 +100,12 @@ function ProfileDropdown({ isCollapsed, handleLogout }) {
                         <span>Profile</span>
                     </button>
                     <button onClick={navigateSettings} className={styles.dropdownItem}>
-                        <span className={styles.itemIcon}>⚙️</span>
+                        <span className={styles.itemIcon}><IoMdSettings /></span>
                         <span>Settings</span>
                     </button>
                     <div className={styles.divider}></div>
                     <button onClick={Logout} className={`${styles.dropdownItem} ${styles.danger}`}>
-                        <span className={styles.itemIcon}>🚪</span>
+                        <span className={styles.itemIcon}><TbLogout2 /></span>
                         <span>Logout</span>
                     </button>
                 </div>,

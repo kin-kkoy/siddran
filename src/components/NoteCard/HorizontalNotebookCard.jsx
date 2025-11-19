@@ -1,4 +1,6 @@
 import styles from './NotebookCard.module.css'
+import { LuNotebook } from "react-icons/lu";
+import { FaTrash } from "react-icons/fa";
 
 function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen }) {
 
@@ -17,7 +19,7 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen }) {
     return (
         <div onClick={handleClick} className={styles.cardLink} style={{ cursor: 'pointer' }}>
             <div className={styles.horizontalCard}>
-                <div className={styles.horizontalIcon}>📁</div>
+                <div className={styles.horizontalIcon}><LuNotebook /></div>
                 
                 <div className={styles.content}>
                 <h4 className={styles.horizontalTitle}>{notebook.name}</h4>
@@ -29,7 +31,7 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen }) {
                         {/* {new Date(notebook.created_at).toLocaleDateString()} */}
                     </span>
                     <button onClick={handleDelete} className={styles.deleteBtn}>
-                        🗑️
+                        <FaTrash />
                     </button>
                 </div>
             </div>

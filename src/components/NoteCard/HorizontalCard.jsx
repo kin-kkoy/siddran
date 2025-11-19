@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import styles from './Card.module.css'
+import { FaTrash } from 'react-icons/fa'
 
 function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect }) {
 
@@ -44,7 +45,7 @@ function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggl
         {/* Show delete button only when NOT in selection mode */}
         {!isSelectionMode && (
           <button onClick={handleDelete}>
-            🗑️
+            <FaTrash />
           </button>
         )}
       </div>
