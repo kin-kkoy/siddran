@@ -1,9 +1,5 @@
-import { useState } from "react"
-import LogoutBtn from "../Buttons/LogoutBtn";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from './Sidebar.module.css'
-import NotesHub from "../../pages/NotesHub";
-import TasksHub from "../../pages/TasksHub";
 import SidebarList from "./SidebarList";
 import ProfileDropdown from "../Menus/ProfileDropdown";
 import { LuNotepadText } from "react-icons/lu";
@@ -23,7 +19,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 //       settings, profile page, logout
 
 
-function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID }) {
+function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, setIsAuthed }) {
 
     // Contents depend on whether on notes/note(specific)/todo/mod page
     //  you will use the concept of *mounting* and `useEffect` 
@@ -63,8 +59,13 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID })
 
         // clear tokens then redirect
         localStorage.removeItem('accessToken')
+        localStorage.removeItem('username')
+
+        if (setIsAuthed) {
+            setIsAuthed(false)
+        }
+
         navigate('/login')
-        window.location.reload()
     }
 
 

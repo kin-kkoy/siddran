@@ -9,6 +9,17 @@ import TasksHub from "./pages/TasksHub.jsx"
 import ModsHub from "./pages/ModsHub.jsx"
 import SettingsPage from "./pages/SettingsPage.jsx"
 
+// Wrapper component to get the ID from route parameters
+function NotePageWrapper({ notes, editTitle, editBody, onNoteChange}){
+  const { id } = useParams()
+
+  useEffect(() => {
+    onNoteChange(id)
+  }, [id, onNoteChange])
+
+  return <NotePage notes={notes} editTitle={editTitle} editBody={editBody} />
+}
+
 function App() {
 
   const [notes, setNotes] = useState([])
@@ -176,14 +187,15 @@ function App() {
 
   // update (edit) title
   const handleEditTitle = async (id, newTitle) => {
+    // Optimistic update
+    setNotes(otherNotes => otherNotes.map( note => note.id === id ? {...note, title: newTitle} : note))
+
     try {
       const res = await authFetch(`${API}/notes/${id}`, {
         method: "PUT",
         body: JSON.stringify({ title: newTitle })
       })
-      if(!res.ok) throw new Error('Failed to add note')
-      const updatedNote = await res.json()
-      setNotes(previousNotes => previousNotes.map(note => note.id === id ? updatedNote : note))
+      if(!res.ok) throw new Error('Failed to update note')
     } catch (error) {
       console.error(error)
     }
@@ -256,18 +268,6 @@ function App() {
   }
 
 
-  // Wrapper component to get the ID from route parameters
-  function NotePageWrapper({ notes, editTitle, editBody, onNoteChange}){
-    const { id } = useParams()
-
-    useEffect(() => {
-      onNoteChange(id)
-    }, [id, onNoteChange])
-
-    return <NotePage notes={notes} editTitle={editTitle} editBody={editBody} />
-  }
-
-
   //  Elements area
   const notesHubElement = (
     <NotesHub notes={notes} 
@@ -309,6 +309,7 @@ function App() {
               toggleSidebar={setIsCollapsed} 
               notes={notes} 
               currentNoteID={currentNoteID} 
+              setIsAuthed={setIsAuthed}
             />
           )}
 
@@ -354,7 +355,7 @@ function App() {
                   <Route path="/settings" element={<SettingsPage />} />
                 </>
               ) : (
-                <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} />} />
+                <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} setAppUsername={setUsername} />} />
               )}
               {/* <Route path="add" element={}/> */}
             </Routes>

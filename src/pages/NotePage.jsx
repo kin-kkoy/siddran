@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom' // ← Add this import
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import styles from './NotePage.module.css'
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -14,6 +15,7 @@ function NotePage({ notes, editTitle, editBody }) {
   const [newTitle, setNewTitle] = useState(note?.title || "")
   const [newBody, setNewBody] = useState(note?.body || "")
   const titleInputReference = useRef(null); // `useRef` is basically just React's way of doing: `document.querySelectorAll()` or `.getElementByID()`
+  const bodyRef = useRef(null);
 
   // re-renders if note changes (parent changes)
   useEffect(() => {
@@ -37,10 +39,18 @@ function NotePage({ notes, editTitle, editBody }) {
       setNewTitle(note.title) // revert back to original title
       return;
     }
-    await editTitle(note.id, newTitle)
+    editTitle(note.id, newTitle)
   }
   const saveBody = async () => {
-    await editBody(note.id, newBody)
+     editBody(note.id, newBody)
+  }
+
+  // QoL: after pressing enter on title, move to body asap
+  const handleKeyDown = e => {
+    if(e.key === "Enter" || e.key === "Tab"){
+      e.preventDefault();
+      bodyRef.current?.focus();
+    }
   }
 
   // for back button
@@ -67,9 +77,11 @@ function NotePage({ notes, editTitle, editBody }) {
         value={newTitle}
         onChange={ e => setNewTitle(e.target.value)}
         onBlur={saveTitle}
+        onKeyDown={handleKeyDown}
       />
       <textarea
-      className={styles.bodyTextarea}
+        ref={bodyRef}
+        className={styles.bodyTextarea}
         value={newBody}
         onChange={ e => setNewBody(e.target.value)}
           // maybe add focus here but for now keep as is

@@ -105,6 +105,9 @@ function RegisterPage({ setIsAuthed, setAppUsername }) {
                             value={confirmPassword}
                             onChange={e => setConfirmPassword(e.target.value)}
                             onFocus={e => e.target.select()}
+                            onKeyDown={e =>{
+                                if(e.key === "Enter") register()
+                            }}
                         />
                     </div>
 

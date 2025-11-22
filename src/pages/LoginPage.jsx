@@ -91,6 +91,9 @@ function LoginPage({ setIsAuthed, setAppUsername }) {
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             onFocus={e => e.target.select()}
+                            onKeyDown={e =>{
+                                if(e.key === "Enter") login()
+                            }}
                         />
                     </div>
 
