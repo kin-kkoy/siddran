@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
-import Sidebar from "./components/Bars/Sidebar.jsx"
-import NotePage from "./pages/NotePage.jsx"
-import NotesHub from "./pages/NotesHub.jsx"
-import LoginPage from "./pages/LoginPage.jsx"
-import RegisterPage from "./pages/RegisterPage.jsx"
-import TasksHub from "./pages/TasksHub.jsx"
+import Sidebar from "./components/Layout/Sidebar/Sidebar.jsx"
+import NotePage from "./pages/Notes/NotePage.jsx"
+import NotesHub from "./pages/Notes/NotesHub.jsx"
+import LoginPage from "./pages/Auth/LoginPage.jsx"
+import RegisterPage from "./pages/Auth/RegisterPage.jsx"
+import TasksHub from "./pages/Tasks/TasksHub.jsx"
 import ModsHub from "./pages/ModsHub.jsx"
 import SettingsPage from "./pages/SettingsPage.jsx"
+import { useNotes } from "./hooks/useNotes.js"
 
 // Wrapper component to get the ID from route parameters
 function NotePageWrapper({ notes, editTitle, editBody, onNoteChange}){
@@ -22,8 +23,6 @@ function NotePageWrapper({ notes, editTitle, editBody, onNoteChange}){
 
 function App() {
 
-  const [notes, setNotes] = useState([])
-  const [notebooks, setNotebooks] = useState([])
   const [isAuthed, setIsAuthed] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false) // for sidebar's margin. It's setter logic will be done on the sidebar (which is the child)
   const [currentNoteID, setCurrentNoteID] = useState(null)
@@ -123,159 +122,21 @@ function App() {
     return res
   }
 
-  // Insta GET notes and notebooks (separated so that if only note || notebook changes it won't run BOTH at the same time)
-  useEffect(() => { // notes
-    if(!isAuthed) return // don't fetch if not logged in / invalid session
 
-    async function fetchNotes() {
-      try{
-        const res = await authFetch(`${API}/notes`)
-        if(!res.ok) throw new Error(`Failed to fetch notes`)
-        const data = await res.json()
-        setNotes(data)
-      }catch (err){
-        console.error(err)
-      }
-    }
-
-    fetchNotes()
-  }, [isAuthed])
-
-  useEffect(() => { // notebooks
-    if(!isAuthed) return
-
-    async function fetchNotebooks() {
-      try {
-        const res = await authFetch(`${API}/notebooks`)
-        if(!res.ok) throw new Error("Failed to fetch notebooks");
-        const data = await res.json()
-        setNotebooks(data)
-      } catch (error) {
-        console.error(`Error in fetching notebooks:`, error)
-      }
-    }
-
-    fetchNotebooks()
-
-  }, [isAuthed])
-
-  // add
-  const handleAddNote = async (title = 'Untitled') => {
-    try{
-      const res = await authFetch(`${API}/notes`, {
-        method: "POST",
-        body: JSON.stringify({ title, body: '' })
-      })
-      if(!res.ok) throw new Error('Failed to add note')
-      const newNote = await res.json()
-      setNotes(previousNotes => [...previousNotes, newNote])
-    }catch(err){
-      console.error('FAILED TO ADD NOTE:  ', err)
-    }
-  }
-
-  // delete
-  const handleDeleteNote = async (id) => {
-    try {
-      const res = await authFetch(`${API}/notes/${id}`, { method: 'DELETE' })
-      if(!res.ok) throw new Error('Failed to add note')
-      setNotes(previousNotes => previousNotes.filter(n => n.id !== id))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  // update (edit) title
-  const handleEditTitle = async (id, newTitle) => {
-    // Optimistic update
-    setNotes(otherNotes => otherNotes.map( note => note.id === id ? {...note, title: newTitle} : note))
-
-    try {
-      const res = await authFetch(`${API}/notes/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ title: newTitle })
-      })
-      if(!res.ok) throw new Error('Failed to update note')
-    } catch (error) {
-      console.error(error)
-    }
-  }
-  
-  // update (edit) body
-  const handleEditBody = async (id, newBody) => {
-    try {
-      const res = await authFetch(`${API}/notes/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ body: newBody })
-      })
-      if(!res.ok) throw new Error('Failed to add note')
-      const data = await res.json()
-      setNotes(previousNotes => previousNotes.map(note => note.id === id ? data : note))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  // create notebook
-  const handleCreateNotebook = async (name, noteIds) => {
-    try {
-      const res = await authFetch(`${API}/notebooks`, {
-        method: "POST",
-        body: JSON.stringify({ name, noteIds })
-      })
-      if(!res.ok) throw new Error("Failed to create ntoebook");
-      
-      const { notebook, updatedNotes } = await res.json()
-
-      // Call set notes immediately to update the current set of notes
-      setNotes( currentNotes => currentNotes.map( note => {
-        const updatedNote = updatedNotes.find( updNote => updNote.id === note.id)
-        return updatedNote || note   // Return & use the updated version if it exits
-      }))
-
-      // add the new notebook (the one destructured) to the current set of notebooks
-      setNotebooks(currNotebooks => [notebook, ...currNotebooks])
-  
-      alert(`Notebook created successfully`)
-      
-    } catch (error) {
-      console.error(`Failed to create notebook:`, error)
-      alert("FAILED to create notebook")
-    }
-  }
-
-  // delete notebook
-  const handleDeleteNotebook = async (id) => {
-    // delete notebook --> update the state by removing said notebook --> update the notes by refreshing the state (calling GET again) so that the notes that were part of the notebook are now `loneNotes`
-    try {
-      const res = await authFetch(`${API}/notebooks/${id}`, { method: "DELETE" })
-      if(!res.ok) throw new Error("Failed to delete notebook");
-
-      // updating notebook state
-      setNotebooks(currentNtbks => currentNtbks.filter(ntbk => ntbk.id !== id))
-      
-      // updating notes state by refreshing (calling GET again)
-      const notesResult = await authFetch(`${API}/notes`)
-      if(notesResult.ok){
-        const updatedNotes = await notesResult.json()
-        setNotes(updatedNotes)
-      }
-      
-    } catch (error) {
-      console.error('Error deleting notebook:', error)
-      alert('Failed to delete notebook')
-    }
-  }
+  // ------------- DATA LOGIC (Adding, deleting, etc. of Notes and Notebooks) ===================================
+  const {
+    notes, notebooks, addNote, deleteNote, editTitle, editBody, createNotebook, deleteNotebook
+  } = useNotes(authFetch, API, isAuthed)
 
 
   //  Elements area
   const notesHubElement = (
     <NotesHub notes={notes} 
     notebooks={notebooks}
-    addNote={handleAddNote}
-    deleteNote={handleDeleteNote}
-    createNotebook={handleCreateNotebook}
-    deleteNotebook={handleDeleteNotebook}
+    addNote={addNote}
+    deleteNote={deleteNote}
+    createNotebook={createNotebook}
+    deleteNotebook={deleteNotebook}
     authFetch={authFetch}
     API={API}/>
   )
@@ -341,8 +202,8 @@ function App() {
                   <Route path="/notes" element={notesHubElement} />
                   <Route path="/notes/:id" element={
                     <NotePageWrapper notes={notes} 
-                      editTitle={handleEditTitle}
-                      editBody={handleEditBody}
+                      editTitle={editTitle}
+                      editBody={editBody}
                       onNoteChange={setCurrentNoteID}
                       />
                     }

@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import Card from '../components/NoteCard/Card'
-import HorizontalCard from '../components/NoteCard/HorizontalCard'
-import AddCard from '../components/NoteCard/AddCard'
-import AddCardList from '../components/NoteCard/AddCardList'
+import Card from '../../components/Notes/Card'
+import HorizontalCard from '../../components/Notes/HorizontalCard'
+import AddCard from '../../components/Notes/AddCard'
+import AddCardList from '../../components/Notes/AddCardList'
 import styles from './NotesHub.module.css'
-import HorizontalNotebookCard from '../components/NoteCard/HorizontalNotebookCard'
-import NotebookCard from '../components/NoteCard/NotebookCard'
-import NotebookModal from '../components/Menus/NotebookModal'
+import HorizontalNotebookCard from '../../components/Notebooks/HorizontalNotebookCard'
+import NotebookCard from '../../components/Notebooks/NotebookCard'
+import NotebookModal from '../../components/Notebooks/NotebookModal'
 
 // obtains the notes and 
 function NotesHub({ notes, notebooks, addNote, deleteNote, createNotebook, deleteNotebook, authFetch, API }) {

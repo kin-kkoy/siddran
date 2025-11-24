@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from './Sidebar.module.css'
 import SidebarList from "./SidebarList";
-import ProfileDropdown from "../Menus/ProfileDropdown";
+import ProfileDropdown from "../ProfileDropdown/ProfileDropdown";
 import { LuNotepadText } from "react-icons/lu";
 import { BiTask, BiPackage } from "react-icons/bi";
 import { RxHamburgerMenu } from "react-icons/rx";
