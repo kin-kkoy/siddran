@@ -1,0 +1,53 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 32px;
+    color: #fff;
+}
+
+.toggleBtn {
+    padding: 8px 16px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.toggleBtn:hover {
+    background-color: #444;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+.listView {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gridView {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.emptyState {
+    text-align: center;
+    color: #666;
+    margin-top: 40px;
+    font-style: italic;
+}

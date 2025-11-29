@@ -210,7 +210,7 @@ function App() {
                   />
                   {/* <Route path="/notebooks/:id" element={Notebook} */}
 
-                  <Route path="/tasks" element={<TasksHub />} />
+                  <Route path="/tasks" element={<TasksHub authFetch={authFetch} API={API}/>} />
                   <Route path="/mods" element={<ModsHub />} />
 
                   <Route path="/settings" element={<SettingsPage />} />
