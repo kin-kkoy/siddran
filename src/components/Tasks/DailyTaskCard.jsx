@@ -1,0 +1,96 @@
+import { useState, useEffect } from 'react'
+import { FaTrash, FaCheck } from 'react-icons/fa'
+import styles from './DailyTaskCard.module.css'
+
+function DailyTaskCard({ tasks, toggleCompletion, deleteTask }) {
+    // const [timeRemaining, setTimeRemaining] = useState('')
+
+    // // Calculate time remaining until expiration
+    // useEffect(() => {
+    //     if (tasks.length === 0) return
+
+    //     const updateCountdown = () => {
+    //         const expiresAt = new Date(tasks[0].expires_at)
+    //         const now = new Date()
+    //         const diff = expiresAt - now
+
+    //         if (diff <= 0) {
+    //             setTimeRemaining('Expired')
+    //             return
+    //         }
+
+    //         const hours = Math.floor(diff / (1000 * 60 * 60))
+    //         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+            
+    //         setTimeRemaining(`${hours}h ${minutes}m remaining`)
+    //     }
+
+    //     updateCountdown()
+    //     const interval = setInterval(updateCountdown, 60000) // Update every minute
+
+    //     return () => clearInterval(interval)
+    // }, [tasks])
+
+    if (tasks.length === 0) return null
+
+    const completedCount = tasks.filter(t => t.is_completed).length
+    const totalCount = tasks.length
+
+    return (
+        <div className={styles.card}>
+            {/* Header */}
+            <div className={styles.header}>
+                <div className={styles.headerLeft}>
+                    <h3 className={styles.title}>Today's Tasks</h3>
+                </div>
+                {/* <span className={styles.countdown}>{timeRemaining}</span> */}
+            </div>
+
+            {/* Task List */}
+            <ul className={styles.taskList}>
+                {tasks.map(task => (
+                    <li key={task.id} className={`${styles.taskItem} ${task.is_completed ? styles.completed : ''}`}>
+                        {/* Checkbox */}
+                        <button 
+                            className={`${styles.checkbox} ${task.is_completed ? styles.checked : ''}`}
+                            onClick={() => toggleCompletion(task.id, !task.is_completed)}
+                        >
+                            {task.is_completed && <FaCheck size={12} />}
+                        </button>
+
+                        {/* Task Content */}
+                        <div className={styles.taskContent}>
+                            <span className={styles.taskTitle}>{task.title}</span>
+                            <span className={`${styles.priority} ${styles[task.priority]}`}>
+                                {task.priority}
+                            </span>
+                        </div>
+
+                        {/* Delete Button */}
+                        <button 
+                            className={styles.deleteBtn}
+                            onClick={() => deleteTask(task.id)}
+                        >
+                            <FaTrash size={12} />
+                        </button>
+                    </li>
+                ))}
+            </ul>
+
+            {/* Footer - Progress */}
+            <div className={styles.footer}>
+                <div className={styles.progressBar}>
+                    <div 
+                        className={styles.progressFill} 
+                        style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                    />
+                </div>
+                <span className={styles.progressText}>
+                    {completedCount} / {totalCount} completed
+                </span>
+            </div>
+        </div>
+    )
+}
+
+export default DailyTaskCard
