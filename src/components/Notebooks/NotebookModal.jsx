@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react'
 import styles from './NotebookModal.module.css'
 import { useNavigate } from 'react-router-dom'
 
-function NotebookModal({ notebook, onClose, authFetch, API}) {
-    // the reason why we pass authFetch and API is because clicking on the note will redirect to the notepage hence authfetching the GET through the API
-
+function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags}) {
     const [notebookNotes, setNotebookNotes] = useState([])
-    const [loading, setLoading] = useState(false) // char char || design
-    const navigate = useNavigate() // navigate because modal HAS TO CLOSE BEFORE/AFTER redirecting
+    const [loading, setLoading] = useState(false)
+    const [tags, setTags] = useState(notebook?.tags || '')
+    const navigate = useNavigate()
 
     useEffect(() => {
         async function fetchNotebookNotes() {
@@ -24,41 +23,54 @@ function NotebookModal({ notebook, onClose, authFetch, API}) {
         }
 
         fetchNotebookNotes()
-    }, [notebook.id])
+    }, [notebook.id, authFetch, API])
 
-    
-    // clicking the note
+    useEffect(() => {
+        setTags(notebook?.tags || '')
+    }, [notebook])
+
     const handleNoteClick = (noteId) => {
         navigate(`/notes/${noteId}`)
         onClose()
     }
 
-    // closing of modal window
     const handleBacking = (e) => {
         if(e.target === e.currentTarget) onClose()
     }
 
+    const saveTags = () => {
+        updateNotebookTags(notebook.id, tags)
+    }
 
     return (
         <div className={styles.backdrop} onClick={handleBacking}>
             <div className={styles.modal}>
 
-
                 <div className={styles.header}>
                     <h2>{notebook.name}</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>x</button>
+                    <button onClick={onClose} className={styles.closeBtn}>×</button>
                 </div>
 
+                <div className={styles.tagsSection}>
+                    <label htmlFor="notebook-tags" className={styles.tagsLabel}>Tags</label>
+                    <input
+                        id="notebook-tags"
+                        type="text"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                        onBlur={saveTags}
+                        placeholder="Add tags (e.g., work, personal, archive...)"
+                        className={styles.tagsInput}
+                    />
+                </div>
 
                 <div className={styles.content}>
                     {loading ? (
                         <p className={styles.loading}>Loading notes....</p>
                     ) : notebookNotes.length === 0 ? (
-                        // Though di possible, let's just add IN CASE or IF EVERRR mn jd gani
                         <p className={styles.empty}>No notes in this notebook yet</p>
                     ) : (
                         <div className={styles.noteList}>
-                            {/* we gon display each note using map duh */}
                             {notebookNotes.map( note => (
                                 <div key={note.id}
                                     className={styles.noteItem}
@@ -74,8 +86,6 @@ function NotebookModal({ notebook, onClose, authFetch, API}) {
                         </div>
                     )}
                 </div>
-
-
 
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 // Custom hook for the notes/notebooks
 export const useNotes = (authFetch, API, isAuthed) => {
@@ -32,23 +32,23 @@ export const useNotes = (authFetch, API, isAuthed) => {
 
 
     // ----------- Notes Operations like: Creating, deleting, etc. ===========================
-    const addNote = async (title = 'Untitled') => {
+    const addNote = useCallback(async (title = 'Untitled') => {
         try {
             const res = await authFetch(`${API}/notes`, {
                 method: "POST",
                 body: JSON.stringify({ title, body: '' })
             })
             if(!res.ok) throw new Error(`Failed to add note`)
-            
+
             const newNote = await res.json()
             setNotes(currentNotes => [...currentNotes, newNote])
 
         } catch (error) {
             console.error(error)
         }
-    }
+    }, [authFetch, API])
 
-    const deleteNote = async (id) => {
+    const deleteNote = useCallback(async (id) => {
         try {
             const res = await authFetch(`${API}/notes/${id}`, { method: "DELETE" })
             if(!res.ok) throw new Error(`Failed to delete note`)
@@ -57,9 +57,9 @@ export const useNotes = (authFetch, API, isAuthed) => {
         } catch (error) {
             console.error(error)
         }
-    }
+    }, [authFetch, API])
 
-    const editTitle = async (id, newTitle) => {
+    const editTitle = useCallback(async (id, newTitle) => {
         // For this, we'll go the optimistic way: The notes will always be updated so just set the frontend side to already have the updated title. In the background we'll do the api call to actually update
 
         setNotes(allNotes => allNotes.map( note => note.id === id ? {...note, title: newTitle} : note))
@@ -72,9 +72,9 @@ export const useNotes = (authFetch, API, isAuthed) => {
         } catch (error) {
             console.error(error)
         }
-    }
+    }, [authFetch, API])
 
-    const editBody = async (id, newBody) => {
+    const editBody = useCallback(async (id, newBody) => {
         // Not optimistic here kay i think it's better because the body is quite big
 
         try {
@@ -85,23 +85,82 @@ export const useNotes = (authFetch, API, isAuthed) => {
             if(!res.ok) throw new Error("Failed to update body/description/contents");
             const data = await res.json()
             setNotes(allNotes => allNotes.map( note => note.id === id ? data : note))
-        
+
         } catch (error) {
             console.error(error)
         }
-    }
+    }, [authFetch, API])
+
+    const toggleFavorite = useCallback(async (id) => {
+        // Get current state before update
+        setNotes(prevNotes => {
+            const note = prevNotes.find(n => n.id === id)
+            const newFavoriteState = !note.is_favorite
+
+            // Optimistic update
+            const updatedNotes = prevNotes.map(n =>
+                n.id === id ? {...n, is_favorite: newFavoriteState} : n
+            )
+
+            // Make API call
+            authFetch(`${API}/notes/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ is_favorite: newFavoriteState })
+            }).catch(error => {
+                console.error(error)
+                // Revert on error
+                setNotes(prevNotes => prevNotes.map(n =>
+                    n.id === id ? {...n, is_favorite: !newFavoriteState} : n
+                ))
+            })
+
+            return updatedNotes
+        })
+    }, [authFetch, API])
+
+    const updateColor = useCallback(async (id, color) => {
+        // Optimistic update
+        setNotes(allNotes => allNotes.map( note =>
+            note.id === id ? {...note, color} : note
+        ))
+
+        try {
+            await authFetch(`${API}/notes/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ color })
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }, [authFetch, API])
+
+    const updateTags = useCallback(async (id, tags) => {
+        // Optimistic update
+        setNotes(allNotes => allNotes.map( note =>
+            note.id === id ? {...note, tags} : note
+        ))
+
+        try {
+            await authFetch(`${API}/notes/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ tags })
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }, [authFetch, API])
 
 
-    // ----------- Notes Operations like: Creating, deleting, etc. ===========================
-    const createNotebook = async (name, noteIds) => {
+    // ----------- Notebook Operations like: Creating, deleting, etc. ===========================
+    const createNotebook = useCallback(async (name, noteIds, tags) => {
         try {
             // create notebook
             const res = await authFetch(`${API}/notebooks`, {
                 method: "POST",
-                body: JSON.stringify({ name, noteIds })
+                body: JSON.stringify({ name, noteIds, tags })
             })
             if(!res.ok) throw new Error("Failed to create notebook");
-            
+
             // get the newly created notebook and the updated list of notes
             const { notebook, updatedNotes } = await res.json()
 
@@ -118,23 +177,76 @@ export const useNotes = (authFetch, API, isAuthed) => {
         } catch (error) {
             console.error(error)
         }
-    }
+    }, [authFetch, API])
 
-    const deleteNotebook = async (id) => {
+    const deleteNotebook = useCallback(async (id) => {
         try {
             const res = await authFetch(`${API}/notebooks/${id}`, { method: "DELETE" })
             if(!res.ok) throw new Error("Failed to delete notebook");
-            
+
             setNotebooks(currentNotebooks => currentNotebooks.filter(note => note.id !== id))
 
             // Refresh the notes to update their notebook_id and appear on the lists of notes
             const noteRes = await authFetch(`${API}/notes`) // just call GET again
             if(noteRes.ok) setNotes(await noteRes.json())
-            
+
         } catch (error) {
             console.error(error)
         }
-    }
+    }, [authFetch, API])
+
+    const toggleFavoriteNotebook = useCallback(async (id) => {
+        setNotebooks(prevNotebooks => {
+            const notebook = prevNotebooks.find(n => n.id === id)
+            const newFavoriteState = !notebook.is_favorite
+
+            const updatedNotebooks = prevNotebooks.map(n =>
+                n.id === id ? {...n, is_favorite: newFavoriteState} : n
+            )
+
+            authFetch(`${API}/notebooks/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ is_favorite: newFavoriteState })
+            }).catch(error => {
+                console.error(error)
+                setNotebooks(prevNotebooks => prevNotebooks.map(n =>
+                    n.id === id ? {...n, is_favorite: !newFavoriteState} : n
+                ))
+            })
+
+            return updatedNotebooks
+        })
+    }, [authFetch, API])
+
+    const updateNotebookColor = useCallback(async (id, color) => {
+        setNotebooks(allNotebooks => allNotebooks.map( notebook =>
+            notebook.id === id ? {...notebook, color} : notebook
+        ))
+
+        try {
+            await authFetch(`${API}/notebooks/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ color })
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }, [authFetch, API])
+
+    const updateNotebookTags = useCallback(async (id, tags) => {
+        setNotebooks(allNotebooks => allNotebooks.map( notebook =>
+            notebook.id === id ? {...notebook, tags} : notebook
+        ))
+
+        try {
+            await authFetch(`${API}/notebooks/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ tags })
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }, [authFetch, API])
 
 
     return {
@@ -144,7 +256,13 @@ export const useNotes = (authFetch, API, isAuthed) => {
         deleteNote,
         editTitle,
         editBody,
+        toggleFavorite,
+        updateColor,
+        updateTags,
         createNotebook,
-        deleteNotebook
+        deleteNotebook,
+        toggleFavoriteNotebook,
+        updateNotebookColor,
+        updateNotebookTags
     }
 }

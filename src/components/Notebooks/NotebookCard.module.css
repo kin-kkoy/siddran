@@ -6,6 +6,7 @@
 .card {
   background-color: #1e1e1e;
   border: 1px solid #3a3a3a;
+  border-left: 4px solid #4a9eff;
   border-radius: 8px;
   padding: 20px;
   cursor: pointer;
@@ -18,7 +19,8 @@
 }
 
 .card:hover {
-  border-color: #4a9eff;
+  background-color: #252525;
+  border-left-color: #5aa9ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
 }
@@ -82,7 +84,6 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 10px;
 }
 
 .horizontalCard:hover {
@@ -113,4 +114,103 @@
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
+}
+
+/* Menu Container */
+.menuContainer {
+  position: relative;
+}
+
+.menuBtn {
+  background-color: transparent;
+  border: none;
+  color: #888;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.menuBtn:hover {
+  color: #fff;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px;
+  min-width: 200px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.menuAbove {
+  bottom: calc(100% + 4px);
+}
+
+.menuBelow {
+  top: calc(100% + 4px);
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background-color: #3a3a3a;
+}
+
+.colorPicker {
+  padding: 10px 12px;
+  border-top: 1px solid #444;
+  margin-top: 4px;
+}
+
+.colorLabel {
+  font-size: 12px;
+  color: #888;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.colorOptions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.colorBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.colorBtn:hover {
+  border-color: #fff;
+  transform: scale(1.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
 }

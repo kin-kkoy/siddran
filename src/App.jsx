@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import Sidebar from "./components/Layout/Sidebar/Sidebar.jsx"
 import NotePage from "./pages/Notes/NotePage.jsx"
@@ -11,14 +11,14 @@ import SettingsPage from "./pages/SettingsPage.jsx"
 import { useNotes } from "./hooks/useNotes.js"
 
 // Wrapper component to get the ID from route parameters
-function NotePageWrapper({ notes, editTitle, editBody, onNoteChange}){
+function NotePageWrapper({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor, onNoteChange}){
   const { id } = useParams()
 
   useEffect(() => {
     onNoteChange(id)
   }, [id, onNoteChange])
 
-  return <NotePage notes={notes} editTitle={editTitle} editBody={editBody} />
+  return <NotePage notes={notes} editTitle={editTitle} editBody={editBody} updateTags={updateTags} toggleFavorite={toggleFavorite} updateColor={updateColor} />
 }
 
 function App() {
@@ -53,15 +53,15 @@ function App() {
   }, [])
 
   // get token and attach to `Authentication` header AS WELL AS the username
-  const getAuthHeaders = () => {
+  const getAuthHeaders = useCallback(() => {
     const accessToken = localStorage.getItem('accessToken')
     return{
       'Content-Type': 'application/json',
       'Authorization': accessToken ? `Bearer ${accessToken}` : ''
     }
-  }
+  }, [])
 
-  const refreshAuthToken = async () => {
+  const refreshAuthToken = useCallback(async () => {
     try {
       const res = await fetch(`${API}/auth/refresh`, {
         method: 'POST',
@@ -78,12 +78,12 @@ function App() {
       // failed to refresh token = logout user
       localStorage.removeItem(`accessToken`)
       setIsAuthed(false)
-      throw error
+      throw refreshTokenError
     }
-  }
+  }, [API])
 
   // helper function for AUTHENTICATED FETCH
-  const authFetch = async (URL, reqProps = {}) => {
+  const authFetch = useCallback(async (URL, reqProps = {}) => {
     let res = await fetch(URL, {
       ...reqProps,
       credentials: 'include',
@@ -96,7 +96,7 @@ function App() {
     // If access token has expired (15mins), try to refresh it
     if(res.status === 401) {
       try {
-        
+
         // First, try to refresh/reset access token
         await refreshAuthToken()
 
@@ -115,28 +115,33 @@ function App() {
         localStorage.removeItem(`accessToken`)
         setIsAuthed(false)
         throw new Error('Session expired. Please login again.')
-        
+
       }
     }
 
     return res
-  }
+  }, [getAuthHeaders, refreshAuthToken])
 
 
   // ------------- DATA LOGIC (Adding, deleting, etc. of Notes and Notebooks) ===================================
   const {
-    notes, notebooks, addNote, deleteNote, editTitle, editBody, createNotebook, deleteNotebook
+    notes, notebooks, addNote, deleteNote, editTitle, editBody, toggleFavorite, updateColor, updateTags, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags
   } = useNotes(authFetch, API, isAuthed)
 
 
   //  Elements area
   const notesHubElement = (
-    <NotesHub notes={notes} 
+    <NotesHub notes={notes}
     notebooks={notebooks}
     addNote={addNote}
     deleteNote={deleteNote}
+    toggleFavorite={toggleFavorite}
+    updateColor={updateColor}
     createNotebook={createNotebook}
     deleteNotebook={deleteNotebook}
+    toggleFavoriteNotebook={toggleFavoriteNotebook}
+    updateNotebookColor={updateNotebookColor}
+    updateNotebookTags={updateNotebookTags}
     authFetch={authFetch}
     API={API}/>
   )
@@ -201,9 +206,12 @@ function App() {
                 <>
                   <Route path="/notes" element={notesHubElement} />
                   <Route path="/notes/:id" element={
-                    <NotePageWrapper notes={notes} 
+                    <NotePageWrapper notes={notes}
                       editTitle={editTitle}
                       editBody={editBody}
+                      updateTags={updateTags}
+                      toggleFavorite={toggleFavorite}
+                      updateColor={updateColor}
                       onNoteChange={setCurrentNoteID}
                       />
                     }

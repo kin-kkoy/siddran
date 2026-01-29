@@ -1,11 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { flushSync } from 'react-dom' // ← Add this import
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styles from './NotePage.module.css'
-import { IoMdArrowRoundBack } from "react-icons/io";
+import { IoMdArrowRoundBack } from "react-icons/io"
+import { FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
 
-function NotePage({ notes, editTitle, editBody }) {
-  
+function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor }) {
+
   const { id } = useParams()
   const navigate = useNavigate()
   const note = notes && notes.length ? notes.find(n => n.id === Number(id)) : null
@@ -14,16 +14,39 @@ function NotePage({ notes, editTitle, editBody }) {
 
   const [newTitle, setNewTitle] = useState(note?.title || "")
   const [newBody, setNewBody] = useState(note?.body || "")
+  const [newTags, setNewTags] = useState(note?.tags || "")
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuPosition, setMenuPosition] = useState('below') // 'above' or 'below'
   const titleInputReference = useRef(null); // `useRef` is basically just React's way of doing: `document.querySelectorAll()` or `.getElementByID()`
-  const bodyRef = useRef(null);
+  const bodyRef = useRef(null)
+  const menuRef = useRef(null)
+  const buttonRef = useRef(null)
 
   // re-renders if note changes (parent changes)
   useEffect(() => {
     if(note){
       setNewTitle(note.title)
       setNewBody(note.body)
+      setNewTags(note.tags || "")
     }
   }, [note])
+
+  // Click outside detection for menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false)
+      }
+    }
+
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [menuOpen])
 
   // this is for auto-selecting title when first created and visited
   useLayoutEffect(() => {
@@ -32,7 +55,7 @@ function NotePage({ notes, editTitle, editBody }) {
     }
   }, [newTitle, id])
 
-  // the api calls to save title/body
+  // the api calls to save title/body/tags
   const saveTitle = async () => {
     if(!newTitle.trim()){
       alert('Title cannot be empty')
@@ -43,6 +66,9 @@ function NotePage({ notes, editTitle, editBody }) {
   }
   const saveBody = async () => {
      editBody(note.id, newBody)
+  }
+  const saveTags = async () => {
+     updateTags(note.id, newTags)
   }
 
   // QoL: after pressing enter on title, move to body asap
@@ -58,10 +84,80 @@ function NotePage({ notes, editTitle, editBody }) {
     navigate('/notes')
   }
 
+  const toggleMenu = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!menuOpen && buttonRef.current) {
+      // Calculate if there's enough space below
+      const buttonRect = buttonRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - buttonRect.bottom
+      const menuHeight = 180 // Approximate menu height
+
+      // If not enough space below, show above
+      setMenuPosition(spaceBelow < menuHeight ? 'above' : 'below')
+    }
+
+    setMenuOpen(!menuOpen)
+  }
+
+  const handleFavoriteToggle = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    toggleFavorite(note.id)
+    setMenuOpen(false)
+  }
+
+  const handleColorChange = (e, color) => {
+    e.preventDefault()
+    e.stopPropagation()
+    updateColor(note.id, color)
+  }
+
   return (
     <div className={styles.container}>
 
-      <button onClick={handleGoBackBtn} className={styles.backBtn}><IoMdArrowRoundBack /> Back to Notes</button>
+      {/* Header row with back button, tags input, and menu */}
+      <div className={styles.headerRow}>
+        <button onClick={handleGoBackBtn} className={styles.backBtn}>
+          <IoMdArrowRoundBack /> Back to Notes
+        </button>
+
+        <input
+          className={styles.tagsInput}
+          type='text'
+          value={newTags}
+          onChange={ e => setNewTags(e.target.value)}
+          onBlur={saveTags}
+          placeholder='Tags (e.g., personal, work, ideas...)'
+        />
+
+        <div className={styles.menuContainer} ref={menuRef}>
+          <button ref={buttonRef} onClick={toggleMenu} className={styles.menuBtn}>
+            <FaEllipsisV />
+          </button>
+
+          {menuOpen && (
+            <div className={`${styles.menu} ${menuPosition === 'above' ? styles.menuAbove : styles.menuBelow}`}>
+              <button onClick={handleFavoriteToggle} className={styles.menuItem}>
+                {note.is_favorite ? <FaStar color="#fbbf24" /> : <FaRegStar />}
+                <span>{note.is_favorite ? 'Unfavorite' : 'Favorite'}</span>
+              </button>
+
+              <div className={styles.colorPicker}>
+                <span className={styles.colorLabel}>Color:</span>
+                <div className={styles.colorOptions}>
+                  <button onClick={(e) => handleColorChange(e, null)} className={styles.colorBtn} style={{ backgroundColor: '#1e1e1e' }} title="Default"></button>
+                  <button onClick={(e) => handleColorChange(e, '#2a2a1a')} className={styles.colorBtn} style={{ backgroundColor: '#2a2a1a' }} title="Brown"></button>
+                  <button onClick={(e) => handleColorChange(e, '#1a2a2a')} className={styles.colorBtn} style={{ backgroundColor: '#1a2a2a' }} title="Teal"></button>
+                  <button onClick={(e) => handleColorChange(e, '#2a1a2a')} className={styles.colorBtn} style={{ backgroundColor: '#2a1a2a' }} title="Purple"></button>
+                  <button onClick={(e) => handleColorChange(e, '#2a1a1a')} className={styles.colorBtn} style={{ backgroundColor: '#2a1a1a' }} title="Red"></button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Show warning if title is Untitled */}
       {newTitle === "Untitled" && (
@@ -79,6 +175,7 @@ function NotePage({ notes, editTitle, editBody }) {
         onBlur={saveTitle}
         onKeyDown={handleKeyDown}
       />
+
       <textarea
         ref={bodyRef}
         className={styles.bodyTextarea}
