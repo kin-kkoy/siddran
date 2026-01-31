@@ -1,0 +1,226 @@
+/* Editor container */
+.editorContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 300px);
+  background: transparent;
+}
+
+.editorInner {
+  position: relative;
+  flex: 1;
+}
+
+.contentEditable {
+  min-height: calc(100vh - 380px);
+  outline: none;
+  color: #e0e0e0;
+  font-size: 16px;
+  line-height: 1.7;
+  caret-color: #fff;
+  padding: 8px 0;
+}
+
+.placeholder {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  color: #555;
+  font-size: 16px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Text formatting */
+:global(.editor-text-bold) {
+  font-weight: 700;
+}
+
+:global(.editor-text-italic) {
+  font-style: italic;
+}
+
+:global(.editor-text-strikethrough) {
+  text-decoration: line-through;
+}
+
+:global(.editor-text-underline) {
+  text-decoration: underline;
+}
+
+:global(.editor-text-code) {
+  background-color: #2a2a2a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  color: #e06c75;
+}
+
+/* Headings */
+:global(.editor-heading-h1) {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 24px 0 16px 0;
+  line-height: 1.3;
+}
+
+:global(.editor-heading-h2) {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 20px 0 12px 0;
+  line-height: 1.3;
+}
+
+:global(.editor-heading-h3) {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 16px 0 8px 0;
+  line-height: 1.3;
+}
+
+/* Paragraph */
+:global(.editor-paragraph) {
+  margin: 8px 0;
+}
+
+/* Lists */
+:global(.editor-list-ul),
+:global(.editor-list-ol) {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+:global(.editor-listitem) {
+  margin: 4px 0;
+}
+
+:global(.editor-nested-listitem) {
+  list-style-type: none;
+}
+
+/* Checklist */
+:global(.editor-listitem-checked),
+:global(.editor-listitem-unchecked) {
+  list-style-type: none;
+  position: relative;
+  padding-left: 28px;
+  margin-left: -24px;
+}
+
+:global(.editor-listitem-checked)::before,
+:global(.editor-listitem-unchecked)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #555;
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: transparent;
+  transition: all 0.15s ease;
+}
+
+:global(.editor-listitem-checked)::before {
+  background-color: #4a9eff;
+  border-color: #4a9eff;
+}
+
+:global(.editor-listitem-checked)::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 7px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+:global(.editor-listitem-checked) {
+  text-decoration: line-through;
+  color: #666;
+}
+
+/* Quote */
+:global(.editor-quote) {
+  border-left: 4px solid #4a9eff;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Code block */
+:global(.editor-code) {
+  display: block;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 16px 0;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  overflow-x: auto;
+  tab-size: 2;
+  white-space: pre;
+  color: #d4d4d4;
+}
+
+/* Syntax highlighting for code */
+:global(.editor-tokenComment) {
+  color: #6a9955;
+}
+
+:global(.editor-tokenPunctuation) {
+  color: #d4d4d4;
+}
+
+:global(.editor-tokenProperty) {
+  color: #b5cea8;
+}
+
+:global(.editor-tokenSelector) {
+  color: #ce9178;
+}
+
+:global(.editor-tokenOperator) {
+  color: #d4d4d4;
+}
+
+:global(.editor-tokenAttr) {
+  color: #569cd6;
+}
+
+:global(.editor-tokenVariable) {
+  color: #9cdcfe;
+}
+
+:global(.editor-tokenFunction) {
+  color: #dcdcaa;
+}
+
+/* Links */
+:global(.editor-link) {
+  color: #4a9eff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+:global(.editor-link:hover) {
+  text-decoration: underline;
+}
+
+/* Image */
+:global(.editor-image) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 16px 0;
+}

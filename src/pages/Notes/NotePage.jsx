@@ -1,8 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styles from './NotePage.module.css'
 import { IoMdArrowRoundBack } from "react-icons/io"
 import { FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
+import LexicalEditor from '../../components/Editor/LexicalEditor'
 
 function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor }) {
 
@@ -13,12 +14,10 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
   if(!note) return <div>Loading note...</div>
 
   const [newTitle, setNewTitle] = useState(note?.title || "")
-  const [newBody, setNewBody] = useState(note?.body || "")
   const [newTags, setNewTags] = useState(note?.tags || "")
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState('below') // 'above' or 'below'
   const titleInputReference = useRef(null); // `useRef` is basically just React's way of doing: `document.querySelectorAll()` or `.getElementByID()`
-  const bodyRef = useRef(null)
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
 
@@ -26,7 +25,6 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
   useEffect(() => {
     if(note){
       setNewTitle(note.title)
-      setNewBody(note.body)
       setNewTags(note.tags || "")
     }
   }, [note])
@@ -64,18 +62,21 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
     }
     editTitle(note.id, newTitle)
   }
-  const saveBody = async () => {
-     editBody(note.id, newBody)
-  }
+  // Save handler for Lexical editor - receives markdown content
+  const handleEditorSave = useCallback((markdownContent) => {
+    editBody(note.id, markdownContent)
+  }, [note?.id, editBody])
   const saveTags = async () => {
      updateTags(note.id, newTags)
   }
 
-  // QoL: after pressing enter on title, move to body asap
+  // QoL: after pressing enter on title, move to body (editor)
   const handleKeyDown = e => {
     if(e.key === "Enter" || e.key === "Tab"){
       e.preventDefault();
-      bodyRef.current?.focus();
+      // Focus the Lexical editor's content editable
+      const editorElement = document.querySelector('[contenteditable="true"]');
+      editorElement?.focus();
     }
   }
 
@@ -176,13 +177,10 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
         onKeyDown={handleKeyDown}
       />
 
-      <textarea
-        ref={bodyRef}
-        className={styles.bodyTextarea}
-        value={newBody}
-        onChange={ e => setNewBody(e.target.value)}
-          // maybe add focus here but for now keep as is
-        onBlur={saveBody}
+      <LexicalEditor
+        key={note.id}
+        initialContent={note.body || ''}
+        onSave={handleEditorSave}
         placeholder='Start typing here...'
       />
 

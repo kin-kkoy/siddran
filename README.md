@@ -7,7 +7,6 @@
 
 # To implement
  - Notes
-    - Grouping a bunch of notes; "Notebook"
     - Keyboard shortcuts like `Ctrl + B` for bolding selected characters
         - Can take a step further and make a dock that shows when mouse is at the bottom and will show buttons that does the same thing as the shortcuts
         - Think markdown
@@ -39,3 +38,9 @@
     - Social features:
         - Adding friends. List of Friends
         - Real-time editing similar to Docs with other people
+
+---
+
+# Done Implementing (Obtained from *"To implement"*) (To be transfered to Features)
+ - Grouping a bunch of notes; "Notebook"
+ 

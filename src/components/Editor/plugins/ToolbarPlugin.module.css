@@ -1,0 +1,48 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #888;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 14px;
+}
+
+.toolbarBtn:hover:not(:disabled) {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.toolbarBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toolbarBtn.active {
+  background-color: #333;
+  color: #4a9eff;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: #333;
+  margin: 0 8px;
+}
