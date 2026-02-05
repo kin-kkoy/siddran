@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Card from '../../components/Notes/Card'
 import HorizontalCard from '../../components/Notes/HorizontalCard'
 import AddCard from '../../components/Notes/AddCard'
@@ -8,22 +8,125 @@ import HorizontalNotebookCard from '../../components/Notebooks/HorizontalNoteboo
 import NotebookCard from '../../components/Notebooks/NotebookCard'
 import NotebookModal from '../../components/Notebooks/NotebookModal'
 import CreateNotebookModal from '../../components/Notebooks/CreateNotebookModal'
+import ConfirmModal from '../../components/Common/ConfirmModal'
+import { HiOutlineTrash } from 'react-icons/hi'
+import { LuNotebookPen } from 'react-icons/lu'
 
 // obtains the notes and
-function NotesHub({ notes, notebooks, addNote, deleteNote, toggleFavorite, updateColor, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags, authFetch, API }) {
+function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, toggleFavorite, updateColor, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags, authFetch, API }) {
 
-  const [viewMode, setViewMode] = useState("list")
-  const [isSelectionMode, setIsSelectionMode] = useState(false)
+  // Persist view mode in localStorage
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem('notesViewMode') || 'list'
+  })
+  // Selection mode can be: null, 'delete', or 'create'
+  const [selectionMode, setSelectionMode] = useState(null)
   const [selectedNotes, setSelectedNotes] = useState([])
   const [selectedNotebook, setSelectedNotebook] = useState(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
-  const changeView = () => viewMode === "list" ? setViewMode("grid") : setViewMode("list")
+  // Helper to check if in any selection mode
+  const isSelectionMode = selectionMode !== null
 
-  const toggleSelectionMode = () => {
-    setIsSelectionMode(!isSelectionMode)
-    setSelectedNotes([])  // clear the selected notes when toggling
+  // Refs for infinite scroll sentinels
+  const notesSentinelRef = useRef(null)
+  const notebooksSentinelRef = useRef(null)
+  const scrollIntentTimeoutRef = useRef(null)
+
+  const hasMoreNotes = notesPagination?.hasNextPage
+  const hasMoreNotebooks = notebooksPagination?.hasNextPage
+
+  // Intersection Observer for notes infinite scroll
+  useEffect(() => {
+    if (!hasMoreNotes || loadingMore) return
+
+    const sentinel = notesSentinelRef.current
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting && !loadingMore) {
+          scrollIntentTimeoutRef.current = setTimeout(() => {
+            loadMoreNotes()
+          }, 300)
+        } else {
+          if (scrollIntentTimeoutRef.current) {
+            clearTimeout(scrollIntentTimeoutRef.current)
+          }
+        }
+      },
+      { root: null, rootMargin: '100px', threshold: 0 }
+    )
+
+    observer.observe(sentinel)
+
+    return () => {
+      observer.disconnect()
+      if (scrollIntentTimeoutRef.current) {
+        clearTimeout(scrollIntentTimeoutRef.current)
+      }
+    }
+  }, [hasMoreNotes, loadingMore, loadMoreNotes])
+
+  // Intersection Observer for notebooks infinite scroll
+  useEffect(() => {
+    if (!hasMoreNotebooks || loadingMore) return
+
+    const sentinel = notebooksSentinelRef.current
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting && !loadingMore) {
+          setTimeout(() => {
+            loadMoreNotebooks()
+          }, 300)
+        }
+      },
+      { root: null, rootMargin: '100px', threshold: 0 }
+    )
+
+    observer.observe(sentinel)
+
+    return () => observer.disconnect()
+  }, [hasMoreNotebooks, loadingMore, loadMoreNotebooks])
+
+  const changeView = () => {
+    const newMode = viewMode === "list" ? "grid" : "list"
+    setViewMode(newMode)
+    localStorage.setItem('notesViewMode', newMode)
+  }
+
+  // Batch delete selected notes
+  const handleBatchDelete = () => {
+    if (selectedNotes.length === 0) return
+    setShowDeleteModal(true)
+  }
+
+  const confirmBatchDelete = () => {
+    selectedNotes.forEach(id => deleteNote(id))
+    setSelectedNotes([])
+    setSelectionMode(null)
+    setShowDeleteModal(false)
+  }
+
+  const enterDeleteMode = () => {
+    setSelectionMode('delete')
+    setSelectedNotes([])
+  }
+
+  const enterCreateMode = () => {
+    setSelectionMode('create')
+    setSelectedNotes([])
+  }
+
+  const exitSelectionMode = () => {
+    setSelectionMode(null)
+    setSelectedNotes([])
   }
 
   const toggleNoteSelection = noteId => {
@@ -40,7 +143,7 @@ function NotesHub({ notes, notebooks, addNote, deleteNote, toggleFavorite, updat
 
   const handleCreateNotebook = async (name, tags) => {
     await createNotebook(name, selectedNotes, tags)
-    setIsSelectionMode(false)
+    setSelectionMode(null)
     setSelectedNotes([])
     setShowCreateModal(false)
   }
@@ -123,23 +226,37 @@ function NotesHub({ notes, notebooks, addNote, deleteNote, toggleFavorite, updat
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          {isSelectionMode && (
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {/* Delete button - visible when not in create mode */}
+          {selectionMode !== 'create' && (
             <button
-              onClick={handleOpenCreateModal}
-              className={styles.createNotebookBtn}
-              disabled={selectedNotes.length === 0}
+              onClick={selectionMode === 'delete' ? handleBatchDelete : enterDeleteMode}
+              className={styles.batchDeleteBtn}
+              disabled={selectionMode === 'delete' && selectedNotes.length === 0}
+              title={selectionMode === 'delete' ? "Delete selected notes" : "Select notes to delete"}
             >
-              Create Notebook ({selectedNotes.length})
+              <HiOutlineTrash size={18} />
             </button>
           )}
-          
-          <button 
-            onClick={toggleSelectionMode} 
-            className={styles.toggleBtn}
-          >
-            {isSelectionMode ? 'Cancel' : 'Select Notes'}
-          </button>
+
+          {/* Create Notebook button - visible when not in delete mode */}
+          {selectionMode !== 'delete' && (
+            <button
+              onClick={selectionMode === 'create' ? handleOpenCreateModal : enterCreateMode}
+              className={styles.createNotebookBtn}
+              disabled={selectionMode === 'create' && selectedNotes.length === 0}
+            >
+              <LuNotebookPen size={16} />
+              {selectionMode === 'create' ? `Create (${selectedNotes.length})` : 'Create Notebook'}
+            </button>
+          )}
+
+          {/* Cancel button - only in selection mode */}
+          {isSelectionMode && (
+            <button onClick={exitSelectionMode} className={styles.toggleBtn}>
+              Cancel
+            </button>
+          )}
 
           <button onClick={changeView} className={styles.toggleBtn}>
             {viewMode === "list" ? "Card View" : "List View"}
@@ -212,6 +329,18 @@ function NotesHub({ notes, notebooks, addNote, deleteNote, toggleFavorite, updat
         }
       </div>
 
+      {/* Infinite scroll sentinels */}
+      {hasMoreNotebooks && (
+        <div ref={notebooksSentinelRef} className={styles.sentinel}>
+          {loadingMore ? <span className={styles.loadingDots}>...</span> : <span className={styles.moreDots}>...</span>}
+        </div>
+      )}
+      {hasMoreNotes && (
+        <div ref={notesSentinelRef} className={styles.sentinel}>
+          {loadingMore ? <span className={styles.loadingDots}>...</span> : <span className={styles.moreDots}>...</span>}
+        </div>
+      )}
+
 
       {/* Modal area */}
       {selectedNotebook && (
@@ -233,6 +362,16 @@ function NotesHub({ notes, notebooks, addNote, deleteNote, toggleFavorite, updat
         />
       )}
 
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmBatchDelete}
+        title="Delete Notes"
+        message={`Are you sure you want to delete ${selectedNotes.length} selected note(s)? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
 
     </div>
   )

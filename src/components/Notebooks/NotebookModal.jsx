@@ -10,14 +10,15 @@ function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags})
 
     useEffect(() => {
         async function fetchNotebookNotes() {
+            setLoading(true)
             try {
-                const res = await authFetch(`${API}/notebooks/${notebook.id}/notes`)
+                const res = await authFetch(`${API}/notebooks/${notebook.id}/notes`);
                 if(!res.ok) throw new Error("Failed to fetch the notes of the notebook");
                 const data = await res.json()
-                setNotebookNotes(data)
+                setNotebookNotes(data.notes)
             } catch (error) {
                 console.error(`Error fetching notebook's notes:`, error)
-            }finally{
+            } finally {
                 setLoading(false)
             }
         }

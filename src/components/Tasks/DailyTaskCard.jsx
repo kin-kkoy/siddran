@@ -1,8 +1,31 @@
-import { useState, useEffect } from 'react'
-import { FaTrash, FaCheck } from 'react-icons/fa'
+import { useState } from 'react'
+import { FaCheck } from 'react-icons/fa'
+import { HiOutlineTrash } from 'react-icons/hi'
 import styles from './DailyTaskCard.module.css'
+import ConfirmModal from '../Common/ConfirmModal'
 
 function DailyTaskCard({ tasks, toggleCompletion, deleteTask }) {
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+    const [taskToDelete, setTaskToDelete] = useState(null)
+
+    const handleDeleteClick = (task) => {
+        setTaskToDelete(task)
+        setDeleteModalOpen(true)
+    }
+
+    const confirmDelete = () => {
+        if (taskToDelete) {
+            deleteTask(taskToDelete.id)
+        }
+        setDeleteModalOpen(false)
+        setTaskToDelete(null)
+    }
+
+    // Sort tasks by priority: High -> Normal -> Low
+    const priorityOrder = { high: 0, normal: 1, low: 2 }
+    const sortedTasks = [...tasks].sort((a, b) =>
+        (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1)
+    )
     // const [timeRemaining, setTimeRemaining] = useState('')
 
     // // Calculate time remaining until expiration
@@ -48,10 +71,10 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask }) {
 
             {/* Task List */}
             <ul className={styles.taskList}>
-                {tasks.map(task => (
+                {sortedTasks.map(task => (
                     <li key={task.id} className={`${styles.taskItem} ${task.is_completed ? styles.completed : ''}`}>
                         {/* Checkbox */}
-                        <button 
+                        <button
                             className={`${styles.checkbox} ${task.is_completed ? styles.checked : ''}`}
                             onClick={() => toggleCompletion(task.id, !task.is_completed)}
                         >
@@ -67,11 +90,11 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask }) {
                         </div>
 
                         {/* Delete Button */}
-                        <button 
+                        <button
                             className={styles.deleteBtn}
-                            onClick={() => deleteTask(task.id)}
+                            onClick={() => handleDeleteClick(task)}
                         >
-                            <FaTrash size={12} />
+                            <HiOutlineTrash size={14} />
                         </button>
                     </li>
                 ))}
@@ -80,8 +103,8 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask }) {
             {/* Footer - Progress */}
             <div className={styles.footer}>
                 <div className={styles.progressBar}>
-                    <div 
-                        className={styles.progressFill} 
+                    <div
+                        className={styles.progressFill}
                         style={{ width: `${(completedCount / totalCount) * 100}%` }}
                     />
                 </div>
@@ -89,6 +112,20 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask }) {
                     {completedCount} / {totalCount} completed
                 </span>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false)
+                    setTaskToDelete(null)
+                }}
+                onConfirm={confirmDelete}
+                title="Delete Daily Task"
+                message={taskToDelete ? `Are you sure you want to delete "${taskToDelete.title}"? This action cannot be undone.` : ''}
+                confirmText="Delete"
+                cancelText="Cancel"
+            />
         </div>
     )
 }

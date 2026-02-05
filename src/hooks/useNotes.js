@@ -5,6 +5,9 @@ export const useNotes = (authFetch, API, isAuthed) => {
 
     const [notes, setNotes] = useState([])
     const [notebooks, setNotebooks] = useState([])
+    const [notesPagination, setNotesPagination] = useState(null)
+    const [notebooksPagination, setNotebooksPagination] = useState(null)
+    const [loadingMore, setLoadingMore] = useState(false)
 
 
     // ----------- Fetch data ================================================================
@@ -15,11 +18,19 @@ export const useNotes = (authFetch, API, isAuthed) => {
             try {
                 // We fetch notes
                 const notesResponse = await authFetch(`${API}/notes`)
-                if(notesResponse.ok) setNotes(await notesResponse.json())
+                if(notesResponse.ok) {
+                    const data = await notesResponse.json()
+                    setNotes(data.notes)
+                    setNotesPagination(data.pagination) // Store pagination info for "Load More"
+                }
                 
                 // and then fetch notebooks
                 const ntbkResponse = await authFetch(`${API}/notebooks`)
-                if(ntbkResponse) setNotebooks(await ntbkResponse.json())
+                if(ntbkResponse.ok) {
+                    const data = await ntbkResponse.json()
+                    setNotebooks(data.notebooks)
+                    setNotebooksPagination(data.pagination) // Store pagination info for "Load More"
+                }
 
             } catch (error) {
                 console.error(`Error fetching for data:`, error)
@@ -29,6 +40,47 @@ export const useNotes = (authFetch, API, isAuthed) => {
         fetchData()
 
     }, [isAuthed, authFetch, API])
+
+    // ----------- Load More Functions (Pagination) ==========================================
+    const loadMoreNotes = useCallback(async () => {
+        if (!notesPagination?.hasNextPage || loadingMore) return
+
+        setLoadingMore(true)
+        try {
+            const response = await authFetch(
+                `${API}/notes?cursor=${notesPagination.nextCursor}&limit=${notesPagination.limit}`
+            )
+            if(response.ok) {
+                const data = await response.json()
+                setNotes(prev => [...prev, ...data.notes]) // Append new notes to existing
+                setNotesPagination(data.pagination) // Update pagination for next request
+            }
+        } catch (error) {
+            console.error('Error loading more notes:', error)
+        } finally {
+            setLoadingMore(false)
+        }
+    }, [authFetch, API, notesPagination, loadingMore])
+
+    const loadMoreNotebooks = useCallback(async () => {
+        if (!notebooksPagination?.hasNextPage || loadingMore) return
+
+        setLoadingMore(true)
+        try {
+            const response = await authFetch(
+                `${API}/notebooks?cursor=${notebooksPagination.nextCursor}&limit=${notebooksPagination.limit}`
+            )
+            if(response.ok) {
+                const data = await response.json()
+                setNotebooks(prev => [...prev, ...data.notebooks]) // Append new notebooks to existing
+                setNotebooksPagination(data.pagination)
+            }
+        } catch (error) {
+            console.error('Error loading more notebooks:', error)
+        } finally {
+            setLoadingMore(false)
+        }
+    }, [authFetch, API, notebooksPagination, loadingMore])
 
 
     // ----------- Notes Operations like: Creating, deleting, etc. ===========================
@@ -252,6 +304,11 @@ export const useNotes = (authFetch, API, isAuthed) => {
     return {
         notes,
         notebooks,
+        notesPagination,
+        notebooksPagination,
+        loadMoreNotes,
+        loadMoreNotebooks,
+        loadingMore,
         addNote,
         deleteNote,
         editTitle,

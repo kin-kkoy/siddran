@@ -54,17 +54,22 @@
 }
 
 .deleteBtn {
-  background: none;
+  background: transparent;
   border: none;
+  color: #666;
   cursor: pointer;
   font-size: 18px;
-  padding: 4px 8px;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .deleteBtn:hover {
-  opacity: 1;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
 /* Horizontal Notebook Card (List View) */

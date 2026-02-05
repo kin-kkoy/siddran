@@ -19,7 +19,7 @@
     border: 1px solid #444;
     border-radius: 12px;
     width: 90%;
-    max-width: 500px;
+    max-width: 400px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     animation: slideIn 0.2s ease-out;
 }
@@ -27,11 +27,11 @@
 @keyframes slideIn {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-20px) scale(0.95);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -40,14 +40,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 24px 16px 24px;
+    padding: 20px 24px 16px 24px;
     border-bottom: 1px solid #333;
 }
 
 .header h2 {
     margin: 0;
     color: #fff;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
 }
 
@@ -72,63 +72,16 @@
     color: #fff;
 }
 
-/* Form */
-.form {
+/* Content */
+.content {
     padding: 24px;
 }
 
-.info {
-    background-color: #2a2a2a;
-    border-left: 3px solid #f97316;
-    padding: 12px 16px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: #e0e0e0;
-    font-size: 14px;
-}
-
-.info strong {
-    color: #f97316;
-}
-
-.formGroup {
-    margin-bottom: 20px;
-}
-
-.formGroup label {
-    display: block;
-    color: #aaa;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.input {
-    width: 100%;
-    background-color: #2a2a2a;
-    border: 1px solid #444;
-    border-radius: 6px;
-    color: #fff;
+.content p {
+    margin: 0;
+    color: #ccc;
     font-size: 15px;
-    padding: 12px 14px;
-    outline: none;
-    font-family: inherit;
-    transition: border-color 0.2s;
-}
-
-.input:focus {
-    border-color: #f97316;
-}
-
-.input::placeholder {
-    color: #666;
-}
-
-.hint {
-    display: block;
-    color: #666;
-    font-size: 12px;
-    margin-top: 6px;
+    line-height: 1.5;
 }
 
 /* Actions */
@@ -136,9 +89,7 @@
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid #333;
+    padding: 16px 24px 24px 24px;
 }
 
 .cancelBtn {
@@ -157,8 +108,8 @@
     background-color: #333;
 }
 
-.createBtn {
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+.confirmBtn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     border: none;
     color: #fff;
     padding: 10px 24px;
@@ -169,7 +120,7 @@
     transition: all 0.2s;
 }
 
-.createBtn:hover {
+.confirmBtn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }

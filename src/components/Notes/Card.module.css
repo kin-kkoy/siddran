@@ -50,18 +50,22 @@
 }
 
 .deleteBtn {
-  background-color: #dc3545;
+  background: transparent;
   border: none;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 4px;
+  color: #666;
+  padding: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.2s;
+  font-size: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .deleteBtn:hover {
-  background-color: #c82333;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
 /* Menu Button and Dropdown */
@@ -204,18 +208,22 @@
 }
 
 .meta .deleteBtn {
-  background-color: #dc3545;
+  background: transparent;
   border: none;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
+  color: #666;
+  padding: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.2s;
+  font-size: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .meta .deleteBtn:hover {
-  background-color: #c82333;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
 /* Add Card (Grid) */
@@ -284,14 +292,15 @@
 
 
 /* Selection mode styles */
-.card.selected {
-  border: 2px solid #4a9eff;
-  background-color: #1a2a3a;
+.card.selected,
+.card.isSelected {
+  border: 2px solid #f97316;
+  background-color: rgba(249, 115, 22, 0.1);
 }
 
 .horizontalCard.selected {
-  border-left: 4px solid #4a9eff;
-  background-color: #1a2a3a;
+  border-left: 4px solid #f97316;
+  background-color: rgba(249, 115, 22, 0.1);
 }
 
 .checkbox {
@@ -305,6 +314,7 @@
   height: 20px;
   cursor: pointer;
   margin-right: 10px;
+  accent-color: #f97316;
 }
 
 /* For horizontal card checkbox */

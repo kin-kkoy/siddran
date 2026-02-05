@@ -1,11 +1,14 @@
-import { FaTrash, FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
+import { FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
+import { HiOutlineTrash } from 'react-icons/hi'
 import styles from './Card.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
+import ConfirmModal from '../Common/ConfirmModal'
 
 function Card({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect, toggleFavorite, updateColor }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState('below') // 'above' or 'below'
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
 
@@ -28,7 +31,12 @@ function Card({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect, t
   const handleDelete = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if(window.confirm(`Delete "${note.title}"?`)) deleteNote(note.id)
+    setShowDeleteModal(true)
+  }
+
+  const confirmDelete = () => {
+    deleteNote(note.id)
+    setShowDeleteModal(false)
   }
 
   const cardClicked = (e) => {
@@ -122,19 +130,34 @@ function Card({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect, t
 
       <div className={styles.footer}>
         {!isSelectionMode && (
-          <button onClick={handleDelete} className={styles.deleteBtn}><FaTrash /></button>
+          <button onClick={handleDelete} className={styles.deleteBtn}><HiOutlineTrash size={18} /></button>
         )}
       </div>
     </div>
   )
 
 
-  return isSelectionMode ? (
-    cardContent
-  ) : (
-    <Link to={`/notes/${note.id}`} style={{ textDecoration: 'none' }}>
-      {cardContent}
-    </Link>
+  return (
+    <>
+      {isSelectionMode ? (
+        cardContent
+      ) : (
+        <Link to={`/notes/${note.id}`} style={{ textDecoration: 'none' }}>
+          {cardContent}
+        </Link>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Note"
+        message={`Are you sure you want to delete "${note.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+    </>
   )
 }
 

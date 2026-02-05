@@ -9,6 +9,7 @@ import TasksHub from "./pages/Tasks/TasksHub.jsx"
 import ModsHub from "./pages/ModsHub.jsx"
 import SettingsPage from "./pages/SettingsPage.jsx"
 import { useNotes } from "./hooks/useNotes.js"
+import { useTasks } from "./hooks/useTasks.js"
 
 // Wrapper component to get the ID from route parameters
 function NotePageWrapper({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor, onNoteChange}){
@@ -125,14 +126,24 @@ function App() {
 
   // ------------- DATA LOGIC (Adding, deleting, etc. of Notes and Notebooks) ===================================
   const {
-    notes, notebooks, addNote, deleteNote, editTitle, editBody, toggleFavorite, updateColor, updateTags, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags
+    notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, editTitle, editBody, toggleFavorite, updateColor, updateTags, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags
   } = useNotes(authFetch, API, isAuthed)
+
+  // ------------- TASKS DATA LOGIC ===================================
+  const {
+    tasks, dailyTasks, tasksPagination, dailyTasksPagination, loadMoreTasks, loadMoreDailyTasks, loadingMore: tasksLoadingMore, loading: tasksLoading, addTask, deleteTask, toggleTaskCompletion, deleteDailyTask, toggleDailyTaskCompletion
+  } = useTasks(authFetch, API, isAuthed)
 
 
   //  Elements area
   const notesHubElement = (
     <NotesHub notes={notes}
     notebooks={notebooks}
+    notesPagination={notesPagination}
+    notebooksPagination={notebooksPagination}
+    loadMoreNotes={loadMoreNotes}
+    loadMoreNotebooks={loadMoreNotebooks}
+    loadingMore={loadingMore}
     addNote={addNote}
     deleteNote={deleteNote}
     toggleFavorite={toggleFavorite}
@@ -218,7 +229,23 @@ function App() {
                   />
                   {/* <Route path="/notebooks/:id" element={Notebook} */}
 
-                  <Route path="/tasks" element={<TasksHub authFetch={authFetch} API={API}/>} />
+                  <Route path="/tasks" element={
+                    <TasksHub
+                      tasks={tasks}
+                      dailyTasks={dailyTasks}
+                      tasksPagination={tasksPagination}
+                      dailyTasksPagination={dailyTasksPagination}
+                      loadMoreTasks={loadMoreTasks}
+                      loadMoreDailyTasks={loadMoreDailyTasks}
+                      loadingMore={tasksLoadingMore}
+                      loading={tasksLoading}
+                      addTask={addTask}
+                      deleteTask={deleteTask}
+                      toggleTaskCompletion={toggleTaskCompletion}
+                      deleteDailyTask={deleteDailyTask}
+                      toggleDailyTaskCompletion={toggleDailyTaskCompletion}
+                    />
+                  } />
                   <Route path="/mods" element={<ModsHub />} />
 
                   <Route path="/settings" element={<SettingsPage />} />

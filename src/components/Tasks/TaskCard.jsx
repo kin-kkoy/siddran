@@ -1,31 +1,64 @@
+import { useState } from 'react'
 import styles from './TaskCard.module.css'
-import { FaCheck, FaTrash } from "react-icons/fa"
+import { FaCheck } from "react-icons/fa"
+import { HiOutlineTrash } from "react-icons/hi"
+import ConfirmModal from '../Common/ConfirmModal'
 
-function TaskCard({ task, deleteTask, toggleCompletion, viewMode}) {
+function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMode, isSelected, onToggleSelect }) {
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     const handleDelete = e => {
         e.preventDefault()
         e.stopPropagation()
-        deleteTask(task.id)
+        setShowDeleteModal(true)
     }
-    
+
+    const confirmDelete = () => {
+        deleteTask(task.id)
+        setShowDeleteModal(false)
+    }
+
     const handleToggle = e => {
         e.preventDefault()
         e.stopPropagation()
         toggleCompletion(task.id, !task.is_completed)
     }
 
-    
+    const handleCardClick = () => {
+        if (isSelectionMode) {
+            onToggleSelect()
+        }
+    }
+
+
     return (
-        <div className={`${styles.card} ${task.is_completed ? styles.completed : ''}`}>
+        <div
+            className={`${styles.card} ${task.is_completed ? styles.completed : ''} ${isSelected ? styles.selected : ''}`}
+            onClick={handleCardClick}
+            style={{ cursor: isSelectionMode ? 'pointer' : 'default' }}
+        >
+
+            {/* Selection checkbox in selection mode */}
+            {isSelectionMode && (
+                <div className={styles.selectionCheckbox}>
+                    <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={onToggleSelect}
+                        onClick={e => e.stopPropagation()}
+                    />
+                </div>
+            )}
 
             {/* ------- Checkbox ------- */}
-            <button 
-                className={`${styles.checkbox} ${task.is_completed ? styles.checked : ''}`}
-                onClick={handleToggle}
-            >
-                {task.is_completed && <FaCheck size={12} />}
-            </button>
+            {!isSelectionMode && (
+                <button
+                    className={`${styles.checkbox} ${task.is_completed ? styles.checked : ''}`}
+                    onClick={handleToggle}
+                >
+                    {task.is_completed && <FaCheck size={12} />}
+                </button>
+            )}
 
             {/* ------- Contents ------- */}
             <div className={styles.content}>
@@ -62,9 +95,22 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode}) {
             </div>
 
             {/* ------- Delete Button ------- */}
-            <button className={styles.deleteBtn} onClick={handleDelete}>
-                <FaTrash />
-            </button>
+            {!isSelectionMode && (
+                <button className={styles.deleteBtn} onClick={handleDelete}>
+                    <HiOutlineTrash size={18} />
+                </button>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={confirmDelete}
+                title="Delete Task"
+                message={`Are you sure you want to delete "${task.title}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+            />
 
         </div>
     )

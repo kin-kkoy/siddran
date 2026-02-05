@@ -131,6 +131,25 @@
     color: #ff4444;
 }
 
+/* Selection mode styles */
+.selected {
+    border: 2px solid #f97316;
+    background-color: rgba(249, 115, 22, 0.1);
+}
+
+.selectionCheckbox {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.selectionCheckbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #f97316;
+}
+
 /* Add Card (Grid View) */
 .addCard {
   background-color: #2a2a2a;
@@ -254,7 +273,7 @@
 }
 
 .input:focus {
-  border-color: #667eea;
+  border-color: #f97316;
 }
 
 .textarea {
@@ -275,7 +294,7 @@
 }
 
 .textarea:focus {
-  border-color: #667eea;
+  border-color: #f97316;
 }
 
 .select {
@@ -292,7 +311,7 @@
 }
 
 .select:focus {
-  border-color: #667eea;
+  border-color: #f97316;
 }
 
 .row {
@@ -316,7 +335,7 @@
 
 .submitBtn {
   padding: 10px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -328,7 +347,7 @@
 
 .submitBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
 }
 
 .cancelBtn {
@@ -468,6 +487,6 @@
 }
 
 .toggleBtn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   color: #fff;
 }
