@@ -154,7 +154,7 @@ function darkThemedPalette(h, s, contrast) {
     '--text-muted':     hi ? '#aaa' : '#888',
     '--text-dim':       hi ? '#999' : '#666',
     '--text-faint':     hi ? '#888' : '#555',
-    '--accent-blue':    '#4a9eff',
+    '--accent-blue':    s >= 20 ? hslToHex(h, Math.max(s, 60), 60) : '#4a9eff',
     '--accent-danger':  '#ef4444',
     '--accent-warning': accent,
     '--accent-warning-alpha': `rgba(${ar}, ${ag}, ${ab}, 0.1)`,
@@ -165,22 +165,22 @@ function darkThemedPalette(h, s, contrast) {
 
 function lightThemedPalette(h, s, contrast) {
   const hi = contrast === 'high'
-  const sat = Math.min(s, 30)
+  const sat = Math.min(s, 45)
   const accent = s >= 15 ? hslToHex(h, Math.max(s, 70), 48) : '#ea580c'
   const [ar, ag, ab] = hexToRgb(accent)
   return {
     '--bg-primary':    hslToHex(h, sat, 95),
-    '--bg-surface':    hslToHex(h, sat * 0.3, 99),
-    '--bg-elevated':   hslToHex(h, sat, 92),
-    '--bg-hover':      hslToHex(h, sat, 88),
-    '--border-default': hslToHex(h, sat * 0.5, hi ? 65 : 80),
-    '--border-strong':  hslToHex(h, sat * 0.5, hi ? 55 : 72),
+    '--bg-surface':    hslToHex(h, sat * 0.6, 97),
+    '--bg-elevated':   hslToHex(h, sat, 90),
+    '--bg-hover':      hslToHex(h, sat, 85),
+    '--border-default': hslToHex(h, sat * 0.7, hi ? 65 : 80),
+    '--border-strong':  hslToHex(h, sat * 0.7, hi ? 55 : 72),
     '--text-primary':   '#1a1a1a',
     '--text-secondary': '#333333',
     '--text-muted':     hi ? '#444' : '#666',
     '--text-dim':       hi ? '#555' : '#888',
     '--text-faint':     hi ? '#666' : '#aaa',
-    '--accent-blue':    '#2563eb',
+    '--accent-blue':    s >= 20 ? hslToHex(h, Math.max(s, 60), 45) : '#2563eb',
     '--accent-danger':  '#dc2626',
     '--accent-warning': accent,
     '--accent-warning-alpha': `rgba(${ar}, ${ag}, ${ab}, 0.1)`,
@@ -266,6 +266,7 @@ export function SettingsProvider({ children, authFetch, API, isAuthed }) {
   useEffect(() => {
     const palette = generatePalette(settings.theme, settings.mode, settings.matchMode, settings.contrast)
     applyPalette(palette)
+    document.documentElement.dataset.mode = settings.mode
   }, [settings.theme, settings.mode, settings.matchMode, settings.contrast])
 
   // Fetch from backend on auth (backend is source of truth)

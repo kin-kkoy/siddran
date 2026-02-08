@@ -92,7 +92,7 @@ function Card({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect, t
 
   const cardContent = (
     <div
-      className={`${styles.card} ${isSelected ? styles.isSelected : ''}`}
+      className={`${styles.card} ${isSelected ? styles.isSelected : ''} ${noteBackground ? styles.hasColor : ''}`}
       style={noteBackground ? { backgroundColor: noteBackground } : undefined}
       onClick={ cardClicked }
     >

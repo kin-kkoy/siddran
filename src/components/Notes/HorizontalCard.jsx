@@ -92,7 +92,7 @@ function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggl
 
   const cardContent = (
     <div
-      className={`${styles.horizontalCard} ${isSelected ? styles.selected : ''}`}
+      className={`${styles.horizontalCard} ${isSelected ? styles.selected : ''} ${noteBackground ? styles.hasColor : ''}`}
       style={noteBackground ? { backgroundColor: noteBackground } : undefined}
       onClick={cardClicked}
     >

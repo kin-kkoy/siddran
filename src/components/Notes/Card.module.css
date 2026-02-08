@@ -340,3 +340,14 @@
   margin-right: 15px;
   margin-bottom: 0;
 }
+
+/* Mode-aware hover for colored cards */
+.card.hasColor:hover,
+.horizontalCard.hasColor:hover {
+  filter: brightness(1.15);
+}
+
+:global([data-mode="light"]) .card.hasColor:hover,
+:global([data-mode="light"]) .horizontalCard.hasColor:hover {
+  filter: brightness(0.92);
+}

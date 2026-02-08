@@ -20,6 +20,7 @@
     - Light/Dark mode
     - Themes
     - Toolbar (Docking toolbar at the bottom) can be toggled to be "auto hide" or "always visible" on settings
+ - Fix light mode or themes to not persist in login/signup page
 
 # To implement/fix
  - Note Editor (Lexical)
@@ -27,13 +28,11 @@
  - Tasks (Currently bugged, not fetching properly)
  - Settings Page (remaining todo)
     - Themes
-        - theme colors don't work in light mode.
+        - theme colors are barely visible in light mode.
     - Account Management
         - Change name
         - Change pass
         - Add/Change email (maybe)
- - Sidebar
-    - Account, menu when hovered should respect light/dark mode (logout, settings)
  - Forgot Password feature
  - Tasks
     - To-do list
