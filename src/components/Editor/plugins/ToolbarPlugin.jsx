@@ -51,8 +51,9 @@ import { LuHeading1, LuHeading2, LuHeading3, LuPilcrow } from 'react-icons/lu';
 
 import styles from './ToolbarPlugin.module.css';
 import LinkPopover from './LinkPopover';
+import { useSettings } from '../../../contexts/SettingsContext';
 
-function ToolbarPlugin() {
+function ToolbarPlugin({ isReadMode }) {
   const [editor] = useLexicalComposerContext();
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -66,7 +67,7 @@ function ToolbarPlugin() {
   // Dock visibility states
   const [isHovering, setIsHovering] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(true); // Visible by default
-  const [forceHidden, setForceHidden] = useState(false); // For keyboard toggle
+  const { settings } = useSettings();
 
   // Link popover state
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
@@ -86,7 +87,8 @@ function ToolbarPlugin() {
   });
 
   // Determine if dock should be shown
-  const shouldShowDock = !forceHidden && (isDockVisible || isHovering);
+  // When autoHideToolbar is OFF, dock is always visible (in write mode)
+  const shouldShowDock = !settings.autoHideToolbar || isDockVisible || isHovering;
 
   // Calculate dock position based on editor container and sidebar
   const updateDockLayout = useCallback(() => {
@@ -233,22 +235,6 @@ function ToolbarPlugin() {
     }
     setIsHovering(true);
   }, []);
-
-  // Keyboard shortcut to toggle dock (Ctrl+Shift+T)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'T') {
-        e.preventDefault();
-        setForceHidden((prev) => !prev);
-        if (forceHidden) {
-          setIsDockVisible(true);
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [forceHidden]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -467,6 +453,9 @@ function ToolbarPlugin() {
   const undo = () => editor.dispatchCommand(UNDO_COMMAND, undefined);
   const redo = () => editor.dispatchCommand(REDO_COMMAND, undefined);
 
+  // Hide the entire toolbar dock in read mode
+  if (isReadMode) return null;
+
   return createPortal(
     <>
       {/* Invisible trigger zone at bottom of viewport, centered on editor */}
@@ -636,10 +625,7 @@ function ToolbarPlugin() {
           </button>
         </div>
 
-        {/* Keyboard shortcut hint */}
-        <div className={styles.hint}>
-          Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to toggle
-        </div>
+        {/* Future: settings toggle button (always-visible vs auto-hide) can go here */}
       </div>
 
       {/* Link popover */}

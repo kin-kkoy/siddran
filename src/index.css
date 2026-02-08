@@ -1,3 +1,23 @@
+:root {
+  --bg-primary: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-elevated: #2a2a2a;
+  --bg-hover: #3a3a3a;
+  --border-default: #333;
+  --border-strong: #444;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #888;
+  --text-dim: #666;
+  --text-faint: #555;
+  --accent-blue: #4a9eff;
+  --accent-danger: #ef4444;
+  --accent-warning: #f97316;
+  --accent-warning-alpha: rgba(249, 115, 22, 0.1);
+  --accent-success: #4ade80;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,11 +32,11 @@ html, body, #root {
 }
 
 body {
-  background-color: #121212;
-  color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: Arial, sans-serif;
 }
 
 #root {
-  min-height: 100vh;  /* Add this */
+  min-height: 100vh;
 }

@@ -3,17 +3,37 @@ import { useState, useEffect, useCallback } from "react";
 // Custom hook for tasks and daily tasks (mirrors useNotes pattern for caching)
 export const useTasks = (authFetch, API, isAuthed) => {
 
-    const [tasks, setTasks] = useState([])
-    const [dailyTasks, setDailyTasks] = useState([])
+    const [tasks, setTasks] = useState(() => {
+        try { return JSON.parse(sessionStorage.getItem('cinder_tasks')) || [] }
+        catch { return [] }
+    })
+    const [dailyTasks, setDailyTasks] = useState(() => {
+        try { return JSON.parse(sessionStorage.getItem('cinder_daily_tasks')) || [] }
+        catch { return [] }
+    })
     const [tasksPagination, setTasksPagination] = useState(null)
     const [dailyTasksPagination, setDailyTasksPagination] = useState(null)
     const [loadingMore, setLoadingMore] = useState(false)
     const [loading, setLoading] = useState(true)
 
+    // Sync state → sessionStorage cache (always write, even empty arrays)
+    useEffect(() => {
+        try { sessionStorage.setItem('cinder_tasks', JSON.stringify(tasks)) } catch {}
+    }, [tasks])
+
+    useEffect(() => {
+        try { sessionStorage.setItem('cinder_daily_tasks', JSON.stringify(dailyTasks)) } catch {}
+    }, [dailyTasks])
+
 
     // ----------- Fetch data on auth ================================================================
     useEffect(() => {
         if(!isAuthed) return
+
+        // Skip backend fetch if cache keys exist (even if arrays are empty)
+        // Backend is still hit on every mutation (POST/PUT/DELETE) individually
+        if(sessionStorage.getItem('cinder_tasks') !== null
+        && sessionStorage.getItem('cinder_daily_tasks') !== null) return
 
         const fetchAllTasks = async () => {
             try {

@@ -9,6 +9,8 @@ import {
 } from 'lexical';
 import { $isCodeNode } from '@lexical/code';
 
+// THE SOLE PURPOSE OF THIS PLUGIN IS TO ALLOW SHIFT+ENTER TO EXIT A CODE BLOCK IF THERE'S NO CONTENT BELOW IT
+
 function CodeBlockExitPlugin() {
   const [editor] = useLexicalComposerContext();
 

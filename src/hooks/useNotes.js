@@ -3,16 +3,36 @@ import { useState, useEffect, useCallback } from "react";
 // Custom hook for the notes/notebooks
 export const useNotes = (authFetch, API, isAuthed) => {
 
-    const [notes, setNotes] = useState([])
-    const [notebooks, setNotebooks] = useState([])
+    const [notes, setNotes] = useState(() => {
+        try { return JSON.parse(sessionStorage.getItem('cinder_notes')) || [] }
+        catch { return [] }
+    })
+    const [notebooks, setNotebooks] = useState(() => {
+        try { return JSON.parse(sessionStorage.getItem('cinder_notebooks')) || [] }
+        catch { return [] }
+    })
     const [notesPagination, setNotesPagination] = useState(null)
     const [notebooksPagination, setNotebooksPagination] = useState(null)
     const [loadingMore, setLoadingMore] = useState(false)
+
+    // Sync state → sessionStorage cache (always write, even empty arrays)
+    useEffect(() => {
+        try { sessionStorage.setItem('cinder_notes', JSON.stringify(notes)) } catch {}
+    }, [notes])
+
+    useEffect(() => {
+        try { sessionStorage.setItem('cinder_notebooks', JSON.stringify(notebooks)) } catch {}
+    }, [notebooks])
 
 
     // ----------- Fetch data ================================================================
     useEffect(() => {
         if(!isAuthed) return
+
+        // Skip backend fetch if cache keys exist (even if arrays are empty)
+        // Backend is still hit on every mutation (POST/PUT/DELETE) individually
+        if(sessionStorage.getItem('cinder_notes') !== null
+        && sessionStorage.getItem('cinder_notebooks') !== null) return
 
         const fetchData = async () => {
             try {

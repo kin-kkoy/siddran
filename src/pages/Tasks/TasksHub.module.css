@@ -13,20 +13,20 @@
 
 .header h1 {
     font-size: 32px;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .toggleBtn {
     padding: 8px 16px;
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
+    background-color: var(--border-default);
+    color: var(--text-primary);
+    border: 1px solid var(--text-faint);
     border-radius: 6px;
     cursor: pointer;
 }
 
 .toggleBtn:hover {
-    background-color: #444;
+    background-color: var(--border-strong);
 }
 
 .controls {
@@ -47,7 +47,7 @@
 
 .emptyState {
     text-align: center;
-    color: #666;
+    color: var(--text-dim);
     margin-top: 40px;
     font-style: italic;
 }
@@ -58,9 +58,9 @@
     max-width: 300px;
     margin: 20px auto;
     padding: 12px 24px;
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
+    background-color: var(--border-default);
+    color: var(--text-primary);
+    border: 1px solid var(--text-faint);
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
@@ -68,7 +68,7 @@
 }
 
 .loadMoreBtn:hover:not(:disabled) {
-    background-color: #444;
+    background-color: var(--border-strong);
 }
 
 .loadMoreBtn:disabled {
@@ -86,13 +86,13 @@
 }
 
 .moreDots {
-    color: #555;
+    color: var(--text-faint);
     font-size: 24px;
     letter-spacing: 4px;
 }
 
 .loadingDots {
-    color: #888;
+    color: var(--text-muted);
     font-size: 24px;
     letter-spacing: 4px;
     animation: pulse 1s ease-in-out infinite;
@@ -109,8 +109,8 @@
     align-items: center;
     justify-content: center;
     background-color: transparent;
-    border: 1px solid #555;
-    color: #888;
+    border: 1px solid var(--text-faint);
+    color: var(--text-muted);
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
@@ -120,8 +120,8 @@
 
 .batchDeleteBtn:hover:not(:disabled) {
     background-color: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
-    color: #ef4444;
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
 }
 
 .batchDeleteBtn:disabled {

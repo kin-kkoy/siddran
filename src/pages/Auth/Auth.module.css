@@ -16,7 +16,7 @@
   width: 100%;
   max-width: 420px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  border: 1px solid #333;
+  border: 1px solid var(--border-default);
 }
 
 .authHeader {
@@ -30,7 +30,7 @@
 }
 
 .authTitle {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 28px;
   font-weight: 600;
   margin: 0 0 8px 0;
@@ -55,17 +55,17 @@
 }
 
 .formLabel {
-  color: #e0e0e0;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
 
 .formInput {
   background: #1a1a1a;
-  border: 2px solid #333;
+  border: 2px solid var(--border-default);
   border-radius: 8px;
   padding: 12px 16px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 15px;
   transition: all 0.3s ease;
   outline: none;
@@ -78,12 +78,12 @@
 }
 
 .formInput::placeholder {
-  color: #666;
+  color: var(--text-dim);
 }
 
 .authButton {
   background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
-  color: #ffffff;
+  color: var(--text-primary);
   border: none;
   border-radius: 8px;
   padding: 14px;
@@ -105,7 +105,7 @@
 }
 
 .authButton:disabled {
-  background: #444;
+  background: var(--border-strong);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -126,7 +126,7 @@
   text-align: center;
   margin-top: 24px;
   padding-top: 24px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-default);
 }
 
 .authFooterText {
@@ -153,11 +153,11 @@
   padding: 12px;
   background: #1a1a1a;
   border-radius: 8px;
-  border: 1px solid #333;
+  border: 1px solid var(--border-default);
 }
 
 .debugInfo p {
-  color: #666;
+  color: var(--text-dim);
   font-size: 12px;
   margin: 4px 0;
   font-family: monospace;

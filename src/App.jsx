@@ -7,9 +7,10 @@ import LoginPage from "./pages/Auth/LoginPage.jsx"
 import RegisterPage from "./pages/Auth/RegisterPage.jsx"
 import TasksHub from "./pages/Tasks/TasksHub.jsx"
 import ModsHub from "./pages/ModsHub.jsx"
-import SettingsPage from "./pages/SettingsPage.jsx"
 import { useNotes } from "./hooks/useNotes.js"
 import { useTasks } from "./hooks/useTasks.js"
+import { SettingsProvider } from "./contexts/SettingsContext.jsx"
+import SettingsPopup from "./components/Settings/SettingsPopup.jsx"
 
 // Wrapper component to get the ID from route parameters
 function NotePageWrapper({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor, onNoteChange}){
@@ -159,9 +160,9 @@ function App() {
 
   // temp style so that my eyes won't cry when dev mode
   const style = {
-    backgroundColor: "#121212", // dark grayish background
-    color: "#ffffff",            // white text
-    minHeight: "100vh",          // full height
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+    minHeight: "100vh",
     margin: 0,
     padding: 0,
     fontFamily: "Arial, sans-serif",
@@ -170,13 +171,14 @@ function App() {
 
   return (
 
+    <SettingsProvider authFetch={authFetch} API={API} isAuthed={isAuthed}>
     <div style={style}>
       <BrowserRouter>
-        <div style={{ display: "flex", 
-          flexDirection: "row", 
-          margin: 0, 
-          padding: 0, 
-          backgroundColor: '#121212'
+        <div style={{ display: "flex",
+          flexDirection: "row",
+          margin: 0,
+          padding: 0,
+          backgroundColor: 'var(--bg-primary)'
         }}>
 
           {/* Only show sidebar when logged in */}
@@ -202,10 +204,10 @@ function App() {
 
 
           {/* The main page/s (the contents on the right, not sidebar) */}
-          <div style={{ flex: 1, 
-            padding: isAuthed ? '20px 40px' : '0', 
-            overflowY: 'auto', 
-            backgroundColor: '#121212',
+          <div style={{ flex: 1,
+            padding: isAuthed ? '20px 40px' : '0',
+            overflowY: 'auto',
+            backgroundColor: 'var(--bg-primary)',
             minWidth: 0  /* Allows flex item to shrink below content size */
           }}>
 
@@ -247,8 +249,6 @@ function App() {
                     />
                   } />
                   <Route path="/mods" element={<ModsHub />} />
-
-                  <Route path="/settings" element={<SettingsPage />} />
                 </>
               ) : (
                 <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} setAppUsername={setUsername} />} />
@@ -258,8 +258,13 @@ function App() {
 
           </div>
         </div>
+
+        {/* Settings popup (rendered at app level, controlled by context) */}
+        {isAuthed && <SettingsPopup />}
+
       </BrowserRouter>
     </div>
+    </SettingsProvider>
 
   )
 }

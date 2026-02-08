@@ -108,9 +108,6 @@ function NotebookCard({ notebook, deleteNotebook, onOpen, toggleFavoriteNotebook
                         </div>
                     </div>
                     <div className={styles.footer}>
-                        <span className={styles.date}>
-                            !! change this to category maybe !!
-                        </span>
                         <button onClick={handleDelete} className={styles.deleteBtn}>
                             <HiOutlineTrash size={18} />
                         </button>

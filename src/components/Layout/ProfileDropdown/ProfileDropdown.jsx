@@ -1,16 +1,16 @@
 import { useRef, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { useNavigate } from "react-router-dom"
 import styles from './ProfileDropdown.module.css'
 import { FaRegUser } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
+import { useSettings } from "../../../contexts/SettingsContext";
 
 function ProfileDropdown({ username, isCollapsed, handleLogout }) {
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef(null)
     const buttonRef = useRef(null) // This refers to the profile button
-    const navigate = useNavigate()
+    const { openSettings } = useSettings()
 
     // rerender component or run when clicking outside (this case, the rerendering is to hide/remove the window (which is this component))
     useEffect(() => {
@@ -31,7 +31,7 @@ function ProfileDropdown({ username, isCollapsed, handleLogout }) {
 
     const navigateSettings = () => {
         setIsOpen(false)
-        navigate('/settings')
+        openSettings()
     }
 
     const navigateProfile = () => {

@@ -1,9 +1,12 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styles from './Card.module.css'
 import { FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { useState, useRef, useEffect } from 'react'
 import ConfirmModal from '../Common/ConfirmModal'
+import { MdChromeReaderMode } from 'react-icons/md'
+import { useSettings } from '../../contexts/SettingsContext'
+import { NOTE_COLORS, getNoteBackground, getSwatchColor } from './noteColors'
 
 function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggleSelect, toggleFavorite, updateColor }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -11,6 +14,9 @@ function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggl
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
+  const navigate = useNavigate();
+  const { settings } = useSettings()
+  const noteBackground = getNoteBackground(note.color, settings.mode)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -47,6 +53,12 @@ function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggl
     }
   }
 
+  const handleOpenInReadMode = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    navigate(`/notes/${note.id}?view=read`)
+  }
+
   const toggleMenu = (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -81,7 +93,7 @@ function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggl
   const cardContent = (
     <div
       className={`${styles.horizontalCard} ${isSelected ? styles.selected : ''}`}
-      style={{ backgroundColor: note.color || '#1e1e1e' }}
+      style={noteBackground ? { backgroundColor: noteBackground } : undefined}
       onClick={cardClicked}
     >
 
@@ -120,17 +132,24 @@ function HorizontalCard({ note, deleteNote, isSelectionMode, isSelected, onToggl
                   <div className={styles.colorPicker}>
                     <span className={styles.colorLabel}>Color:</span>
                     <div className={styles.colorOptions}>
-                      <button onClick={(e) => handleColorChange(e, null)} className={styles.colorBtn} style={{ backgroundColor: '#1e1e1e' }} title="Default"></button>
-                      <button onClick={(e) => handleColorChange(e, '#2a2a1a')} className={styles.colorBtn} style={{ backgroundColor: '#2a2a1a' }} title="Brown"></button>
-                      <button onClick={(e) => handleColorChange(e, '#1a2a2a')} className={styles.colorBtn} style={{ backgroundColor: '#1a2a2a' }} title="Teal"></button>
-                      <button onClick={(e) => handleColorChange(e, '#2a1a2a')} className={styles.colorBtn} style={{ backgroundColor: '#2a1a2a' }} title="Purple"></button>
-                      <button onClick={(e) => handleColorChange(e, '#2a1a1a')} className={styles.colorBtn} style={{ backgroundColor: '#2a1a1a' }} title="Red"></button>
+                      {NOTE_COLORS.map(c => (
+                        <button
+                          key={c.name}
+                          onClick={(e) => handleColorChange(e, c.key)}
+                          className={styles.colorBtn}
+                          style={{ backgroundColor: getSwatchColor(c, settings.mode) || 'var(--bg-surface)' }}
+                          title={c.name}
+                        ></button>
+                      ))}
                     </div>
                   </div>
                 </div>
               )}
             </div>
-
+            
+            <button onClick={handleOpenInReadMode} className={styles.readModeBtn}>
+              <MdChromeReaderMode size={18} />
+            </button>
             <button onClick={handleDelete} className={styles.deleteBtn}>
               <HiOutlineTrash size={18} />
             </button>

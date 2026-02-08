@@ -1,23 +1,26 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import styles from './NotePage.module.css'
 import { IoMdArrowRoundBack } from "react-icons/io"
 import { FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
+import { MdChromeReaderMode } from "react-icons/md";
+import { HiPencilSquare } from "react-icons/hi2";
 import LexicalEditor from '../../components/Editor/LexicalEditor'
 
 function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor }) {
 
-  const { id } = useParams()
+  const { id } = useParams() //what note
   const navigate = useNavigate()
   const note = notes && notes.length ? notes.find(n => n.id === Number(id)) : null
 
-  if(!note) return <div>Loading note...</div>
-
+  // All hooks must be called before any early return (Rules of Hooks)
   const [newTitle, setNewTitle] = useState(note?.title || "")
   const [newTags, setNewTags] = useState(note?.tags || "")
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState('below') // 'above' or 'below'
+  const [searchParams, setSearchParams] = useSearchParams() //how to display said note
   const titleInputReference = useRef(null); // `useRef` is basically just React's way of doing: `document.querySelectorAll()` or `.getElementByID()`
+  const viewMode = searchParams.get('view') === 'read' // for view mode, true = read, false = write
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
 
@@ -53,6 +56,15 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
     }
   }, [newTitle, id])
 
+  // Save handler for Lexical editor - receives markdown content
+  const handleEditorSave = useCallback((markdownContent) => {
+    if (!note) return
+    editBody(note.id, markdownContent)
+  }, [note?.id, editBody])
+
+  // Early return AFTER all hooks
+  if(!note) return <div>Loading note...</div>
+
   // the api calls to save title/body/tags
   const saveTitle = async () => {
     if(!newTitle.trim()){
@@ -62,10 +74,6 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
     }
     editTitle(note.id, newTitle)
   }
-  // Save handler for Lexical editor - receives markdown content
-  const handleEditorSave = useCallback((markdownContent) => {
-    editBody(note.id, markdownContent)
-  }, [note?.id, editBody])
   const saveTags = async () => {
      updateTags(note.id, newTags)
   }
@@ -83,6 +91,16 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
   // for back button
   const handleGoBackBtn = () =>{
     navigate('/notes')
+  }
+
+  const toggleViewMode = () => {
+    if(viewMode){
+      searchParams.delete('view') // write mode
+    }else{
+      searchParams.set('view', 'read') // SET to read mode
+    }
+
+    setSearchParams(searchParams) // set after altering the params
   }
 
   const toggleMenu = (e) => {
@@ -131,7 +149,12 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
           onChange={ e => setNewTags(e.target.value)}
           onBlur={saveTags}
           placeholder='Tags (e.g., personal, work, ideas...)'
+          readOnly={viewMode}
         />
+
+        <button onClick={toggleViewMode} className={styles.backBtn}>
+          {viewMode ? <HiPencilSquare /> : <MdChromeReaderMode />}
+        </button>
 
         <div className={styles.menuContainer} ref={menuRef}>
           <button ref={buttonRef} onClick={toggleMenu} className={styles.menuBtn}>
@@ -160,13 +183,6 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
         </div>
       </div>
 
-      {/* Show warning if title is Untitled */}
-      {newTitle === "Untitled" && (
-        <div className={styles.titleWarning}>
-          💡 Tip: Give your note a title to easily find it later
-        </div>
-      )}
-
       <input
         ref={titleInputReference}
         className={styles.titleInput}
@@ -175,6 +191,7 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
         onChange={ e => setNewTitle(e.target.value)}
         onBlur={saveTitle}
         onKeyDown={handleKeyDown}
+        readOnly={viewMode}
       />
 
       <LexicalEditor
@@ -182,6 +199,7 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
         initialContent={note.body || ''}
         onSave={handleEditorSave}
         placeholder='Start typing here...'
+        interfaceMode={viewMode}
       />
 
     </div>

@@ -57,9 +57,11 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
             console.error('Logout errror:', error)
         }
 
-        // clear tokens then redirect
+        // clear tokens and cached data then redirect
         localStorage.removeItem('accessToken')
         localStorage.removeItem('username')
+        localStorage.removeItem('cinder_settings')
+        sessionStorage.clear()
 
         if (setIsAuthed) {
             setIsAuthed(false)

@@ -19,9 +19,9 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background-color: #2a2a2a;
+    background-color: var(--bg-elevated);
     border: none;
-    color: #fff;
+    color: var(--text-primary);
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
@@ -31,7 +31,7 @@
 }
 
 .backBtn:hover {
-    background-color: #3a3a3a;
+    background-color: var(--bg-hover);
 }
 
 /* Title input */
@@ -39,7 +39,7 @@
     width: 100%;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 42px;
     font-weight: 700;
     padding: 0;
@@ -49,16 +49,16 @@
 }
 
 .titleInput::placeholder {
-    color: #555;
+    color: var(--text-faint);
 }
 
 /* Tags input in header row */
 .tagsInput {
     flex: 1;
     background: transparent;
-    border: 1px solid #333;
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #e0e0e0;
+    color: var(--text-secondary);
     font-size: 14px;
     padding: 10px 14px;
     outline: none;
@@ -67,11 +67,11 @@
 }
 
 .tagsInput:focus {
-    border-color: #555;
+    border-color: var(--text-faint);
 }
 
 .tagsInput::placeholder {
-    color: #555;
+    color: var(--text-faint);
 }
 
 /* Menu Container */
@@ -81,9 +81,9 @@
 }
 
 .menuBtn {
-    background-color: #2a2a2a;
+    background-color: var(--bg-elevated);
     border: none;
-    color: #888;
+    color: var(--text-muted);
     padding: 8px 12px;
     cursor: pointer;
     font-size: 14px;
@@ -95,20 +95,20 @@
 }
 
 .menuBtn:hover {
-    color: #fff;
-    background-color: #3a3a3a;
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
 }
 
 .menu {
     position: absolute;
     right: 0;
-    background-color: #2a2a2a;
-    border: 1px solid #444;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
     border-radius: 6px;
     padding: 8px;
     min-width: 200px;
     z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .menuAbove {
@@ -126,7 +126,7 @@
     gap: 10px;
     background-color: transparent;
     border: none;
-    color: #fff;
+    color: var(--text-primary);
     padding: 10px 12px;
     cursor: pointer;
     font-size: 14px;
@@ -136,18 +136,18 @@
 }
 
 .menuItem:hover {
-    background-color: #3a3a3a;
+    background-color: var(--bg-hover);
 }
 
 .colorPicker {
     padding: 10px 12px;
-    border-top: 1px solid #444;
+    border-top: 1px solid var(--border-strong);
     margin-top: 4px;
 }
 
 .colorLabel {
     font-size: 12px;
-    color: #888;
+    color: var(--text-muted);
     display: block;
     margin-bottom: 8px;
 }
@@ -162,13 +162,13 @@
     width: 24px;
     height: 24px;
     border-radius: 4px;
-    border: 2px solid #555;
+    border: 2px solid var(--text-faint);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .colorBtn:hover {
-    border-color: #fff;
+    border-color: var(--text-primary);
     transform: scale(1.1);
 }
 
@@ -177,7 +177,7 @@
     width: 100%;
     background: transparent;
     border: none;
-    color: #e0e0e0;
+    color: var(--text-secondary);
     font-size: 16px;
     line-height: 1.7;
     padding: 0;
@@ -188,7 +188,7 @@
 }
 
 .bodyTextarea::placeholder {
-    color: #555;
+    color: var(--text-faint);
 }
 
 /* Debug section */
@@ -196,32 +196,22 @@
     margin-bottom: 30px;
     padding: 15px;
     background-color: #1a1a1a;
-    border: 1px solid #333;
+    border: 1px solid var(--border-default);
     border-radius: 4px;
 }
 
 .debugSection h1 {
     font-size: 18px;
-    color: #888;
+    color: var(--text-muted);
     margin: 0 0 8px 0;
 }
 
 .debugSection p {
     font-size: 14px;
-    color: #666;
+    color: var(--text-dim);
     margin: 4px 0;
 }
 
 
 
 
-/* In NotePage.module.css */
-.titleWarning {
-  background-color: #2a2a1a;
-  border-left: 3px solid #fbbf24;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border-radius: 4px;
-  color: #fbbf24;
-  font-size: 14px;
-}

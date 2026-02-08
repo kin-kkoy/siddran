@@ -8,40 +8,45 @@
      - appears at the bottom when editor is not in focus and disappears when in focus
      - appears when the mouse/cursor is placed at the bottom-center of the editor/screen
      - *Went with this behavior because I wanted to remove distractions once user is note-taking*
- - Sidebar, shows navigation & profile features but still lacks implementation for most buttons. Notes does work though and shows lists of notes
+   - Reading mode of a note; Aside from being able to WRITE a note, you can also READ a note, like in Obsidian but make the reading/writing mode button/toggle much clearer or visible to the user.
+     - Reading mode doesn't allow editing/typing of the contents. (if it's not obvious) 
  - Notebook, made by grouping a bunch of notes. Always appears on top. Also has favorite and color change (only on the side) feat.
+ - Sidebar, shows navigation & profile features but still lacks implementation for most buttons. Notes does work though and shows lists of notes
 
 ---
 
-# To implement
- - Reading mode of a note; Aside from being able to WRITE a note, you can also READ a note, like in Obsidian but make the reading/writing mode button/toggle much clearer or visible to the user.
-   - Reading mode doesn't allow editing or typing of the contents and texts with link should just one click only (currently in writing mode i still have to right click and then open link in a new tab to see the link) whether left click or scroll wheel button click and will open the link on a new tab instead.
- - Notifications (maybe) -----------------
+# To implement before deployment
  - Settings Page
     - Light/Dark mode
     - Themes
-        - Uploading picture as background (maybe)
-        - Customizable section area things 
+    - Toolbar (Docking toolbar at the bottom) can be toggled to be "auto hide" or "always visible" on settings
+
+# To implement/fix
+ - Note Editor (Lexical)
+    - Code Block - Copy button (button clicked will copy the whole code block)
+ - Tasks (Currently bugged, not fetching properly)
+ - Settings Page (remaining todo)
+    - Themes
+        - theme colors don't work in light mode.
     - Account Management
         - Change name
         - Change pass
         - Add/Change email (maybe)
+ - Sidebar
+    - Account, menu when hovered should respect light/dark mode (logout, settings)
  - Forgot Password feature
  - Tasks
     - To-do list
         - 2 or 3 Layer nesting of tasks (subtasks)
         - Parent of nested tasks/subtask can compress or not via dropdown
-    - Timer feature
-        - for study sessions, pomodoro like
-            - Focus session (timer)
-            - Short Break (timer)
-            - Long Break (timer)
-            - Timer duration is adjustable
+    - Notifications (maybe) -----------------
+        - to alert user about their tasks
+
  - Mods
     - TBD
 
  - Advanced
-    - Social features:
+    - Social features: (MAYBE THOUGH LIKELY)
         - Adding friends. List of Friends
         - Real-time editing similar to Docs with other people
 
@@ -55,3 +60,8 @@
  - The editor doesn't respect the gap. Line 1 then add 2 blank lines then on line 4 add a word or letter, leave the note and come back and then you can see the 2 blank lines (lines 2 and 3) are gone, simply put it kinda removes whitespaces lines.
  - Code block, there should be a way to exit out of it (if the code block is the last line in the editor, currently if the last line of the note is the code block the only way to exit out of the code block (to start another line) is to remove the code block then add another line then on the previous line add the code block and then to exit the said code block just move the cursor to the line below (WHICH IS EXTRA HASSLE))
  - Link, needs fixing, inserting a link
+
+
+# PROBLEMS 
+ - Doesn't auto save when user stops typing for a while (Could be a problem when internet connection is suddenly gone)
+ - No Offline feature YET (might do this or not)

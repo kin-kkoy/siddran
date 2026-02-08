@@ -18,8 +18,8 @@
 }
 
 .modal {
-  background-color: #1e1e1e;
-  border: 1px solid #3a3a3a;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--bg-hover);
   border-radius: 12px;
   width: 90%;
   max-width: 600px;
@@ -45,19 +45,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #3a3a3a;
+  border-bottom: 1px solid var(--bg-hover);
 }
 
 .header h2 {
   margin: 0;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 20px;
 }
 
 .closeBtn {
   background: none;
   border: none;
-  color: #888;
+  color: var(--text-muted);
   font-size: 24px;
   cursor: pointer;
   padding: 4px 8px;
@@ -65,18 +65,18 @@
 }
 
 .closeBtn:hover {
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .tagsSection {
   padding: 16px 24px;
-  border-bottom: 1px solid #3a3a3a;
-  background-color: #252525;
+  border-bottom: 1px solid var(--bg-hover);
+  background-color: var(--bg-elevated);
 }
 
 .tagsLabel {
   display: block;
-  color: #aaa;
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -84,10 +84,10 @@
 
 .tagsInput {
   width: 100%;
-  background-color: #1e1e1e;
-  border: 1px solid #444;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
   padding: 10px 12px;
   outline: none;
@@ -96,11 +96,11 @@
 }
 
 .tagsInput:focus {
-  border-color: #4a9eff;
+  border-color: var(--accent-blue);
 }
 
 .tagsInput::placeholder {
-  color: #666;
+  color: var(--text-dim);
 }
 
 .content {
@@ -112,48 +112,76 @@
 .loading,
 .empty {
   text-align: center;
-  color: #888;
+  color: var(--text-muted);
   padding: 40px 20px;
   font-size: 14px;
 }
 
-.notesList {
+.noteList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .noteItem {
-  background-color: #252525;
-  border: 1px solid #3a3a3a;
-  border-left: 3px solid #4a9eff;
+  background-color: var(--bg-elevated);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-left: 4px solid var(--accent-warning);
   border-radius: 6px;
-  padding: 16px;
+  padding: 12px 16px;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .noteItem:hover {
-  background-color: #2a2a2a;
-  border-left-color: #5aa9ff;
-  transform: translateX(4px);
+  background-color: var(--bg-elevated);
+  border-color: rgba(249, 115, 22, 0.5);
+  border-left-color: #fb923c;
+}
+
+.noteItemContent {
+  flex: 1;
+  min-width: 0;
 }
 
 .noteItem h4 {
-  margin: 0 0 8px 0;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.noteItem p {
-  margin: 0 0 8px 0;
-  color: #aaa;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.date {
-  color: #666;
+.noteTags {
+  margin: 4px 0 0 0;
+  color: var(--text-muted);
   font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.readModeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.readModeBtn:hover {
+  background-color: rgba(74, 158, 255, 0.1);
+  color: var(--accent-blue);
 }

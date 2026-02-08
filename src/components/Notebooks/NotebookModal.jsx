@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import styles from './NotebookModal.module.css'
 import { useNavigate } from 'react-router-dom'
+import { MdChromeReaderMode } from 'react-icons/md'
 
 function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags}) {
     const [notebookNotes, setNotebookNotes] = useState([])
@@ -32,6 +33,12 @@ function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags})
 
     const handleNoteClick = (noteId) => {
         navigate(`/notes/${noteId}`)
+        onClose()
+    }
+
+    const handleReadMode = (e, noteId) => {
+        e.stopPropagation()
+        navigate(`/notes/${noteId}?view=read`)
         onClose()
     }
 
@@ -77,11 +84,17 @@ function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags})
                                     className={styles.noteItem}
                                     onClick={() => handleNoteClick(note.id)}
                                 >
-                                    <h4>{note.title}</h4>
-                                    <p>{note.body ? note.body.substring(0, 100) + '...' : 'No content'}</p>
-                                    <span className={styles.date}>
-                                        {new Date(note.created_at).toLocaleDateString()}
-                                    </span>
+                                    <div className={styles.noteItemContent}>
+                                        <h4>{note.title}</h4>
+                                        {note.tags && <p className={styles.noteTags}>{note.tags}</p>}
+                                    </div>
+                                    <button
+                                        className={styles.readModeBtn}
+                                        onClick={(e) => handleReadMode(e, note.id)}
+                                        title="Open in read mode"
+                                    >
+                                        <MdChromeReaderMode size={18} />
+                                    </button>
                                 </div>
                             ))}
                         </div>

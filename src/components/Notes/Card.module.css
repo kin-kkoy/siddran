@@ -1,7 +1,7 @@
 /* Grid Card */
 .card {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 20px;
   cursor: pointer;
@@ -14,9 +14,8 @@
 }
 
 .card:hover {
-  border-color: #555;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: var(--text-faint);
+  background-color: var(--bg-elevated);
 }
 
 .cardHeader {
@@ -30,7 +29,7 @@
   font-size: 18px;
   font-weight: 500;
   margin: 0;
-  color: #ffffff;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -39,7 +38,7 @@
 
 .preview {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -52,7 +51,7 @@
 .deleteBtn {
   background: transparent;
   border: none;
-  color: #666;
+  color: var(--text-dim);
   padding: 8px;
   border-radius: 6px;
   cursor: pointer;
@@ -65,7 +64,26 @@
 
 .deleteBtn:hover {
   background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: var(--accent-danger);
+}
+
+.readModeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.readModeBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
 }
 
 /* Menu Button and Dropdown */
@@ -76,7 +94,7 @@
 .menuBtn {
   background-color: transparent;
   border: none;
-  color: #888;
+  color: var(--text-muted);
   padding: 4px 8px;
   cursor: pointer;
   font-size: 14px;
@@ -84,19 +102,19 @@
 }
 
 .menuBtn:hover {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .menu {
   position: absolute;
   right: 0;
-  background-color: #2a2a2a;
-  border: 1px solid #444;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   padding: 8px;
   min-width: 200px;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .menuAbove {
@@ -114,7 +132,7 @@
   gap: 10px;
   background-color: transparent;
   border: none;
-  color: #fff;
+  color: var(--text-primary);
   padding: 10px 12px;
   cursor: pointer;
   font-size: 14px;
@@ -124,18 +142,18 @@
 }
 
 .menuItem:hover {
-  background-color: #3a3a3a;
+  background-color: var(--bg-hover);
 }
 
 .colorPicker {
   padding: 10px 12px;
-  border-top: 1px solid #444;
+  border-top: 1px solid var(--border-strong);
   margin-top: 4px;
 }
 
 .colorLabel {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
   display: block;
   margin-bottom: 8px;
 }
@@ -150,20 +168,20 @@
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  border: 2px solid #555;
+  border: 2px solid var(--text-faint);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .colorBtn:hover {
-  border-color: #fff;
+  border-color: var(--text-primary);
   transform: scale(1.1);
 }
 
 /* Horizontal Card (List View) */
 .horizontalCard {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   padding: 16px 20px;
   cursor: pointer;
@@ -176,8 +194,8 @@
 }
 
 .horizontalCard:hover {
-  border-color: #555;
-  background-color: #252525;
+  border-color: var(--text-faint);
+  background-color: var(--bg-elevated);
 }
 
 .horizontalCardContent {
@@ -191,12 +209,12 @@
   font-size: 16px;
   font-weight: 500;
   margin: 0;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .horizontalCard p {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -210,7 +228,7 @@
 .meta .deleteBtn {
   background: transparent;
   border: none;
-  color: #666;
+  color: var(--text-dim);
   padding: 8px;
   border-radius: 6px;
   cursor: pointer;
@@ -223,13 +241,13 @@
 
 .meta .deleteBtn:hover {
   background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: var(--accent-danger);
 }
 
 /* Add Card (Grid) */
 .addCard {
-  background-color: #2a2a2a;
-  border: 2px dashed #555;
+  background-color: var(--bg-elevated);
+  border: 2px dashed var(--text-faint);
   border-radius: 8px;
   padding: 20px;
   cursor: pointer;
@@ -244,26 +262,26 @@
 }
 
 .addCard:hover {
-  border-color: #777;
-  background-color: #333;
+  border-color: var(--border-strong);
+  background-color: var(--border-default);
 }
 
 .addCard h2 {
   font-size: 18px;
   font-weight: 500;
   margin: 0;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 .addCardIcon {
   font-size: 32px;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 /* Add Card (List) */
 .addCardList {
-  background-color: #2a2a2a;
-  border: 2px dashed #555;
+  background-color: var(--bg-elevated);
+  border: 2px dashed var(--text-faint);
   border-radius: 6px;
   padding: 16px 20px;
   cursor: pointer;
@@ -274,33 +292,33 @@
 }
 
 .addCardList:hover {
-  border-color: #777;
-  background-color: #333;
+  border-color: var(--border-strong);
+  background-color: var(--border-default);
 }
 
 .addCardList h4 {
   font-size: 16px;
   font-weight: 500;
   margin: 0;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 .addCardListIcon {
   font-size: 24px;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 
 /* Selection mode styles */
 .card.selected,
 .card.isSelected {
-  border: 2px solid #f97316;
-  background-color: rgba(249, 115, 22, 0.1);
+  border: 2px solid var(--accent-warning);
+  background-color: var(--accent-warning-alpha);
 }
 
 .horizontalCard.selected {
-  border-left: 4px solid #f97316;
-  background-color: rgba(249, 115, 22, 0.1);
+  border-left: 4px solid var(--accent-warning);
+  background-color: var(--accent-warning-alpha);
 }
 
 .checkbox {
@@ -314,7 +332,7 @@
   height: 20px;
   cursor: pointer;
   margin-right: 10px;
-  accent-color: #f97316;
+  accent-color: var(--accent-warning);
 }
 
 /* For horizontal card checkbox */

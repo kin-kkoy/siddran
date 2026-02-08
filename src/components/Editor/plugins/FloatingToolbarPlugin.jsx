@@ -16,7 +16,7 @@ import { FaBold, FaItalic, FaStrikethrough, FaLink, FaCode } from 'react-icons/f
 import styles from './FloatingToolbarPlugin.module.css';
 import LinkPopover from './LinkPopover';
 
-function FloatingToolbar({ editor }) {
+function FloatingToolbar({ editor, isReadMode }) {
   const toolbarRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -31,6 +31,12 @@ function FloatingToolbar({ editor }) {
   const [linkPopoverPosition, setLinkPopoverPosition] = useState({ x: 0, y: 0 });
 
   const updateToolbar = useCallback(() => {
+    // Don't show if in read mode
+    if (isReadMode){
+      setIsVisible(false);
+      return;
+    }
+
     // Don't hide toolbar if link popover is open
     if (linkPopoverOpen) return;
 
@@ -71,7 +77,7 @@ function FloatingToolbar({ editor }) {
       y: rect.top + window.scrollY - 10,
     });
     setIsVisible(true);
-  }, [linkPopoverOpen]);
+  }, [linkPopoverOpen, isReadMode]);
 
   useEffect(() => {
     return mergeRegister(
@@ -231,9 +237,9 @@ function FloatingToolbar({ editor }) {
   );
 }
 
-function FloatingToolbarPlugin() {
+function FloatingToolbarPlugin({ isReadMode }) {
   const [editor] = useLexicalComposerContext();
-  return <FloatingToolbar editor={editor} />;
+  return <FloatingToolbar editor={editor} isReadMode={isReadMode}/>;
 }
 
 export default FloatingToolbarPlugin;
