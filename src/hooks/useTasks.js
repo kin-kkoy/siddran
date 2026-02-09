@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "../utils/toast";
+import logger from "../utils/logger";
 
 // Custom hook for tasks and daily tasks
 export const useTasks = (authFetch, API, isAuthed) => {
@@ -34,7 +36,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 }
 
             } catch (error) {
-                console.error(`Error fetching tasks:`, error)
+                logger.error(`Error fetching tasks:`, error)
             } finally {
                 setLoading(false)
             }
@@ -60,7 +62,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 setTasksPagination(data.pagination)
             }
         } catch (error) {
-            console.error('Error loading more tasks:', error)
+            logger.error('Error loading more tasks:', error)
         } finally {
             setLoadingMore(false)
         }
@@ -80,7 +82,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 setDailyTasksPagination(data.pagination)
             }
         } catch (error) {
-            console.error('Error loading more daily tasks:', error)
+            logger.error('Error loading more daily tasks:', error)
         } finally {
             setLoadingMore(false)
         }
@@ -92,7 +94,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
         // if daily tasks
         if (taskType === 'daily') {
             if (!Array.isArray(title) || title.length === 0) {
-                alert("No tasks to create")
+                toast.warning("No tasks to create")
                 return
             }
 
@@ -108,8 +110,8 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 }
 
             } catch (error) {
-                console.error("Error adding daily tasks:", error)
-                alert("Failed to create daily tasks")
+                logger.error("Error adding daily tasks:", error)
+                toast.error("Failed to create daily tasks")
             }
 
             return
@@ -117,7 +119,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
         // if normal tasks
         if (!title.trim()) {
-            alert("Task title cannot be empty")
+            toast.warning("Task title cannot be empty")
             return
         }
 
@@ -136,8 +138,8 @@ export const useTasks = (authFetch, API, isAuthed) => {
             }
 
         } catch (error) {
-            console.error("Error adding task:", error)
-            alert("Failed to add task")
+            logger.error("Error adding task:", error)
+            toast.error("Failed to add task")
         }
     }, [authFetch, API])
 
@@ -149,7 +151,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
             }
 
         } catch (error) {
-            console.error("Error deleting task:", error)
+            logger.error("Error deleting task:", error)
         }
     }, [authFetch, API])
 
@@ -166,7 +168,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
             })
 
         } catch (error) {
-            console.error("Error updating task:", error)
+            logger.error("Error updating task:", error)
             // Revert on error
             setTasks(prev => prev.map(task =>
                 task.id === id ? {...task, is_completed: !isCompleted} : task
@@ -183,7 +185,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 setDailyTasks(prev => prev.filter(task => task.id !== id))
             }
         } catch (error) {
-            console.error("Error deleting daily task:", error)
+            logger.error("Error deleting daily task:", error)
         }
     }, [authFetch, API])
 
@@ -200,7 +202,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
             })
 
         } catch (error) {
-            console.error("Error updating daily task:", error)
+            logger.error("Error updating daily task:", error)
             // Revert on error
             setDailyTasks(prev => prev.map(task =>
                 task.id === id ? {...task, is_completed: !isCompleted} : task

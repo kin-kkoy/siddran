@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import styles from './NotebookModal.module.css'
 import { useNavigate } from 'react-router-dom'
 import { MdChromeReaderMode } from 'react-icons/md'
+import logger from '../../utils/logger'
 
 function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags}) {
     const [notebookNotes, setNotebookNotes] = useState([])
@@ -18,7 +19,7 @@ function NotebookModal({ notebook, onClose, authFetch, API, updateNotebookTags})
                 const data = await res.json()
                 setNotebookNotes(data.notes)
             } catch (error) {
-                console.error(`Error fetching notebook's notes:`, error)
+                logger.error(`Error fetching notebook's notes:`, error)
             } finally {
                 setLoading(false)
             }

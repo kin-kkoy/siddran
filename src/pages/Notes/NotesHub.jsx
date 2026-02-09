@@ -11,6 +11,7 @@ import CreateNotebookModal from '../../components/Notebooks/CreateNotebookModal'
 import ConfirmModal from '../../components/Common/ConfirmModal'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { LuNotebookPen } from 'react-icons/lu'
+import { toast } from '../../utils/toast'
 
 // obtains the notes and
 function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, toggleFavorite, updateColor, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags, authFetch, API }) {
@@ -34,6 +35,7 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
   const notesSentinelRef = useRef(null)
   const notebooksSentinelRef = useRef(null)
   const scrollIntentTimeoutRef = useRef(null)
+  const notebookScrollTimeoutRef = useRef(null)
 
   const hasMoreNotes = notesPagination?.hasNextPage
   const hasMoreNotebooks = notebooksPagination?.hasNextPage
@@ -82,9 +84,13 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
       (entries) => {
         const [entry] = entries
         if (entry.isIntersecting && !loadingMore) {
-          setTimeout(() => {
+          notebookScrollTimeoutRef.current = setTimeout(() => {
             loadMoreNotebooks()
           }, 300)
+        } else {
+          if (notebookScrollTimeoutRef.current) {
+            clearTimeout(notebookScrollTimeoutRef.current)
+          }
         }
       },
       { root: null, rootMargin: '100px', threshold: 0 }
@@ -92,7 +98,12 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
 
     observer.observe(sentinel)
 
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      if (notebookScrollTimeoutRef.current) {
+        clearTimeout(notebookScrollTimeoutRef.current)
+      }
+    }
   }, [hasMoreNotebooks, loadingMore, loadMoreNotebooks])
 
   const changeView = () => {
@@ -135,7 +146,7 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
 
   const handleOpenCreateModal = () => {
     if(selectedNotes.length === 0){
-      alert('Please select at least one note to create a notebook')
+      toast.warning('Please select at least one note to create a notebook')
       return
     }
     setShowCreateModal(true)

@@ -6,6 +6,7 @@ import { FaStar, FaRegStar, FaEllipsisV } from 'react-icons/fa'
 import { MdChromeReaderMode } from "react-icons/md";
 import { HiPencilSquare } from "react-icons/hi2";
 import LexicalEditor from '../../components/Editor/LexicalEditor'
+import { toast } from '../../utils/toast'
 
 function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor }) {
 
@@ -68,10 +69,11 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
   // the api calls to save title/body/tags
   const saveTitle = async () => {
     if(!newTitle.trim()){
-      alert('Title cannot be empty')
+      toast.warning('Title cannot be empty')
       setNewTitle(note.title) // revert back to original title
       return;
     }
+    if(newTitle === note.title) return; // no change, skip PUT
     editTitle(note.id, newTitle)
   }
   const saveTags = async () => {

@@ -36,7 +36,6 @@ function ProfileDropdown({ username, isCollapsed, handleLogout }) {
 
     const navigateProfile = () => {
         setIsOpen(false)
-        alert(`to be implemented!`)
     }
 
     const Logout = () => {

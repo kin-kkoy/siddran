@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styles from './CreateNotebookModal.module.css'
+import { toast } from '../../utils/toast'
 
 function CreateNotebookModal({ onClose, onCreate, selectedNotesCount }) {
     const [name, setName] = useState('')
@@ -8,7 +9,7 @@ function CreateNotebookModal({ onClose, onCreate, selectedNotesCount }) {
     const handleSubmit = (e) => {
         e.preventDefault()
         if (!name.trim()) {
-            alert('Please enter a notebook name')
+            toast.warning('Please enter a notebook name')
             return
         }
         onCreate(name, tags)

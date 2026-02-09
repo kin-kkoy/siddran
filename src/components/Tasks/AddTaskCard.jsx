@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styles from './TaskCard.module.css'
+import { toast } from '../../utils/toast'
 
 function AddTaskCard({ addTask, viewMode }) {
     const [taskType, setTaskType] = useState("normal") // normal: normal add task || daily: add daily tasks
@@ -32,7 +33,7 @@ function AddTaskCard({ addTask, viewMode }) {
         e.preventDefault()
 
         if(!title.trim()){
-            alert("Task title cannot be empty")
+            toast.warning("Task title cannot be empty")
             return
         }
 
@@ -53,7 +54,7 @@ function AddTaskCard({ addTask, viewMode }) {
 
     const submitDraft = async () => {
         if(dailyTasksDraft.length === 0){
-            alert("Add at least one task to the list")
+            toast.warning("Add at least one task to the list")
             return
         }
 

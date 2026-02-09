@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import logger from '../utils/logger'
 
 // ── Theme definitions ──────────────────────────────────────────────
 export const THEMES = {
@@ -283,7 +284,7 @@ export function SettingsProvider({ children, authFetch, API, isAuthed }) {
           }
         }
       } catch (error) {
-        console.error('Error fetching settings:', error)
+        logger.error('Error fetching settings:', error)
       }
     }
 
@@ -307,7 +308,7 @@ export function SettingsProvider({ children, authFetch, API, isAuthed }) {
       authFetch(`${API}/settings`, {
         method: 'PUT',
         body: JSON.stringify({ settings: settingsRef.current }),
-      }).catch(err => console.error('Error saving settings:', err))
+      }).catch(err => logger.error('Error saving settings:', err))
     }
   }, [authFetch, API])
 

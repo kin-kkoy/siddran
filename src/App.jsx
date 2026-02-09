@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import Sidebar from "./components/Layout/Sidebar/Sidebar.jsx"
 import NotePage from "./pages/Notes/NotePage.jsx"
@@ -7,10 +7,13 @@ import LoginPage from "./pages/Auth/LoginPage.jsx"
 import RegisterPage from "./pages/Auth/RegisterPage.jsx"
 import TasksHub from "./pages/Tasks/TasksHub.jsx"
 import ModsHub from "./pages/ModsHub.jsx"
+import NotFoundPage from "./pages/NotFoundPage.jsx"
 import { useNotes } from "./hooks/useNotes.js"
 import { useTasks } from "./hooks/useTasks.js"
 import { SettingsProvider } from "./contexts/SettingsContext.jsx"
 import SettingsPopup from "./components/Settings/SettingsPopup.jsx"
+import ToastContainer from "./components/Common/ToastContainer.jsx"
+import logger from "./utils/logger.js"
 
 // Wrapper component to get the ID from route parameters
 function NotePageWrapper({ notes, editTitle, editBody, updateTags, toggleFavorite, updateColor, onNoteChange}){
@@ -63,25 +66,36 @@ function App() {
     }
   }, [])
 
+  const refreshPromiseRef = useRef(null)
+
   const refreshAuthToken = useCallback(async () => {
-    try {
-      const res = await fetch(`${API}/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include' // auto sends HttpOnly cookie
-      })
+    // If a refresh is already in progress, piggyback on it
+    if (refreshPromiseRef.current) return refreshPromiseRef.current
 
-      if (!res.ok) throw new Error(`Failed to refresh token`)
+    refreshPromiseRef.current = (async () => {
+      try {
+        const res = await fetch(`${API}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include' // auto sends HttpOnly cookie
+        })
 
-      const data = await res.json()
-      localStorage.setItem(`accessToken`, data.accessToken)
-      return data.accessToken
+        if (!res.ok) throw new Error(`Failed to refresh token`)
 
-    } catch (refreshTokenError) {
-      // failed to refresh token = logout user
-      localStorage.removeItem(`accessToken`)
-      setIsAuthed(false)
-      throw refreshTokenError
-    }
+        const data = await res.json()
+        localStorage.setItem(`accessToken`, data.accessToken)
+        return data.accessToken
+
+      } catch (refreshTokenError) {
+        // failed to refresh token = logout user
+        localStorage.removeItem(`accessToken`)
+        setIsAuthed(false)
+        throw refreshTokenError
+      } finally {
+        refreshPromiseRef.current = null
+      }
+    })()
+
+    return refreshPromiseRef.current
   }, [API])
 
   // helper function for AUTHENTICATED FETCH
@@ -113,7 +127,7 @@ function App() {
         })
 
       } catch (refreshError) {
-        console.error(`Token refresh failed:`, refreshError)
+        logger.error(`Token refresh failed:`, refreshError)
         localStorage.removeItem(`accessToken`)
         setIsAuthed(false)
         throw new Error('Session expired. Please login again.')
@@ -249,6 +263,7 @@ function App() {
                     />
                   } />
                   <Route path="/mods" element={<ModsHub />} />
+                  <Route path="*" element={<NotFoundPage />} />
                 </>
               ) : (
                 <Route path="*" element={<LoginPage setIsAuthed={setIsAuthed} setAppUsername={setUsername} />} />
@@ -261,6 +276,9 @@ function App() {
 
         {/* Settings popup (rendered at app level, controlled by context) */}
         {isAuthed && <SettingsPopup />}
+
+        {/* Toast notifications (always available) */}
+        <ToastContainer />
 
       </BrowserRouter>
     </div>

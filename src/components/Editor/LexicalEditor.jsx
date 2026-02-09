@@ -31,9 +31,10 @@ import { TRANSFORMERS } from './utils/markdownTransformers';
 import styles from './LexicalEditor.module.css';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { useEffect } from 'react';
+import logger from '../../utils/logger';
 
 function onError(error) {
-  console.error('Lexical Error:', error);
+  logger.error('Lexical Error:', error);
 }
 
 function ReadModeListener({isReadMode}){
@@ -96,7 +97,7 @@ function LexicalEditor({ initialContent, onSave, placeholder = 'Start typing her
           {/* Custom plugins */}
           <FloatingToolbarPlugin isReadMode={interfaceMode}/>
           <CodeBlockExitPlugin />
-          <OnBlurPlugin onBlur={onSave} />
+          <OnBlurPlugin onBlur={onSave} initialContent={initialContent} />
           <LinkClickPlugin isReadMode={interfaceMode} />
           <CodeCopyPlugin />
 

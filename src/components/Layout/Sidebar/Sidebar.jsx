@@ -5,6 +5,7 @@ import ProfileDropdown from "../ProfileDropdown/ProfileDropdown";
 import { LuNotepadText } from "react-icons/lu";
 import { BiTask, BiPackage } from "react-icons/bi";
 import { RxHamburgerMenu } from "react-icons/rx";
+import logger from "../../../utils/logger";
 
 
 // CHANGE EVERYTHING THERE!! WHAT SHOULD HAPPEN:
@@ -54,7 +55,7 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
                 credentials: 'include'
             })
         } catch (error) {
-            console.error('Logout errror:', error)
+            logger.error('Logout error:', error)
         }
 
         // clear tokens and cached data then redirect

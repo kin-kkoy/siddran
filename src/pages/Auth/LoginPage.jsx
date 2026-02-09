@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './Auth.module.css'
+import logger from '../../utils/logger'
 
 function LoginPage({ setIsAuthed, setAppUsername }) {
     const [username, setUsername] = useState('')
@@ -47,7 +48,7 @@ function LoginPage({ setIsAuthed, setAppUsername }) {
             navigate('/notes')
 
         } catch (error) {
-            console.error('Login erorr:', error)
+            logger.error('Login error:', error)
             setError(error.message || 'Something went wrong when trying to login')
         }finally{
             setLoading(false)
@@ -59,7 +60,6 @@ function LoginPage({ setIsAuthed, setAppUsername }) {
             <div className={styles.authCard}>
 
                 <div className={styles.authHeader}>
-                    <div className={styles.authLogo}>🔥</div>
                     <h1 className={styles.authTitle}>Welcome to Cinder</h1>
                 </div>
 

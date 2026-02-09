@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './Auth.module.css'
+import { toast } from '../../utils/toast'
+import logger from '../../utils/logger'
 
 function RegisterPage({ setIsAuthed, setAppUsername }) {
     const [username, setUsername] = useState('')
@@ -42,8 +44,7 @@ function RegisterPage({ setIsAuthed, setAppUsername }) {
 
             if(!res.ok) throw new Error (data.error || 'Registration failed')
 
-            // Change alert to toast later soon
-            alert('Registration successful! Going in now')
+            toast.success('Registration successful!')
             localStorage.setItem(`accessToken`, data.accessToken)
 
             const payload = JSON.parse(atob(data.accessToken.split('.')[1]))
@@ -53,7 +54,7 @@ function RegisterPage({ setIsAuthed, setAppUsername }) {
             navigate('/notes')
 
         } catch (error) {
-            console.error('Registration erorr:', error)
+            logger.error('Registration error:', error)
             setError(error.message || 'Something went wrong when trying to register')
         }finally{
             setLoading(false)
@@ -64,9 +65,7 @@ function RegisterPage({ setIsAuthed, setAppUsername }) {
         <div className={styles.authContainer}>
             <div className={styles.authCard}>
                 <div className={styles.authHeader}>
-                    <div className={styles.authLogo}>🔥</div>
-                    <h1 className={styles.authTitle}>Join Cinder | CHANGE THIS TOO CRINGE LOL</h1>
-                    <p className={styles.authSubtitle}>Create your account</p>
+                    <h1 className={styles.authTitle}>Create your account</h1>
                 </div>
 
                 {error && <div className={styles.authError}>{error}</div>}

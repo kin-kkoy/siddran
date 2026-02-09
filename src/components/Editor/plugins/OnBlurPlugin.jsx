@@ -134,9 +134,9 @@ function listToMarkdown(node, depth = 0) {
   return lines;
 }
 
-function OnBlurPlugin({ onBlur }) {
+function OnBlurPlugin({ onBlur, initialContent }) {
   const [editor] = useLexicalComposerContext();
-  const lastSavedContent = useRef('');
+  const lastSavedContent = useRef(initialContent || '');
 
   useEffect(() => {
     const rootElement = editor.getRootElement();

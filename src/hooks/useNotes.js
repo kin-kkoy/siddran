@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "../utils/toast";
+import logger from "../utils/logger";
 
 // Custom hook for the notes/notebooks
 export const useNotes = (authFetch, API, isAuthed) => {
@@ -31,7 +33,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 }
 
             } catch (error) {
-                console.error(`Error fetching for data:`, error)
+                logger.error(`Error fetching for data:`, error)
             }
         }
 
@@ -54,7 +56,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 setNotesPagination(data.pagination) // Update pagination for next request
             }
         } catch (error) {
-            console.error('Error loading more notes:', error)
+            logger.error('Error loading more notes:', error)
         } finally {
             setLoadingMore(false)
         }
@@ -74,7 +76,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 setNotebooksPagination(data.pagination)
             }
         } catch (error) {
-            console.error('Error loading more notebooks:', error)
+            logger.error('Error loading more notebooks:', error)
         } finally {
             setLoadingMore(false)
         }
@@ -94,7 +96,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
             setNotes(currentNotes => [...currentNotes, newNote])
 
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -105,7 +107,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
             setNotes(allNotes => allNotes.filter( note => note.id !== id))
 
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -120,7 +122,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 body: JSON.stringify({ title: newTitle })
             })
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -137,7 +139,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
             setNotes(allNotes => allNotes.map( note => note.id === id ? data : note))
 
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -157,7 +159,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 method: "PUT",
                 body: JSON.stringify({ is_favorite: newFavoriteState })
             }).catch(error => {
-                console.error(error)
+                logger.error(error)
                 // Revert on error
                 setNotes(prevNotes => prevNotes.map(n =>
                     n.id === id ? {...n, is_favorite: !newFavoriteState} : n
@@ -180,7 +182,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 body: JSON.stringify({ color })
             })
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -196,7 +198,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 body: JSON.stringify({ tags })
             })
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -222,10 +224,10 @@ export const useNotes = (authFetch, API, isAuthed) => {
 
             // add notebook
             setNotebooks(currNotebooks => [notebook, ...currNotebooks])
-            alert(`Notebook created successfully`)
+            toast.success("Notebook created successfully")
 
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -241,7 +243,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
             if(noteRes.ok) setNotes(await noteRes.json())
 
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -258,7 +260,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 method: "PUT",
                 body: JSON.stringify({ is_favorite: newFavoriteState })
             }).catch(error => {
-                console.error(error)
+                logger.error(error)
                 setNotebooks(prevNotebooks => prevNotebooks.map(n =>
                     n.id === id ? {...n, is_favorite: !newFavoriteState} : n
                 ))
@@ -279,7 +281,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 body: JSON.stringify({ color })
             })
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
@@ -294,7 +296,7 @@ export const useNotes = (authFetch, API, isAuthed) => {
                 body: JSON.stringify({ tags })
             })
         } catch (error) {
-            console.error(error)
+            logger.error(error)
         }
     }, [authFetch, API])
 
