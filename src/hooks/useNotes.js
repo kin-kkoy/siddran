@@ -300,6 +300,72 @@ export const useNotes = (authFetch, API, isAuthed) => {
         }
     }, [authFetch, API])
 
+    const renameNotebook = useCallback(async (id, name) => {
+        setNotebooks(allNotebooks => allNotebooks.map( notebook =>
+            notebook.id === id ? {...notebook, name} : notebook
+        ))
+
+        try {
+            await authFetch(`${API}/notebooks/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({ name })
+            })
+        } catch (error) {
+            logger.error(error)
+        }
+    }, [authFetch, API])
+
+    const removeNoteFromNotebook = useCallback(async (notebookId, noteId) => {
+        try {
+            const res = await authFetch(`${API}/notebooks/${notebookId}/notes/${noteId}`, {
+                method: "DELETE"
+            })
+            if (!res.ok) throw new Error("Failed to remove note from notebook")
+
+            // Update the note locally to remove its notebook_id
+            setNotes(allNotes => allNotes.map(note =>
+                note.id === noteId ? {...note, notebook_id: null} : note
+            ))
+
+            // Update the notebook's note_count
+            setNotebooks(allNotebooks => allNotebooks.map(notebook =>
+                notebook.id === notebookId ? {...notebook, note_count: Math.max(0, (notebook.note_count || 0) - 1)} : notebook
+            ))
+
+        } catch (error) {
+            logger.error(error)
+        }
+    }, [authFetch, API])
+
+
+    const addNotesToNotebook = useCallback(async (notebookId, noteIds) => {
+        try {
+            const res = await authFetch(`${API}/notebooks/${notebookId}/notes`, {
+                method: "POST",
+                body: JSON.stringify({ noteIds })
+            })
+            if (!res.ok) throw new Error("Failed to add notes to notebook")
+
+            const { updatedNotes } = await res.json()
+
+            setNotes(allNotes => allNotes.map(note => {
+                const updated = updatedNotes.find(n => n.id === note.id)
+                return updated || note
+            }))
+
+            setNotebooks(allNotebooks => allNotebooks.map(notebook =>
+                notebook.id === notebookId
+                    ? { ...notebook, note_count: (notebook.note_count || 0) + updatedNotes.length }
+                    : notebook
+            ))
+
+            return updatedNotes
+        } catch (error) {
+            logger.error(error)
+            return []
+        }
+    }, [authFetch, API])
+
 
     return {
         notes,
@@ -320,6 +386,9 @@ export const useNotes = (authFetch, API, isAuthed) => {
         deleteNotebook,
         toggleFavoriteNotebook,
         updateNotebookColor,
-        updateNotebookTags
+        updateNotebookTags,
+        renameNotebook,
+        removeNoteFromNotebook,
+        addNotesToNotebook
     }
 }

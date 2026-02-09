@@ -56,6 +56,7 @@
 }
 
 .title {
+    font-family: var(--font-display);
     font-size: 18px;
     color: var(--text-primary);
     margin: 0 0 8px 0;
@@ -172,6 +173,7 @@
 }
 
 .addCard h2 {
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 500;
   margin: 0;
@@ -202,6 +204,7 @@
 }
 
 .addCardList h4 {
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 500;
   margin: 0;
@@ -265,6 +268,7 @@
   border: 1px solid var(--border-strong);
   border-radius: 6px;
   color: var(--text-primary);
+  font-family: inherit;
   font-size: 16px;
   outline: none;
   transition: border-color 0.2s;
@@ -302,6 +306,7 @@
   border: 1px solid var(--border-strong);
   border-radius: 6px;
   color: var(--text-primary);
+  font-family: inherit;
   font-size: 14px;
   outline: none;
   cursor: pointer;
@@ -338,6 +343,7 @@
   color: #fff;
   border: none;
   border-radius: 6px;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -355,6 +361,7 @@
   color: var(--text-muted);
   border: 1px solid var(--border-strong);
   border-radius: 6px;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -427,6 +434,7 @@
   color: #fff;
   border: none;
   border-radius: 6px;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;

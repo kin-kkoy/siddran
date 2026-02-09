@@ -1,4 +1,4 @@
-import { LuNotebook } from 'react-icons/lu';
+import { LuFileText } from 'react-icons/lu';
 import { FaStar, FaRegStar, FaEllipsisV } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi";
 import styles from './NotebookCard.module.css'
@@ -11,6 +11,13 @@ function NotebookCard({ notebook, deleteNotebook, onOpen, toggleFavoriteNotebook
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const menuRef = useRef(null)
     const buttonRef = useRef(null)
+
+    const spineColor = notebook.color || '#4a9eff'
+    const noteCount = notebook.note_count || 0
+
+    const tagsDisplay = notebook.tags
+        ? notebook.tags.split(',').map(t => t.trim()).filter(Boolean).join(' · ')
+        : null
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -32,6 +39,7 @@ function NotebookCard({ notebook, deleteNotebook, onOpen, toggleFavoriteNotebook
         e.preventDefault()
         e.stopPropagation()
         setShowDeleteModal(true)
+        setMenuOpen(false)
     }
 
     const confirmDelete = () => {
@@ -75,12 +83,15 @@ function NotebookCard({ notebook, deleteNotebook, onOpen, toggleFavoriteNotebook
     return (
         <>
             <div onClick={handleClick} className={styles.cardLink} style={{ cursor: 'pointer' }}>
-                <div className={styles.card} style={{ borderLeftColor: notebook.color || '#4a9eff' }}>
+                <div
+                    className={styles.card}
+                    style={{
+                        borderLeftColor: spineColor,
+                        '--spine-color': spineColor,
+                        '--spine-glow': `${spineColor}26`,
+                    }}
+                >
                     <div className={styles.header}>
-                        <div style={{ flex: 1 }}>
-                            <div className={styles.icon}><LuNotebook /></div>
-                            <h3 className={styles.title}>{notebook.name}</h3>
-                        </div>
                         <div className={styles.menuContainer} ref={menuRef}>
                             <button ref={buttonRef} onClick={toggleMenu} className={styles.menuBtn}>
                                 <FaEllipsisV />
@@ -94,7 +105,7 @@ function NotebookCard({ notebook, deleteNotebook, onOpen, toggleFavoriteNotebook
                                     </button>
 
                                     <div className={styles.colorPicker}>
-                                        <span className={styles.colorLabel}>Border Color:</span>
+                                        <span className={styles.colorLabel}>Spine Color:</span>
                                         <div className={styles.colorOptions}>
                                             <button onClick={(e) => handleColorChange(e, '#4a9eff')} className={styles.colorBtn} style={{ backgroundColor: '#4a9eff' }} title="Blue (Default)"></button>
                                             <button onClick={(e) => handleColorChange(e, '#fbbf24')} className={styles.colorBtn} style={{ backgroundColor: '#fbbf24' }} title="Yellow"></button>
@@ -107,15 +118,25 @@ function NotebookCard({ notebook, deleteNotebook, onOpen, toggleFavoriteNotebook
                             )}
                         </div>
                     </div>
+
+                    <div className={styles.cardBody}>
+                        <h3 className={styles.title}>{notebook.name}</h3>
+                        {tagsDisplay && <p className={styles.tags}>{tagsDisplay}</p>}
+                        <div className={styles.divider} />
+                    </div>
+
                     <div className={styles.footer}>
+                        <div className={styles.noteCount}>
+                            <LuFileText size={14} />
+                            <span>{noteCount} {noteCount === 1 ? 'Note' : 'Notes'}</span>
+                        </div>
                         <button onClick={handleDelete} className={styles.deleteBtn}>
-                            <HiOutlineTrash size={18} />
+                            <HiOutlineTrash />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}

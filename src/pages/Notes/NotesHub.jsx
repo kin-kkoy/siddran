@@ -14,7 +14,7 @@ import { LuNotebookPen } from 'react-icons/lu'
 import { toast } from '../../utils/toast'
 
 // obtains the notes and
-function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, toggleFavorite, updateColor, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags, authFetch, API }) {
+function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, toggleFavorite, updateColor, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags, renameNotebook, removeNoteFromNotebook, addNotesToNotebook, authFetch, API }) {
 
   // Persist view mode in localStorage
   const [viewMode, setViewMode] = useState(() => {
@@ -30,6 +30,9 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
 
   // Helper to check if in any selection mode
   const isSelectionMode = selectionMode !== null
+
+  // Cache for notebook notes (avoids refetching on every modal open)
+  const notebookNotesCache = useRef({})
 
   // Refs for infinite scroll sentinels
   const notesSentinelRef = useRef(null)
@@ -361,6 +364,11 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
           authFetch={authFetch}
           API={API}
           updateNotebookTags={updateNotebookTags}
+          renameNotebook={renameNotebook}
+          removeNoteFromNotebook={removeNoteFromNotebook}
+          addNotesToNotebook={addNotesToNotebook}
+          notebookNotesCache={notebookNotesCache}
+          allNotes={notes}
         />
       )}
 

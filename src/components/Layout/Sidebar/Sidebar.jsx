@@ -38,11 +38,6 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
     //     // TODO: Ideally, the sorting happens in the backend, and frontend simply fetches and displays.
     //     alert(`This is temporary, sorting should be implemented`)
     // }
-    // // Display note toggle (card/list view)
-    // const displayToggle = choice => {
-    //     // TODO: Clicking this button toggles between card/list view
-    //     alert(`This is temporary, toggling will be implemented`)
-    // }
 
 
     // logout
@@ -98,7 +93,7 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
                     className={`${styles.menuBtn} ${location.pathname === '/mods' ? styles.active : ''}`} 
                     title="Mods">
                         <span className={styles.icon}><BiPackage /></span>
-                        {!isCollapsed && <span>Mods</span>}
+                        {!isCollapsed && <span>TBI</span>}
                 </Link>
 
             </div>

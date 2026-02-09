@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 Explanations.md
+notebookCardReference.png
 
 # For prod/dev
 .env

@@ -11,7 +11,7 @@ function NotFoundPage() {
             gap: '16px',
             color: 'var(--text-primary)',
         }}>
-            <h1 style={{ fontSize: '72px', margin: 0, color: 'var(--text-muted)' }}>404</h1>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '72px', margin: 0, color: 'var(--text-muted)' }}>404</h1>
             <p style={{ fontSize: '18px', color: 'var(--text-dim)', margin: 0 }}>
                 This page doesn't exist.
             </p>

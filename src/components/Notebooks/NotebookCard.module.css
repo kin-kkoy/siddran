@@ -6,85 +6,129 @@
 .card {
   background-color: var(--bg-surface);
   border: 1px solid var(--bg-hover);
-  border-left: 6px solid var(--accent-blue);
-  border-radius: 8px;
+  border-left: 15px solid var(--accent-blue);
+  border-radius: 10px 6px 6px 10px;
   padding: 20px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: box-shadow 0.2s, background-color 0.2s;
   position: relative;
   min-height: 200px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  overflow: hidden;
 }
 
 .card:hover {
   background-color: var(--bg-elevated);
-  border-left-color: var(--accent-blue);
+  box-shadow: 0 6px 20px var(--spine-glow, rgba(74, 158, 255, 0.15));
 }
 
-.icon {
-  font-size: 48px;
-  text-align: center;
-  margin-bottom: 10px;
+.card:hover .title {
+  color: var(--spine-color, var(--accent-blue));
+}
+
+.card:hover .divider {
+  opacity: 1;
+}
+
+
+.card:hover .menuBtn {
+  opacity: 1;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
 }
 
 .title {
+  font-family: var(--font-display);
   color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
   text-align: center;
+  word-break: break-word;
+  transition: color 0.2s;
+}
+
+.tags {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin: 0;
+}
+
+.divider {
+  width: 60px;
+  height: 1px;
+  background-color: var(--border-strong);
+  opacity: 0.6;
+  margin-top: 8px;
 }
 
 .footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
   margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid var(--bg-hover);
+  padding-top: 4px;
 }
 
-.date {
+.noteCount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   color: var(--text-muted);
-  font-size: 12px;
 }
 
 .deleteBtn {
   background: transparent;
   border: none;
-  color: var(--text-dim);
+  padding: 6px;
+  border-radius: 4px;
   cursor: pointer;
+  color: var(--text-muted);
   font-size: 18px;
-  padding: 8px;
-  border-radius: 6px;
-  transition: all 0.2s;
+  transition: color 0.2s, background-color 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .deleteBtn:hover {
-  background-color: rgba(239, 68, 68, 0.1);
   color: var(--accent-danger);
+  background-color: rgba(239, 68, 68, 0.1);
 }
 
 /* Horizontal Notebook Card (List View) */
-.horizontalLink {
-  text-decoration: none;
-  color: inherit;
-}
-
 .horizontalCard {
   background-color: var(--bg-surface);
   border: 1px solid var(--bg-hover);
-  border-left: 6px solid var(--accent-blue);
-  border-radius: 6px;
+  border-left: 5px solid var(--accent-blue);
+  border-radius: 8px 4px 4px 8px;
   padding: 16px 20px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: box-shadow 0.2s, background-color 0.2s;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -92,12 +136,11 @@
 
 .horizontalCard:hover {
   background-color: var(--bg-elevated);
-  border-left-color: var(--accent-blue);
+  box-shadow: 0 4px 12px var(--spine-glow, rgba(74, 158, 255, 0.15));
 }
 
-.horizontalIcon {
-  font-size: 32px;
-  flex-shrink: 0;
+.horizontalCard:hover .horizontalTitle {
+  color: var(--spine-color, var(--accent-blue));
 }
 
 .content {
@@ -106,10 +149,33 @@
 }
 
 .horizontalTitle {
+  font-family: var(--font-display);
   color: var(--text-primary);
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  transition: color 0.2s;
+}
+
+.horizontalTags {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.horizontalNoteCount {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .meta {
@@ -131,7 +197,13 @@
   padding: 4px 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: color 0.2s;
+  transition: color 0.2s, opacity 0.2s;
+  opacity: 0;
+}
+
+.card:hover .menuBtn,
+.horizontalCard:hover .menuBtn {
+  opacity: 1;
 }
 
 .menuBtn:hover {
@@ -209,11 +281,4 @@
 .colorBtn:hover {
   border-color: var(--text-primary);
   transform: scale(1.1);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
 }

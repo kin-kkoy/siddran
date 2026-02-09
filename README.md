@@ -12,15 +12,14 @@
      - Reading mode doesn't allow editing/typing of the contents. (if it's not obvious) 
  - Notebook, made by grouping a bunch of notes. Always appears on top. Also has favorite and color change (only on the side) feat.
  - Sidebar, shows navigation & profile features but still lacks implementation for most buttons. Notes does work though and shows lists of notes
+ - Settings Page
+   - Light/Dark mode
+   - Themes
+   - Toolbar (Docking toolbar at the bottom) can be toggled to be "auto hide" or "always visible" on settings
 
 ---
 
 # To implement before deployment
- - Settings Page
-    - Light/Dark mode
-    - Themes
-    - Toolbar (Docking toolbar at the bottom) can be toggled to be "auto hide" or "always visible" on settings
- - Fix light mode or themes to not persist in login/signup page
 
 # To implement/fix
  - Note Editor (Lexical)
@@ -50,16 +49,6 @@
         - Real-time editing similar to Docs with other people
 
 ---
-
-# NEED FIX
- 
-
-# FIXED BUT NEEDS DOUBLE CHECKING ON A LATER DATE
- - Checklist not working well; renders properly once first pressed but after leaving the note and then visiting back, it is displayed like this " [ ] " or " [x] " instead of the checkbox look in markdown. In other words, render issue
- - The editor doesn't respect the gap. Line 1 then add 2 blank lines then on line 4 add a word or letter, leave the note and come back and then you can see the 2 blank lines (lines 2 and 3) are gone, simply put it kinda removes whitespaces lines.
- - Code block, there should be a way to exit out of it (if the code block is the last line in the editor, currently if the last line of the note is the code block the only way to exit out of the code block (to start another line) is to remove the code block then add another line then on the previous line add the code block and then to exit the said code block just move the cursor to the line below (WHICH IS EXTRA HASSLE))
- - Link, needs fixing, inserting a link
-
 
 # PROBLEMS 
  - Doesn't auto save when user stops typing for a while (Could be a problem when internet connection is suddenly gone)

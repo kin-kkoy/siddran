@@ -141,7 +141,7 @@ function App() {
 
   // ------------- DATA LOGIC (Adding, deleting, etc. of Notes and Notebooks) ===================================
   const {
-    notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, editTitle, editBody, toggleFavorite, updateColor, updateTags, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags
+    notes, notebooks, notesPagination, notebooksPagination, loadMoreNotes, loadMoreNotebooks, loadingMore, addNote, deleteNote, editTitle, editBody, toggleFavorite, updateColor, updateTags, createNotebook, deleteNotebook, toggleFavoriteNotebook, updateNotebookColor, updateNotebookTags, renameNotebook, removeNoteFromNotebook, addNotesToNotebook
   } = useNotes(authFetch, API, isAuthed)
 
   // ------------- TASKS DATA LOGIC ===================================
@@ -168,18 +168,19 @@ function App() {
     toggleFavoriteNotebook={toggleFavoriteNotebook}
     updateNotebookColor={updateNotebookColor}
     updateNotebookTags={updateNotebookTags}
+    renameNotebook={renameNotebook}
+    removeNoteFromNotebook={removeNoteFromNotebook}
+    addNotesToNotebook={addNotesToNotebook}
     authFetch={authFetch}
     API={API}/>
   )
 
-  // temp style so that my eyes won't cry when dev mode
   const style = {
     backgroundColor: "var(--bg-primary)",
     color: "var(--text-primary)",
     minHeight: "100vh",
     margin: 0,
     padding: 0,
-    fontFamily: "Arial, sans-serif",
   };
 
 

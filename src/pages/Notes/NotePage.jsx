@@ -77,6 +77,7 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
     editTitle(note.id, newTitle)
   }
   const saveTags = async () => {
+     if (newTags === (note.tags || "")) return
      updateTags(note.id, newTags)
   }
 

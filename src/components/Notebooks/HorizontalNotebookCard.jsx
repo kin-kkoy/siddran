@@ -1,4 +1,4 @@
-import { LuNotebook } from "react-icons/lu";
+import { LuFileText } from "react-icons/lu";
 import { FaStar, FaRegStar, FaEllipsisV } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi";
 import styles from './NotebookCard.module.css'
@@ -11,6 +11,13 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen, toggleFavori
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const menuRef = useRef(null)
     const buttonRef = useRef(null)
+
+    const spineColor = notebook.color || '#4a9eff'
+    const noteCount = notebook.note_count || 0
+
+    const tagsDisplay = notebook.tags
+        ? notebook.tags.split(',').map(t => t.trim()).filter(Boolean).join(' · ')
+        : null
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -32,6 +39,7 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen, toggleFavori
         e.preventDefault()
         e.stopPropagation()
         setShowDeleteModal(true)
+        setMenuOpen(false)
     }
 
     const confirmDelete = () => {
@@ -75,12 +83,23 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen, toggleFavori
     return (
         <>
             <div onClick={handleClick} className={styles.cardLink} style={{ cursor: 'pointer' }}>
-                <div className={styles.horizontalCard} style={{ borderLeftColor: notebook.color || '#4a9eff' }}>
-                    <div className={styles.horizontalIcon}><LuNotebook /></div>
-
+                <div
+                    className={styles.horizontalCard}
+                    style={{
+                        borderLeftColor: spineColor,
+                        '--spine-color': spineColor,
+                        '--spine-glow': `${spineColor}26`,
+                    }}
+                >
                     <div className={styles.content}>
                         <h4 className={styles.horizontalTitle}>{notebook.name}</h4>
+                        {tagsDisplay && <p className={styles.horizontalTags}>{tagsDisplay}</p>}
                     </div>
+
+                    <span className={styles.horizontalNoteCount}>
+                        <LuFileText size={13} />
+                        {noteCount} {noteCount === 1 ? 'Note' : 'Notes'}
+                    </span>
 
                     <div className={styles.meta}>
                         <div className={styles.menuContainer} ref={menuRef}>
@@ -95,8 +114,13 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen, toggleFavori
                                         <span>{notebook.is_favorite ? 'Unfavorite' : 'Favorite'}</span>
                                     </button>
 
+                                    <button onClick={handleDelete} className={styles.menuItem}>
+                                        <HiOutlineTrash />
+                                        <span>Delete</span>
+                                    </button>
+
                                     <div className={styles.colorPicker}>
-                                        <span className={styles.colorLabel}>Border Color:</span>
+                                        <span className={styles.colorLabel}>Spine Color:</span>
                                         <div className={styles.colorOptions}>
                                             <button onClick={(e) => handleColorChange(e, '#4a9eff')} className={styles.colorBtn} style={{ backgroundColor: '#4a9eff' }} title="Blue (Default)"></button>
                                             <button onClick={(e) => handleColorChange(e, '#fbbf24')} className={styles.colorBtn} style={{ backgroundColor: '#fbbf24' }} title="Yellow"></button>
@@ -108,15 +132,10 @@ function HorizontalNotebookCard({ notebook, deleteNotebook, onOpen, toggleFavori
                                 </div>
                             )}
                         </div>
-
-                        <button onClick={handleDelete} className={styles.deleteBtn}>
-                            <HiOutlineTrash size={18} />
-                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
