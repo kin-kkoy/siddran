@@ -1,55 +1,80 @@
-# Features
- - Simple Authentication [ Login/Register (no email), with cookies & jwt for session management ]
- - Notes features
-   - immediate saving no need to click buttons or the like
-   - has favorite feature and color change for the card.
-   - Markdown support for the editor (the note taking area)
-   - Has a docker at the bottom with shortcut buttons
-     - appears at the bottom when editor is not in focus and disappears when in focus
-     - appears when the mouse/cursor is placed at the bottom-center of the editor/screen
-     - *Went with this behavior because I wanted to remove distractions once user is note-taking*
-   - Reading mode of a note; Aside from being able to WRITE a note, you can also READ a note, like in Obsidian but make the reading/writing mode button/toggle much clearer or visible to the user.
-     - Reading mode doesn't allow editing/typing of the contents. (if it's not obvious) 
- - Notebook, made by grouping a bunch of notes. Always appears on top. Also has favorite and color change (only on the side) feat.
- - Sidebar, shows navigation & profile features but still lacks implementation for most buttons. Notes does work though and shows lists of notes
- - Settings Page
-   - Light/Dark mode
-   - Themes
-   - Toolbar (Docking toolbar at the bottom) can be toggled to be "auto hide" or "always visible" on settings
+# Cinder
+
+A distraction-free note-taking app built with React and Lexical. Also comes with tasks.
 
 ---
 
-# To implement before deployment
+## Features
 
-# To implement/fix
- - Note Editor (Lexical)
-    - Code Block - Copy button (button clicked will copy the whole code block)
- - Tasks (Currently bugged, not fetching properly)
- - Settings Page (remaining todo)
-    - Themes
-        - theme colors are barely visible in light mode.
-    - Account Management
-        - Change name
-        - Change pass
-        - Add/Change email (maybe)
- - Forgot Password feature
- - Tasks
-    - To-do list
-        - 2 or 3 Layer nesting of tasks (subtasks)
-        - Parent of nested tasks/subtask can compress or not via dropdown
-    - Notifications (maybe) -----------------
-        - to alert user about their tasks
+### Authentication
+- Simple login & registration (no email required. Might implement soon)
+- Session management via cookies & JWT
 
- - Mods
-    - TBD
+### Notes
+- **Auto-save** — notes save automatically when the editor loses focus, no save button needed
+- **Markdown support** — powered by the [Lexical](https://lexical.dev/) editor
+- **Reading mode** — toggle between writing and reading, similar to Obsidian
+- **Favorites & colors** — mark notes as favorites and assign card colors
+- **Floating dock** — shortcut toolbar that hides while you write and reappears when you need it
 
- - Advanced
-    - Social features: (MAYBE THOUGH LIKELY)
-        - Adding friends. List of Friends
-        - Real-time editing similar to Docs with other people
+### Notebooks
+- Group notes into notebooks
+- Notebooks always appear at the top of the list
+- Supports favorites and color customization
+
+### Tasks
+- Ongoing implementation
+
+### Mods
+- To be implemented
+
+### Sidebar
+- Navigation and profile features
+- Displays a scrollable list of notes
+
+### Settings
+- Light / Dark mode
+- Themes
+- Toolbar visibility — choose between "auto hide" or "always visible"
 
 ---
 
-# PROBLEMS 
- - Doesn't auto save when user stops typing for a while (Could be a problem when internet connection is suddenly gone)
- - No Offline feature YET (might do this or not)
+## Tech Stack
+
+| Layer | Tech |
+| --- | --- |
+| Framework | React 19 |
+| Editor | Lexical |
+| Routing | React Router v7 |
+| Build | Vite 7 |
+| Styling | CSS Modules |
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+---
+
+## Roadmap
+
+- [ ] Code block copy button
+- [ ] Toggle button in settings to make notebooks color be the whole notebook card instead of just being the spine.
+- [ ] Task lists with subtask nesting (2-3 levels)
+- [ ] Dynamically create tasks by highlighting a note's content
+- [ ] Account management (change name, change password)
+- [ ] Forgot password flow (SOON)
+- [ ] Auto-save on idle (guard against connection loss) (SOON)
+- [ ] Offline support
+- [ ] Game; Mods
+- [ ] Real-time collaborative editing (BIG MAYBE)

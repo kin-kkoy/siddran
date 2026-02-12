@@ -97,6 +97,7 @@ function darkDefaults(contrast) {
   return {
     '--bg-primary':    '#121212',
     '--bg-surface':    '#1e1e1e',
+    '--bg-surface-alt': '#232323',
     '--bg-elevated':   '#2a2a2a',
     '--bg-hover':      '#3a3a3a',
     '--border-default': hi ? '#555' : '#333',
@@ -118,10 +119,11 @@ function darkDefaults(contrast) {
 function lightDefaults(contrast) {
   const hi = contrast === 'high'
   return {
-    '--bg-primary':    '#f5f5f5',
+    '--bg-primary':    '#ebebeb',
     '--bg-surface':    '#ffffff',
-    '--bg-elevated':   '#f0f0f0',
-    '--bg-hover':      '#e5e5e5',
+    '--bg-surface-alt': '#f5f5f5',
+    '--bg-elevated':   '#e2e2e2',
+    '--bg-hover':      '#d9d9d9',
     '--border-default': hi ? '#999' : '#d4d4d4',
     '--border-strong':  hi ? '#777' : '#bbb',
     '--text-primary':   '#1a1a1a',
@@ -146,6 +148,7 @@ function darkThemedPalette(h, s, contrast) {
   return {
     '--bg-primary':    hslToHex(h, sat, 8),
     '--bg-surface':    hslToHex(h, sat, 12),
+    '--bg-surface-alt': hslToHex(h, sat, 14),
     '--bg-elevated':   hslToHex(h, sat, 16),
     '--bg-hover':      hslToHex(h, sat, 22),
     '--border-default': hslToHex(h, sat * 0.6, hi ? 35 : 22),
@@ -170,10 +173,11 @@ function lightThemedPalette(h, s, contrast) {
   const accent = s >= 15 ? hslToHex(h, Math.max(s, 70), 48) : '#ea580c'
   const [ar, ag, ab] = hexToRgb(accent)
   return {
-    '--bg-primary':    hslToHex(h, sat, 95),
+    '--bg-primary':    hslToHex(h, sat, 90),
     '--bg-surface':    hslToHex(h, sat * 0.6, 97),
-    '--bg-elevated':   hslToHex(h, sat, 90),
-    '--bg-hover':      hslToHex(h, sat, 85),
+    '--bg-surface-alt': hslToHex(h, sat * 0.6, 95),
+    '--bg-elevated':   hslToHex(h, sat, 85),
+    '--bg-hover':      hslToHex(h, sat, 80),
     '--border-default': hslToHex(h, sat * 0.7, hi ? 65 : 80),
     '--border-strong':  hslToHex(h, sat * 0.7, hi ? 55 : 72),
     '--text-primary':   '#1a1a1a',
@@ -208,6 +212,7 @@ function literalPalette(hex, h, s, contrast) {
   return {
     '--bg-primary':    hex,
     '--bg-surface':    hslToHex(h, s, surfaceL),
+    '--bg-surface-alt': hslToHex(h, s, surfaceL + 2),
     '--bg-elevated':   hslToHex(h, s, elevatedL),
     '--bg-hover':      hslToHex(h, s, hoverL),
     '--border-default': hslToHex(h, s * 0.6, lightText ? (hi ? baseLightness + 20 : baseLightness + 12) : (hi ? baseLightness - 20 : baseLightness - 12)),

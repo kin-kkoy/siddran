@@ -234,7 +234,7 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
 
         <div>
           <p style={{ color: '#888', fontSize: '14px' }}>
-            {filteredNotebooks.length} {filteredNotebooks.length === 1 ? 'notebook | ' : 'notebooks | '}
+            {filteredNotebooks.length} {filteredNotebooks.length === 1 ? 'notebook · ' : 'notebooks · '}
             {loneNotes.length} {loneNotes.length === 1 ? 'note' : 'notes'}
             {isSelectionMode && ` (${selectedNotes.length} selected)`}
           </p>
