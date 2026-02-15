@@ -80,32 +80,41 @@ function blockToMarkdown(node, listType = null, listDepth = 0) {
 
   if ($isListItemNode(node)) {
     const children = node.getChildren();
-    const lines = [];
+
+    let prefix = indent;
+    if (listType === 'number') {
+      prefix += '1. ';
+    } else if (listType === 'check') {
+      const checked = node.getChecked?.() ? 'x' : ' ';
+      prefix += `- [${checked}] `;
+    } else {
+      prefix += '- ';
+    }
+
+    // Collect all inline content into one string, handle nested lists separately
+    let inlineContent = '';
+    const nestedListLines = [];
 
     for (const child of children) {
       if ($isListNode(child)) {
-        // Nested list
         const nestedLines = listToMarkdown(child, listDepth + 1);
-        lines.push(...nestedLines);
-      } else {
-        // Regular list item content
-        let prefix = indent;
-        if (listType === 'number') {
-          prefix += '1. ';
-        } else if (listType === 'check') {
-          const checked = node.getChecked?.() ? 'x' : ' ';
-          prefix += `- [${checked}] `;
-        } else {
-          prefix += '- ';
-        }
-
-        if ($isTextNode(child)) {
-          lines.unshift(prefix + textNodeToMarkdown(child));
-        } else if (child.getTextContent) {
-          lines.unshift(prefix + childrenToMarkdown(node));
-        }
+        nestedListLines.push(...nestedLines);
+      } else if ($isTextNode(child)) {
+        inlineContent += textNodeToMarkdown(child);
+      } else if ($isLinkNode(child)) {
+        const linkText = childrenToMarkdown(child);
+        const url = child.getURL();
+        inlineContent += `[${linkText}](${url})`;
+      } else if (child.getTextContent) {
+        inlineContent += child.getTextContent();
       }
     }
+
+    const lines = [];
+    if (inlineContent) {
+      lines.push(prefix + inlineContent);
+    }
+    lines.push(...nestedListLines);
 
     return lines.join('\n');
   }
