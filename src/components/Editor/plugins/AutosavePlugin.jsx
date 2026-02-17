@@ -12,17 +12,27 @@ function AutosavePlugin({ onSave, noteId, lastSavedContentRef, onDirtyChange }) 
 
   const getDraftKey = useCallback(() => `cinder_draft_${noteId}`, [noteId]);
 
-  // Save draft to localStorage
+  // Save draft to localStorage (or clean up if content matches backend)
   const saveDraft = useCallback(() => {
     if (!isDraftDirty.current) return;
 
     const markdown = serializeEditorState(editor.getEditorState());
+
+    // Content already saved to backend — clean up instead of saving draft
+    if (markdown === lastSavedContentRef.current) {
+      localStorage.removeItem(getDraftKey());
+      isDraftDirty.current = false;
+      isDirty.current = false;
+      onDirtyChange?.(false);
+      return;
+    }
+
     localStorage.setItem(getDraftKey(), JSON.stringify({
       content: markdown,
       savedAt: Date.now()
     }));
     isDraftDirty.current = false;
-  }, [editor, getDraftKey]);
+  }, [editor, getDraftKey, lastSavedContentRef, onDirtyChange]);
 
   // Track editor changes — just set dirty flags, no serialization
   useEffect(() => {
@@ -71,18 +81,20 @@ function AutosavePlugin({ onSave, noteId, lastSavedContentRef, onDirtyChange }) 
     return () => clearInterval(interval);
   }, [saveDraft]);
 
-  // On unmount: save draft if dirty (covers in-app navigation)
+  // On unmount: save draft only if content differs from backend
   useEffect(() => {
     return () => {
       if (isDirty.current || isDraftDirty.current) {
         const markdown = serializeEditorState(editor.getEditorState());
-        localStorage.setItem(getDraftKey(), JSON.stringify({
-          content: markdown,
-          savedAt: Date.now()
-        }));
+        if (markdown !== lastSavedContentRef.current) {
+          localStorage.setItem(getDraftKey(), JSON.stringify({
+            content: markdown,
+            savedAt: Date.now()
+          }));
+        }
       }
     };
-  }, [editor, getDraftKey]);
+  }, [editor, getDraftKey, lastSavedContentRef]);
 
   return null;
 }

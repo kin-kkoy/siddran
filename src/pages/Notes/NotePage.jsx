@@ -89,6 +89,7 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
         const { content, savedAt } = JSON.parse(draft)
         const noteUpdated = new Date(note.updated_at).getTime()
         if (savedAt > noteUpdated) {
+          localStorage.removeItem(draftKey) // consume — don't re-trigger on re-render
           toast.warning('Recovered unsaved changes from local backup')
           return content
         }
