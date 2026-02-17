@@ -212,11 +212,13 @@ function parseListBlock(lines, startIndex, baseIndent = 0) {
     // Less indented than our level — belongs to a parent list
     if (indent < baseIndent) break;
 
-    // More indented — nested list, attach to the previous item
+    // More indented — nested list, add as wrapper sibling after the previous item
     if (indent > baseIndent) {
       if (lastItem) {
         const { node: nestedList, endIndex } = parseListBlock(lines, i, indent);
-        lastItem.append(nestedList);
+        const wrapperItem = $createListItemNode();
+        wrapperItem.append(nestedList);
+        list.append(wrapperItem);
         i = endIndex;
       } else {
         break;

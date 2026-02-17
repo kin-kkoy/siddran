@@ -136,7 +136,10 @@ function listToMarkdown(node, depth = 0) {
     if ($isListItemNode(item)) {
       const line = blockToMarkdown(item, listType, depth, index);
       lines.push(line);
-      index++;
+      // Don't increment index for wrapper items (nested list containers)
+      if (!$isListNode(item.getFirstChild())) {
+        index++;
+      }
     }
   }
 
