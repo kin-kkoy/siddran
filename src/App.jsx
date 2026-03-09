@@ -158,7 +158,7 @@ function App() {
 
   // ------------- TASKS DATA LOGIC ===================================
   const {
-    tasks, dailyTasks, tasksPagination, dailyTasksPagination, loadMoreTasks, loadMoreDailyTasks, loadingMore: tasksLoadingMore, loading: tasksLoading, addTask, deleteTask, toggleTaskCompletion, deleteDailyTask, toggleDailyTaskCompletion
+    tasks, dailyTasks, tasksPagination, dailyTasksPagination, loadMoreTasks, loadMoreDailyTasks, loadingMore: tasksLoadingMore, loading: tasksLoading, addTask, updateTask, deleteTask, toggleTaskCompletion, deleteDailyTask, toggleDailyTaskCompletion
   } = useTasks(authFetch, API, isAuthed)
 
 
@@ -185,6 +185,24 @@ function App() {
     addNotesToNotebook={addNotesToNotebook}
     authFetch={authFetch}
     API={API}/>
+  )
+  const tasksHubElement = (
+    <TasksHub
+      tasks={tasks}
+      dailyTasks={dailyTasks}
+      tasksPagination={tasksPagination}
+      dailyTasksPagination={dailyTasksPagination}
+      loadMoreTasks={loadMoreTasks}
+      loadMoreDailyTasks={loadMoreDailyTasks}
+      loadingMore={tasksLoadingMore}
+      loading={tasksLoading}
+      addTask={addTask}
+      updateTask={updateTask}
+      deleteTask={deleteTask}
+      toggleTaskCompletion={toggleTaskCompletion}
+      deleteDailyTask={deleteDailyTask}
+      toggleDailyTaskCompletion={toggleDailyTaskCompletion}
+    />
   )
 
   const style = {
@@ -258,23 +276,7 @@ function App() {
                   />
                   {/* <Route path="/notebooks/:id" element={Notebook} */}
 
-                  <Route path="/tasks" element={
-                    <TasksHub
-                      tasks={tasks}
-                      dailyTasks={dailyTasks}
-                      tasksPagination={tasksPagination}
-                      dailyTasksPagination={dailyTasksPagination}
-                      loadMoreTasks={loadMoreTasks}
-                      loadMoreDailyTasks={loadMoreDailyTasks}
-                      loadingMore={tasksLoadingMore}
-                      loading={tasksLoading}
-                      addTask={addTask}
-                      deleteTask={deleteTask}
-                      toggleTaskCompletion={toggleTaskCompletion}
-                      deleteDailyTask={deleteDailyTask}
-                      toggleDailyTaskCompletion={toggleDailyTaskCompletion}
-                    />
-                  } />
+                  <Route path="/tasks" element={tasksHubElement} />
                   <Route path="/mods" element={<ModsHub />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </>

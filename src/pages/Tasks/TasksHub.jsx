@@ -5,6 +5,7 @@ import styles from './TasksHub.module.css'
 import DailyTaskCard from "../../components/Tasks/DailyTaskCard"
 import ConfirmModal from "../../components/Common/ConfirmModal"
 import { HiOutlineTrash } from 'react-icons/hi'
+import TaskDetailsModal from "../../components/Common/TaskDetailsModal"
 
 function TasksHub({
   tasks,
@@ -16,6 +17,7 @@ function TasksHub({
   loadingMore,
   loading,
   addTask,
+  updateTask,
   deleteTask,
   toggleTaskCompletion,
   deleteDailyTask,
@@ -27,8 +29,10 @@ function TasksHub({
     return localStorage.getItem('tasksViewMode') || 'card'
   })
   const [isSelectionMode, setIsSelectionMode] = useState(false)
-  const [selectedTasks, setSelectedTasks] = useState([])
+  const [selectedTasks, setSelectedTasks] = useState([]) // for deleting
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [openTask, setOpenTask] = useState(null)
+  // const [showTaskModal, setShowTaskModal] = useState(false)
   const tasksSentinelRef = useRef(null)
   const dailyTasksSentinelRef = useRef(null)
   const scrollIntentTimeoutRef = useRef(null)
@@ -120,6 +124,12 @@ function TasksHub({
     localStorage.setItem('tasksViewMode', newMode)
   }
 
+  // Selecting Task Logic
+  const openCardDetails = (task) => {
+    setOpenTask(task);
+  }
+  
+  // Toggle Selection for DELETING ------
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode)
     setSelectedTasks([])
@@ -180,7 +190,8 @@ function TasksHub({
           </p>
         </div>
 
-
+        
+        {/* BODY ================================================================ */}
         <div className={viewMode === "card" ? styles.gridView : styles.listView}>
 
           {/* Add Task Component */}
@@ -209,6 +220,7 @@ function TasksHub({
                isSelectionMode={isSelectionMode}
                isSelected={selectedTasks.includes(task.id)}
                onToggleSelect={() => toggleTaskSelection(task.id)}
+               onOpenDetail={openCardDetails}
               />
             ))
           ) : (
@@ -224,6 +236,13 @@ function TasksHub({
             </div>
           )}
         </div>
+        
+        {/* Open Task details Modal */}
+        {openTask && <TaskDetailsModal 
+          onClose={() => setOpenTask(null)}
+          task = {openTask}
+          updateTask={updateTask}
+        />}
 
         {/* Delete Confirmation Modal */}
         <ConfirmModal

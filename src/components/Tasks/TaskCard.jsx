@@ -4,7 +4,7 @@ import { FaCheck } from "react-icons/fa"
 import { HiOutlineTrash } from "react-icons/hi"
 import ConfirmModal from '../Common/ConfirmModal'
 
-function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMode, isSelected, onToggleSelect }) {
+function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMode, isSelected, onToggleSelect, onOpenDetail }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     const handleDelete = e => {
@@ -27,6 +27,8 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
     const handleCardClick = () => {
         if (isSelectionMode) {
             onToggleSelect()
+        }else{
+            onOpenDetail(task);
         }
     }
 
@@ -35,7 +37,8 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
         <div
             className={`${styles.card} ${task.is_completed ? styles.completed : ''} ${isSelected ? styles.selected : ''}`}
             onClick={handleCardClick}
-            style={{ cursor: isSelectionMode ? 'pointer' : 'default' }}
+            // style={{ cursor: isSelectionMode ? 'pointer' : 'default' }}
+            style={{cursor: 'pointer'}}
         >
 
             {/* Selection checkbox in selection mode */}

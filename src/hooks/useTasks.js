@@ -143,6 +143,32 @@ export const useTasks = (authFetch, API, isAuthed) => {
         }
     }, [authFetch, API])
 
+    // const updateTask = useCallback(async (id, title = "defaultValue", description = "defaultValue", isCompleted = "defaultValue", priority = "defaultValue", dueDate = "defaultValue") => {
+    const updateTask = useCallback(async (id, {title, description, is_completed, priority, due_date}) => {
+        try {
+
+            // get the passed values first
+            const params = {title, description, is_completed, priority, due_date};
+
+            //remove undefined fields (the params that weren't passed)
+            const cleanParams = Object.fromEntries(
+                Object.entries(params).filter(([_dirname, v]) => v !== undefined)
+            );
+
+            const res = await authFetch(`${API}/tasks/${id}`, { 
+                method: 'PUT',
+                body: JSON.stringify(cleanParams)
+            })
+
+            if(res.ok){
+                setTasks(prev => prev.map(task => task.id === id ? {...task, ...cleanParams} : task))
+            }
+
+        } catch (error) {
+            logger.error("Error updating task:", error)
+        }
+    }, [authFetch, API])
+
     const deleteTask = useCallback(async (id) => {
         try {
             const res = await authFetch(`${API}/tasks/${id}`, { method: 'DELETE' })
@@ -221,6 +247,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
         loadingMore,
         loading,
         addTask,
+        updateTask,
         deleteTask,
         toggleTaskCompletion,
         deleteDailyTask,
