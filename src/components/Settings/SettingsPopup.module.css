@@ -238,11 +238,22 @@
   transform: translateX(18px);
 }
 
+/* Stacked setting block (label on top, full-width content below) */
+.settingBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settingBlock .themeGrid {
+  margin-top: 8px;
+}
+
 /* Theme grid */
 .themeGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 6px;
   width: 100%;
 }
 

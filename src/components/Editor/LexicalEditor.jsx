@@ -24,6 +24,7 @@ import MarkdownInitPlugin from './plugins/MarkdownInitPlugin';
 import CodeBlockExitPlugin from './plugins/CodeBlockExitPlugin';
 import LinkClickPlugin from './plugins/LinkClickPlugin';
 import CodeCopyPlugin from './plugins/CodeCopyPlugin';
+import ScrollIntoViewPlugin from './plugins/ScrollIntoViewPlugin';
 
 // Theme and utils
 import editorTheme from './themes/editorTheme';
@@ -103,6 +104,7 @@ function LexicalEditor({ initialContent, onSave, noteId, onDirtyChange, placehol
           <AutosavePlugin onSave={onSave} noteId={noteId} lastSavedContentRef={lastSavedContentRef} onDirtyChange={onDirtyChange} />
           <LinkClickPlugin isReadMode={interfaceMode} />
           <CodeCopyPlugin />
+          <ScrollIntoViewPlugin />
 
           {/* Read mode or not */}
           <ReadModeListener isReadMode={interfaceMode} />

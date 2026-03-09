@@ -60,20 +60,10 @@ function InterfaceTab({ settings, updateSetting }) {
   return (
     <div className={styles.tabContent}>
 
-      {/* Mode toggle */}
-      <SettingRow label="Appearance" description="Switch between light and dark mode">
-        <SegmentedControl
-          options={[
-            { value: 'light', label: 'Light' },
-            { value: 'dark', label: 'Dark' },
-          ]}
-          value={settings.mode}
-          onChange={(v) => updateSetting('mode', v)}
-        />
-      </SettingRow>
-
       {/* Theme selector */}
-      <SettingRow label="Theme" description="Choose a color theme for the app">
+      <div className={styles.settingBlock}>
+        <span className={styles.settingLabel}>Theme</span>
+        <span className={styles.settingDesc}>Choose a color theme for the app</span>
         <div className={styles.themeGrid}>
           {Object.entries(THEMES).map(([key, theme]) => (
             <button
@@ -84,19 +74,19 @@ function InterfaceTab({ settings, updateSetting }) {
             >
               <span
                 className={styles.swatchColor}
-                style={{ backgroundColor: theme.hex || '#121212' }}
+                style={{ backgroundColor: theme.hex || '#09090f' }}
               />
               <span className={styles.swatchLabel}>{theme.name}</span>
             </button>
           ))}
         </div>
-      </SettingRow>
+      </div>
 
-      {/* Match light/dark mode toggle — only shown for non-default themes */}
+      {/* Adapt theme — only shown for non-default themes */}
       {settings.theme !== 'default' && (
         <SettingRow
-          label="Match Light/Dark Mode"
-          description="When on, theme shades adapt to your selected mode. When off, the literal theme color is used."
+          label="Adapt Theme"
+          description="When on, theme colors are adapted into dark shades. When off, the literal theme color is used."
         >
           <ToggleSwitch
             checked={settings.matchMode}
@@ -127,6 +117,30 @@ function InterfaceTab({ settings, updateSetting }) {
           onChange={(v) => updateSetting('autoHideToolbar', v)}
         />
       </SettingRow>
+
+      {/* Star canvas toggle */}
+      <SettingRow
+        label="Twinkling Stars"
+        description="Show animated star particles in the background."
+      >
+        <ToggleSwitch
+          checked={settings.showStars !== false}
+          onChange={(v) => updateSetting('showStars', v)}
+        />
+      </SettingRow>
+
+      {/* Reduce star size */}
+      {settings.showStars !== false && (
+        <SettingRow
+          label="Reduce Star Size"
+          description="Make the background stars smaller and more subtle."
+        >
+          <ToggleSwitch
+            checked={settings.reduceStars === true}
+            onChange={(v) => updateSetting('reduceStars', v)}
+          />
+        </SettingRow>
+      )}
     </div>
   )
 }

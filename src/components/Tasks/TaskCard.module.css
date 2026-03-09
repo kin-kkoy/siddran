@@ -1,4 +1,5 @@
 .card {
+    font-family: var(--font-body);
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -29,7 +30,7 @@
     height: 22px;
     min-width: 22px;
     border-radius: 6px;
-    border: 2px solid var(--text-faint);
+    border: 2px solid var(--text-muted);
     background: transparent;
     cursor: pointer;
     display: flex;
@@ -42,7 +43,7 @@
 }
 
 .checkbox:hover {
-    border-color: var(--border-strong);
+    border-color: var(--text-primary);
 }
 
 .checked {
@@ -56,7 +57,7 @@
 }
 
 .title {
-    font-family: var(--font-display);
+    font-family: var(--font-heading);
     font-size: 18px;
     color: var(--text-primary);
     margin: 0 0 8px 0;
@@ -152,6 +153,7 @@
 
 /* Add Card (Grid View) */
 .addCard {
+  font-family: var(--font-body);
   background-color: var(--bg-elevated);
   border: 2px dashed var(--text-faint);
   border-radius: 8px;
@@ -187,6 +189,7 @@
 
 /* Add Card (List View) */
 .addCardList {
+  font-family: var(--font-body);
   background-color: var(--bg-elevated);
   border: 2px dashed var(--text-faint);
   border-radius: 6px;

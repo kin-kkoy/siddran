@@ -9,7 +9,7 @@ import NotebookCard from '../../components/Notebooks/NotebookCard'
 import NotebookModal from '../../components/Notebooks/NotebookModal'
 import CreateNotebookModal from '../../components/Notebooks/CreateNotebookModal'
 import ConfirmModal from '../../components/Common/ConfirmModal'
-import { HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineTrash, HiOutlineViewGrid, HiOutlineViewList } from 'react-icons/hi'
 import { LuNotebookPen } from 'react-icons/lu'
 import { toast } from '../../utils/toast'
 
@@ -216,11 +216,13 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
 
 
       <div className={styles.header}>
-        <h1>NotesHub</h1>
-      </div>
+        <h1>Notes<span className={styles.accent}>Hub</span></h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+          {filteredNotebooks.length} {filteredNotebooks.length === 1 ? 'notebook · ' : 'notebooks · '}
+          {loneNotes.length} {loneNotes.length === 1 ? 'note' : 'notes'}
+          {isSelectionMode && ` (${selectedNotes.length} selected)`}
+        </p>
 
-      {/* Search Bar */}
-      <div className={styles.searchContainer}>
         <input
           type="text"
           className={styles.searchInput}
@@ -228,31 +230,8 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-      </div>
-
-      <div className={styles.controls}>
-
-        <div>
-          <p style={{ color: '#888', fontSize: '14px' }}>
-            {filteredNotebooks.length} {filteredNotebooks.length === 1 ? 'notebook · ' : 'notebooks · '}
-            {loneNotes.length} {loneNotes.length === 1 ? 'note' : 'notes'}
-            {isSelectionMode && ` (${selectedNotes.length} selected)`}
-          </p>
-        </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          {/* Delete button - visible when not in create mode */}
-          {selectionMode !== 'create' && (
-            <button
-              onClick={selectionMode === 'delete' ? handleBatchDelete : enterDeleteMode}
-              className={styles.batchDeleteBtn}
-              disabled={selectionMode === 'delete' && selectedNotes.length === 0}
-              title={selectionMode === 'delete' ? "Delete selected notes" : "Select notes to delete"}
-            >
-              <HiOutlineTrash size={18} />
-            </button>
-          )}
-
           {/* Create Notebook button - visible when not in delete mode */}
           {selectionMode !== 'delete' && (
             <button
@@ -265,6 +244,18 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
             </button>
           )}
 
+          {/* Delete button - visible when not in create mode */}
+          {selectionMode !== 'create' && (
+            <button
+              onClick={selectionMode === 'delete' ? handleBatchDelete : enterDeleteMode}
+              className={styles.batchDeleteBtn}
+              disabled={selectionMode === 'delete' && selectedNotes.length === 0}
+              title={selectionMode === 'delete' ? "Delete selected notes" : "Select notes to delete"}
+            >
+              <HiOutlineTrash size={18} />
+            </button>
+          )}
+
           {/* Cancel button - only in selection mode */}
           {isSelectionMode && (
             <button onClick={exitSelectionMode} className={styles.toggleBtn}>
@@ -272,11 +263,10 @@ function NotesHub({ notes, notebooks, notesPagination, notebooksPagination, load
             </button>
           )}
 
-          <button onClick={changeView} className={styles.toggleBtn}>
-            {viewMode === "list" ? "Card View" : "List View"}
+          <button onClick={changeView} className={styles.toggleBtn} title={viewMode === "list" ? "Card View" : "List View"}>
+            {viewMode === "list" ? <HiOutlineViewGrid size={18} /> : <HiOutlineViewList size={18} />}
           </button>
         </div>
-
       </div>
 
 

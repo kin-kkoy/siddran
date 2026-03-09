@@ -4,7 +4,7 @@ import AddTaskCard from "../../components/Tasks/AddTaskCard"
 import styles from './TasksHub.module.css'
 import DailyTaskCard from "../../components/Tasks/DailyTaskCard"
 import ConfirmModal from "../../components/Common/ConfirmModal"
-import { HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineTrash, HiOutlineViewGrid, HiOutlineViewList } from 'react-icons/hi'
 import TaskDetailsModal from "../../components/Common/TaskDetailsModal"
 
 function TasksHub({
@@ -158,7 +158,11 @@ function TasksHub({
     <div className={styles.container}>
 
         <div className={styles.header}>
-          <h1>Tasks</h1>
+          <h1>Tasks<span className={styles.accent}>Hub</span></h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+            {isSelectionMode && ` (${selectedTasks.length} selected)`}
+          </p>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             {/* Delete button - always visible */}
             <button
@@ -177,17 +181,10 @@ function TasksHub({
               </button>
             )}
 
-            <button onClick={changeView} className={styles.toggleBtn}>
-              {viewMode === "list" ? "Card View" : "List View"}
+            <button onClick={changeView} className={styles.toggleBtn} title={viewMode === "list" ? "Card View" : "List View"}>
+              {viewMode === "list" ? <HiOutlineViewGrid size={18} /> : <HiOutlineViewList size={18} />}
             </button>
           </div>
-        </div>
-
-        <div className={styles.controls}>
-          <p style={{ color: '#888', fontSize: '14px' }}>
-            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
-            {isSelectionMode && ` (${selectedTasks.length} selected)`}
-          </p>
         </div>
 
         

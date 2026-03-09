@@ -34,6 +34,17 @@
     background-color: var(--bg-hover);
 }
 
+/* Semi-transparent writing surface */
+.editorSurface {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 32px 40px;
+    margin-bottom: 20px;
+    min-height: calc(100vh - 200px);
+    will-change: transform;
+}
+
 /* Title input */
 .titleInput {
     width: 100%;

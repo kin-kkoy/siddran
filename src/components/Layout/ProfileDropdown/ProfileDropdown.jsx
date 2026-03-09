@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import styles from './ProfileDropdown.module.css'
-import { FaRegUser } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
 import { useSettings } from "../../../contexts/SettingsContext";
@@ -80,8 +79,13 @@ function ProfileDropdown({ username, isCollapsed, handleLogout }) {
                 onClick={() => setIsOpen(!isOpen)}
                 title={isCollapsed ? "Profile" : undefined}
             >
-                <span className={styles.icon}><FaRegUser /></span>
-                {!isCollapsed && <span>{username}</span>}
+                <span className={styles.avatar}>{username ? username.charAt(0).toUpperCase() : '?'}</span>
+                {!isCollapsed && (
+                    <span className={styles.userInfo}>
+                        <span>{username}</span>
+                        <span className={styles.userTitle}>star chaser</span>
+                    </span>
+                )}
                 {!isCollapsed && (
                     <span className={`${styles.arrow} ${isOpen ? styles.arrowUp : ''}`}>▼</span>
                 )}

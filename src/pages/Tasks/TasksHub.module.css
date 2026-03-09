@@ -1,32 +1,54 @@
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0 20px 20px;
 }
 
 .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg-primary) 93%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px 0 16px;
+    margin-bottom: 8px;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 12px;
+    animation: topIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes topIn {
+    from { transform: translateY(-10px); opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
 }
 
 .header h1 {
-    font-size: 32px;
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 500;
     color: var(--text-primary);
+    margin-right: auto;
+}
+
+.accent {
+    color: var(--accent-warning);
 }
 
 .toggleBtn {
     padding: 8px 16px;
-    background-color: var(--border-default);
+    background-color: var(--bg-elevated);
     color: var(--text-primary);
-    border: 1px solid var(--text-faint);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .toggleBtn:hover {
-    background-color: var(--border-strong);
+    background-color: var(--bg-hover);
 }
 
 .controls {
@@ -37,12 +59,21 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    animation: fadeUp 0.4s ease both;
+    animation-delay: 0.1s;
 }
 
 .gridView {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 16px;
+    animation: fadeUp 0.4s ease both;
+    animation-delay: 0.1s;
+}
+
+@keyframes fadeUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
 }
 
 .emptyState {
@@ -119,7 +150,7 @@
 }
 
 .batchDeleteBtn:hover:not(:disabled) {
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: rgba(224, 92, 92, 0.09);
     border-color: var(--accent-danger);
     color: var(--accent-danger);
 }

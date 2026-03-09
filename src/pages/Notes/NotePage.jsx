@@ -222,26 +222,28 @@ function NotePage({ notes, editTitle, editBody, updateTags, toggleFavorite, upda
         </div>
       </div>
 
-      <input
-        ref={titleInputReference}
-        className={styles.titleInput}
-        type='text'
-        value={newTitle}
-        onChange={ e => setNewTitle(e.target.value)}
-        onBlur={saveTitle}
-        onKeyDown={handleKeyDown}
-        readOnly={viewMode}
-      />
+      <div className={styles.editorSurface}>
+        <input
+          ref={titleInputReference}
+          className={styles.titleInput}
+          type='text'
+          value={newTitle}
+          onChange={ e => setNewTitle(e.target.value)}
+          onBlur={saveTitle}
+          onKeyDown={handleKeyDown}
+          readOnly={viewMode}
+        />
 
-      <LexicalEditor
-        key={note.id}
-        initialContent={getInitialContent()}
-        onSave={handleEditorSave}
-        noteId={note.id}
-        onDirtyChange={handleDirtyChange}
-        placeholder='Start typing here...'
-        interfaceMode={viewMode}
-      />
+        <LexicalEditor
+          key={note.id}
+          initialContent={getInitialContent()}
+          onSave={handleEditorSave}
+          noteId={note.id}
+          onDirtyChange={handleDirtyChange}
+          placeholder='Start typing here...'
+          interfaceMode={viewMode}
+        />
+      </div>
 
     </div>
 
