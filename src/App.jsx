@@ -220,25 +220,29 @@ function App() {
     <SettingsProvider authFetch={authFetch} API={API} isAuthed={isAuthed}>
     <div style={style}>
 
-      {/* Background effects — always visible (auth pages too) */}
+      {/* Background effects */}
       <StarCanvas />
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        pointerEvents: 'none',
-        zIndex: 0,
-        background: 'radial-gradient(ellipse 50% 40% at 85% 15%, rgba(100,60,180,0.05) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 15% 85%, rgba(40,80,180,0.04) 0%, transparent 60%)',
-      }} />
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent 0%, rgba(240,184,64,0.3) 30%, rgba(240,184,64,0.5) 50%, rgba(240,184,64,0.3) 70%, transparent 100%)',
-        zIndex: 999,
-        pointerEvents: 'none',
-      }} />
+      {isAuthed && (
+        <>
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 0,
+            background: 'radial-gradient(ellipse 50% 40% at 85% 15%, rgba(100,60,180,0.05) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 15% 85%, rgba(40,80,180,0.04) 0%, transparent 60%)',
+          }} />
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(240,184,64,0.3) 30%, rgba(240,184,64,0.5) 50%, rgba(240,184,64,0.3) 70%, transparent 100%)',
+            zIndex: 999,
+            pointerEvents: 'none',
+          }} />
+        </>
+      )}
 
       <BrowserRouter>
         <div style={{ display: "flex",

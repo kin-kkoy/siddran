@@ -242,11 +242,13 @@ export function SettingsProvider({ children, authFetch, API, isAuthed }) {
     try { localStorage.setItem('cinder_settings', JSON.stringify(settings)) } catch {}
   }, [settings])
 
-  // Apply theme whenever settings change
+  // Apply theme whenever settings change — force default on auth pages
   useEffect(() => {
-    const palette = generatePalette(settings.theme, settings.matchMode, settings.contrast)
+    const palette = isAuthed
+      ? generatePalette(settings.theme, settings.matchMode, settings.contrast)
+      : darkDefaults('low')
     applyPalette(palette)
-  }, [settings.theme, settings.matchMode, settings.contrast])
+  }, [settings.theme, settings.matchMode, settings.contrast, isAuthed])
 
   // Fetch from backend on auth (backend is source of truth)
   useEffect(() => {
