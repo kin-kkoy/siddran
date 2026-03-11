@@ -7,6 +7,8 @@ import ConfirmModal from '../Common/ConfirmModal'
 function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMode, isSelected, onToggleSelect, onOpenDetail }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
+    const isOverdue = (task.due_date && !task.is_completed ? new Date() > new Date(task.due_date) : false) 
+
     const handleDelete = e => {
         e.preventDefault()
         e.stopPropagation()
@@ -35,7 +37,12 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
 
     return (
         <div
-            className={`${styles.card} ${task.is_completed ? styles.completed : ''} ${isSelected ? styles.selected : ''}`}
+            className={`
+                ${styles.card} 
+                ${task.is_completed ? styles.completed : ''} 
+                ${isSelected ? styles.selected : ''}
+                ${isOverdue ? styles.overdue : ''}
+            `}
             onClick={handleCardClick}
             // style={{ cursor: isSelectionMode ? 'pointer' : 'default' }}
             style={{cursor: 'pointer'}}
@@ -76,14 +83,19 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
 
                 {/* --- Metadata --- */}
                 <div className={styles.metadata}>
+                    <div className={styles.metaLeft}>
+                        {task.due_date && (
+                            <span className={styles.dueDate}>
+                                Due: {new Date(task.due_date).toLocaleDateString()}
+                            </span>
+                        )}
+                        {isOverdue && (
+                            <span className={styles.overdueTag}>Overdue</span>
+                        )}
+                    </div>
                     <span className={`${styles.priority} ${styles[task.priority]}`}>
                         {task.priority}
                     </span>
-                    {task.due_date && (
-                        <span className={styles.dueDate}>
-                        Due: {new Date(task.due_date).toLocaleDateString()}
-                        </span>
-                    )}
                 </div>
 
                 {/* Checklist Preview */}

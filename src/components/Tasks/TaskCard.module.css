@@ -20,6 +20,30 @@
     opacity: 0.6;
 }
 
+.overdue {
+    border: 2px solid var(--accent-danger);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent-danger) 45%, transparent);
+}
+
+.overdue:hover {
+    border-color: var(--accent-danger) !important;
+    box-shadow: 0 0 24px color-mix(in srgb, var(--accent-danger) 70%, transparent);
+}
+
+.overdueTag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background-color: rgba(224, 92, 92, 0.12);
+    color: var(--accent-danger);
+    border: 1px solid rgba(224, 92, 92, 0.3);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
 .completed .title {
     text-decoration: line-through;
     color: var(--text-muted);
@@ -65,7 +89,7 @@
 }
 
 .description {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-muted);
     margin: 0 0 12px 0;
     line-height: 1.5;
@@ -73,15 +97,23 @@
 
 .metadata {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     margin-bottom: 8px;
+}
+
+.metaLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .priority {
     padding: 4px 10px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
 }
@@ -102,7 +134,7 @@
 }
 
 .dueDate {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-muted);
 }
 

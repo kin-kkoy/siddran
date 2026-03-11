@@ -33,6 +33,9 @@ function TasksHub({
   })
   const [sortBy, setSortBy] = useState('priority')
   const [sortDir, setSortDir] = useState('asc') // sorting direction (ascending/descending)
+  const [showCompleted, setShowCompleted] = useState(true)
+  const [deadlineFilter, setDeadlineFilter] = useState('all')
+  const [deadlineRange, setDeadlineRange] = useState('all')
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [selectedTasks, setSelectedTasks] = useState([]) // for deleting
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -46,9 +49,36 @@ function TasksHub({
   const hasMoreTasks = tasksPagination?.hasNextPage
   const hasMoreDailyTasks = dailyTasksPagination?.hasNextPage
 
+  // Filter tasks: show completed/in progress then show including any of the 3: today within today/3 days/ this week
+  const filteredTasks = tasks.filter(task => {
+    if(!showCompleted) return task.is_completed === false
+    return true
+  }).filter(task => {
+    // no further filter
+    if(deadlineFilter === 'all') return true
+
+    // filter: deadline -----
+    // if no date
+    if(!task.due_date) return false // do not include tasks with no deadline
+
+    // if task has deadline then get the range
+    const due = new Date(task.due_date)
+    const now = new Date()
+    // then compare (comparison is used for filter)
+    if(deadlineRange === 'all') return true  // any date so long as IT HAS ONE
+    if(deadlineRange === '3days'){
+      const threeDays = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
+      return due <= threeDays
+    }
+    if(deadlineRange === 'week'){
+      const week = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return due <= week;
+    }
+  })
+
   // Sort tasks: incomplete first, then by priority (High -> Normal -> Low)
   const priorityOrder = { high: 0, normal: 1, low: 2 }
-  const sortedTasks = [...tasks].sort((a, b) => {
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
     // First sort by completion status (incomplete first)
     if (a.is_completed !== b.is_completed) {
       return a.is_completed ? 1 : -1
@@ -185,13 +215,32 @@ function TasksHub({
     <div className={styles.container}>
 
         <div className={styles.header}>
-          <h1>Tasks<span className={styles.accent}>Hub</span></h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
-            {isSelectionMode && ` (${selectedTasks.length} selected)`}
-          </p>
+          <h1>Tasks<span className={styles.accent}>Hub</span><span style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 400, marginLeft: '10px' }}>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}{isSelectionMode && ` (${selectedTasks.length} selected)`}</span></h1>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            {/* Sroting options */}
+            {/* Filter options */}
+            <button
+              onClick={() => setShowCompleted(prev => !prev)}
+              className={styles.toggleBtn}
+            >
+              {showCompleted ? 'Hide completed' : 'Show completed'}
+            </button>
+            <select
+              value={deadlineFilter}
+              onChange={e => { setDeadlineFilter(e.target.value); setDeadlineRange('all') }}
+              className={styles.sortSelect}
+            >
+              <option value="all">All tasks</option>
+              <option value="hasDeadline">Has deadline</option>
+            </select>
+            {deadlineFilter === 'hasDeadline' && (
+              <select value={deadlineRange} onChange={e => setDeadlineRange(e.target.value)} className={styles.sortSelect}>
+                <option value="all">Any date</option>
+                <option value="3days">Within 3 days</option>
+                <option value="week">Within a week</option>
+              </select>
+            )}
+
+            {/* Sort options */}
             <select
               value={sortBy}
               onChange={ e => setSortBy(e.target.value)}
