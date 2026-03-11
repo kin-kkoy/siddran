@@ -9,21 +9,13 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--bg-primary) 93%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--bg-primary);
     padding: 24px 0 16px;
     margin-bottom: 8px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    animation: topIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes topIn {
-    from { transform: translateY(-10px); opacity: 0; }
-    to   { transform: translateY(0);     opacity: 1; }
 }
 
 .header h1 {
@@ -152,8 +144,8 @@
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
     padding: 20px 0;
-    animation: fadeUp 0.4s ease both;
-    animation-delay: 0.1s;
+    position: relative;
+    z-index: 1;
 }
 
 /* List view */
@@ -162,13 +154,8 @@
     flex-direction: column;
     gap: 12px;
     padding: 20px 0;
-    animation: fadeUp 0.4s ease both;
-    animation-delay: 0.1s;
-}
-
-@keyframes fadeUp {
-    from { transform: translateY(12px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+    position: relative;
+    z-index: 1;
 }
 
 /* Load More Button */

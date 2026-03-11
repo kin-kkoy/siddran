@@ -281,7 +281,7 @@ function App() {
 
           {/* The main page/s (the contents on the right, not sidebar) */}
           <div style={{ flex: 1,
-            padding: isAuthed ? '20px 40px' : '0',
+            padding: isAuthed ? '0 40px' : '0',
             overflowY: 'auto',
             backgroundColor: 'transparent',
             minWidth: 0,  /* Allows flex item to shrink below content size */
