@@ -75,15 +75,26 @@
 /* Title input */
 .titleInput {
     flex: 1;
-    background: transparent;
-    border: none;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
     outline: none;
     color: var(--text-primary);
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: 22px;
     font-weight: 600;
-    padding: 0;
+    padding: 6px 10px;
     width: 100%;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.titleInput:hover {
+    border-color: var(--border-strong);
+}
+
+.titleInput:focus {
+    border-color: var(--accent-blue);
+    background: var(--bg-elevated);
 }
 
 .titleInput::placeholder {
