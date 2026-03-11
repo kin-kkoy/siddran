@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import Sidebar from "./components/Layout/Sidebar/Sidebar.jsx"
 import StarCanvas from "./components/Layout/StarCanvas/StarCanvas.jsx"
+
 import NotePage from "./pages/Notes/NotePage.jsx"
 import NotesHub from "./pages/Notes/NotesHub.jsx"
 import LoginPage from "./pages/Auth/LoginPage.jsx"
@@ -225,25 +226,16 @@ function App() {
       {/* Background effects */}
       <StarCanvas />
       {isAuthed && (
-        <>
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            pointerEvents: 'none',
-            zIndex: 0,
-            background: 'radial-gradient(ellipse 50% 40% at 85% 15%, rgba(100,60,180,0.05) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 15% 85%, rgba(40,80,180,0.04) 0%, transparent 60%)',
-          }} />
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(240,184,64,0.3) 30%, rgba(240,184,64,0.5) 50%, rgba(240,184,64,0.3) 70%, transparent 100%)',
-            zIndex: 999,
-            pointerEvents: 'none',
-          }} />
-        </>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(240,184,64,0.3) 30%, rgba(240,184,64,0.5) 50%, rgba(240,184,64,0.3) 70%, transparent 100%)',
+          zIndex: 999,
+          pointerEvents: 'none',
+        }} />
       )}
 
       <BrowserRouter>

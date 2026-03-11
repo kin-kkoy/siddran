@@ -141,6 +141,8 @@ function InterfaceTab({ settings, updateSetting }) {
           />
         </SettingRow>
       )}
+
+
     </div>
   )
 }

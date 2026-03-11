@@ -93,9 +93,6 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
                             <span className={styles.overdueTag}>Overdue</span>
                         )}
                     </div>
-                    <span className={`${styles.priority} ${styles[task.priority]}`}>
-                        {task.priority}
-                    </span>
                 </div>
 
                 {/* Checklist Preview */}
@@ -109,11 +106,16 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
 
             </div>
 
-            {/* ------- Delete Button ------- */}
+            {/* ------- Right Column: Priority + Delete ------- */}
             {!isSelectionMode && (
-                <button className={styles.deleteBtn} onClick={handleDelete}>
-                    <HiOutlineTrash size={18} />
-                </button>
+                <div className={styles.rightCol}>
+                    <span className={`${styles.priority} ${styles[task.priority]}`}>
+                        {task.priority}
+                    </span>
+                    <button className={styles.deleteBtn} onClick={handleDelete}>
+                        <HiOutlineTrash size={18} />
+                    </button>
+                </div>
             )}
 
             {/* Delete Confirmation Modal */}

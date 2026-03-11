@@ -2,6 +2,30 @@ import { useRef, useEffect } from 'react'
 import { useSettings } from '../../../contexts/SettingsContext'
 import styles from './StarCanvas.module.css'
 
+const TWO_PI = Math.PI * 2
+
+// Color palette — weighted towards white/cool but with visible variety
+const STAR_COLORS = [
+  { color: [255, 210,  95], weight: 6  }, // warm gold
+  { color: [255, 175,  80], weight: 4  }, // amber
+  { color: [200, 150, 255], weight: 6  }, // violet
+  { color: [150, 185, 255], weight: 7  }, // sky blue
+  { color: [120, 225, 210], weight: 4  }, // teal
+  { color: [255, 175, 195], weight: 3  }, // rose
+  { color: [220, 215, 240], weight: 40 }, // near-white (majority)
+  { color: [200, 210, 255], weight: 20 }, // cool white
+  { color: [235, 230, 255], weight: 10 }, // bright white
+]
+
+// Build a weighted random picker once
+const COLOR_TABLE = STAR_COLORS.flatMap(({ color, weight }) =>
+  Array(weight).fill(color)
+)
+
+function pickColor() {
+  return COLOR_TABLE[Math.floor(Math.random() * COLOR_TABLE.length)]
+}
+
 function StarCanvas() {
   const canvasRef = useRef(null)
   const { settings } = useSettings()
@@ -21,7 +45,6 @@ function StarCanvas() {
     const ctx = canvas.getContext('2d')
     let animId
 
-    // Resize canvas to fill window
     const resize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
@@ -33,29 +56,16 @@ function StarCanvas() {
     const radiusRange = reduceStars ? 1.0 : 2.0
     const radiusBase = reduceStars ? 0.3 : 0.6
 
-    // Generate stars
-    const stars = Array.from({ length: count }, () => {
-      const rand = Math.random()
-      let color
-      if (rand < 0.08) {
-        color = [240, 200, 140]
-      } else if (rand < 0.14) {
-        color = [180, 160, 240]
-      } else {
-        color = [220, 215, 240]
-      }
-
-      return {
-        x: Math.random(),
-        y: Math.random(),
-        radius: Math.random() * radiusRange + radiusBase,
-        baseOpacity: Math.random() * 0.5 + 0.2,
-        range: Math.random() * 0.4 + 0.15,
-        phase: Math.random() * Math.PI * 2,
-        speed: Math.random() * 2.0 + 0.8,
-        color,
-      }
-    })
+    const stars = Array.from({ length: count }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      radius: Math.random() * radiusRange + radiusBase,
+      baseOpacity: Math.random() * 0.5 + 0.2,
+      range: Math.random() * 0.4 + 0.15,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 2.0 + 0.8,
+      color: pickColor(),
+    }))
 
     let paused = false
     const onVisibility = () => { paused = document.hidden }
@@ -77,7 +87,7 @@ function StarCanvas() {
           star.y * canvas.height,
           star.radius,
           0,
-          Math.PI * 2
+          TWO_PI
         )
         ctx.fillStyle = `rgba(${r},${g},${b},${Math.max(0, Math.min(1, opacity))})`
         ctx.fill()

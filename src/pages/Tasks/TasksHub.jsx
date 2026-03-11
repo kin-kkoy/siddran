@@ -215,7 +215,7 @@ function TasksHub({
     <div className={styles.container}>
 
         <div className={styles.header}>
-          <h1>Tasks<span className={styles.accent}>Hub</span><span style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 400, marginLeft: '10px' }}>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}{isSelectionMode && ` (${selectedTasks.length} selected)`}</span></h1>
+          <h1>Tasks<span className={styles.accent}>Hub</span><span style={{ color: 'var(--text-muted)', fontWeight: 400, marginLeft: '10px', fontSize: '14px', fontFamily: 'var(--font-body, inherit)' }}>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}{isSelectionMode && ` (${selectedTasks.length} selected)`}</span></h1>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             {/* Filter options */}
             <button
