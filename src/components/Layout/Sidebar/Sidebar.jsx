@@ -77,12 +77,10 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
                             </g>
                         </svg>
                     </div>
-                    {!isCollapsed && (
-                        <div>
-                            <div className={styles.brandName}>SIDDRAN</div>
-                            <div className={styles.brandSub}>space drifting</div>
-                        </div>
-                    )}
+                    <div className={styles.brandText}>
+                        <div className={styles.brandName}>SIDDRAN</div>
+                        <div className={styles.brandSub}>space drifting</div>
+                    </div>
                 </div>
 
                 {/* Navigation area */}
@@ -91,12 +89,12 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
                         className={`${styles.menuBtn} ${location.pathname.startsWith('/notes') ? styles.active : ''}`}
                         title="Notes">
                             <span className={styles.navDot}></span>
-                            {!isCollapsed && <span>Notes</span>}
+                            <span className={styles.navLabel}>Notes</span>
                     </Link>
                     <Link to="/tasks"
                         className={`${styles.menuBtn} ${location.pathname === '/tasks' ? styles.active : ''}`} title="Tasks">
                             <span className={styles.navDot}></span>
-                            {!isCollapsed && <span>Tasks</span>}
+                            <span className={styles.navLabel}>Tasks</span>
                     </Link>
 
                     <div className={styles.divider} />
@@ -105,7 +103,7 @@ function Sidebar({ username, isCollapsed, toggleSidebar, notes, currentNoteID, s
                         className={`${styles.menuBtn} ${location.pathname === '/mods' ? styles.active : ''}`}
                         title="Mods">
                             <span className={styles.navDot}></span>
-                            {!isCollapsed && <span>Mods</span>}
+                            <span className={styles.navLabel}>Mods</span>
                     </Link>
                 </div>
 

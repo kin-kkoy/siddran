@@ -75,20 +75,15 @@ function ProfileDropdown({ username, isCollapsed, handleLogout }) {
         <>
             <button
                 ref={buttonRef}  // ← Add ref
-                className={`${styles.profileBtn} ${isCollapsed ? styles.collapsed : ''}`}
+                className={styles.profileBtn}
                 onClick={() => setIsOpen(!isOpen)}
                 title={isCollapsed ? "Profile" : undefined}
             >
                 <span className={styles.avatar}>{username ? username.charAt(0).toUpperCase() : '?'}</span>
-                {!isCollapsed && (
-                    <span className={styles.userInfo}>
-                        <span>{username}</span>
-                        <span className={styles.userTitle}>star chaser</span>
-                    </span>
-                )}
-                {!isCollapsed && (
-                    <span className={`${styles.arrow} ${isOpen ? styles.arrowUp : ''}`}>▼</span>
-                )}
+                <span className={`${styles.userInfo} ${isCollapsed ? styles.userInfoHidden : ''}`}>
+                    <span>{username}</span>
+                    <span className={styles.userTitle}>star chaser</span>
+                </span>
             </button>
 
             {/* Render dropdown using Portal */}

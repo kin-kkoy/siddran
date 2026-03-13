@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0;
+  padding: 1rem 1.2rem;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -17,14 +17,13 @@
   width: 100%;
   text-align: left;
   font-size: 0.78rem;
-}
-
-.profileBtn.collapsed {
-  justify-content: center;
+  transition: background 0.2s;
+  overflow: hidden;
 }
 
 .profileBtn:hover {
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* Avatar circle */
@@ -49,6 +48,15 @@
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease 0.15s;
+}
+
+.userInfoHidden {
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
 .userTitle {
@@ -66,17 +74,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-/* Arrow indicator */
-.arrow {
-  font-size: 10px;
-  transition: transform 0.2s;
-  margin-left: auto;
-}
-
-.arrowUp {
-  transform: rotate(180deg);
 }
 
 /* Dropdown menu */
