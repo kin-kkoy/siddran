@@ -95,15 +95,6 @@ function TaskCard({ task, deleteTask, toggleCompletion, viewMode, isSelectionMod
                     </div>
                 </div>
 
-                {/* Checklist Preview */}
-                {task.checklist && task.checklist.length > 0 && (
-                    <div className={styles.checklistPreview}>
-                        <small>
-                        ✓ {task.checklist.filter(c => c.is_completed).length}/{task.checklist.length} completed
-                        </small>
-                    </div>
-                )}
-
             </div>
 
             {/* ------- Right Column: Priority + Delete ------- */}

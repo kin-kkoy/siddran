@@ -146,12 +146,6 @@
     color: var(--text-muted);
 }
 
-.checklistPreview {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 8px;
-}
-
 .deleteBtn {
     background: transparent;
     border: none;

@@ -7,7 +7,6 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
     const [tasks, setTasks] = useState([])
     const [dailyTasks, setDailyTasks] = useState([])
-    const [checklistItems, setChecklistItems] = useState([])
     const [tasksPagination, setTasksPagination] = useState(null)
     const [dailyTasksPagination, setDailyTasksPagination] = useState(null)
     const [loadingMore, setLoadingMore] = useState(false)
@@ -329,43 +328,6 @@ export const useTasks = (authFetch, API, isAuthed) => {
             logger.error("Error batch deleting daily tasks:", error)
             throw error
         }
-    }, [authFetch, API])
-
-
-    // ----------- Checklist Task Operations ===========================
-    const addChecklistItem = useCallback(async (taskId, {title, priority}) => {
-        if (title?.trim()){
-            toast.warning("Title cannot be empty")
-            return
-        }
-
-        try {
-            const res = await authFetch(`${API}/tasks/:taskId/checklist`, {
-                body: JSON.stringify({ checklistItem: [{title: title.trim(), priority}]})
-            }, taskId)
-
-            if(res.ok){
-                const newChecklistItem = await res.json()
-                setChecklistItems(prev => [...prev, ...newChecklistItem])
-            }
-
-        } catch (error) {
-            logger.error("Error adding checklist item:", error)
-            toast.error("Failed to create checklist item")
-        }
-
-    }, [authFetch, API])
-
-    const updateChecklistItem = useCallback(async () => {
-        
-    }, [authFetch, API])
-
-    const toggleChecklistItem = useCallback(async () => {
-        
-    }, [authFetch, API])
-
-    const deleteChecklistItem = useCallback(async () => {
-        
     }, [authFetch, API])
 
 
