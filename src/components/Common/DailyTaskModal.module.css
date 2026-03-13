@@ -62,6 +62,34 @@
     color: #fff;
 }
 
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.saveBtn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.saveBtn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.saveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .closeBtn {
     background: rgba(0, 0, 0, 0.2);
     border: none;
@@ -340,6 +368,41 @@
 .deleteBtn:hover {
     background-color: #ff444420;
     color: #ff4444;
+}
+
+/* Pending deletion indicator */
+.pendingDelete {
+    opacity: 0.5;
+    background-color: rgba(255, 68, 68, 0.06);
+}
+
+.pendingDelete .taskTitle {
+    text-decoration: line-through;
+    color: var(--accent-danger, #ff4444);
+}
+
+.pendingDelete .deleteBtn {
+    opacity: 1;
+    color: var(--accent-danger, #ff4444);
+}
+
+.undoBtn {
+    opacity: 1 !important;
+    color: var(--accent-danger, #ff4444) !important;
+}
+
+/* Pending toggle indicator */
+.pendingToggle {
+    border-left: 3px solid var(--accent-warning);
+}
+
+/* Pending hint text */
+.pendingHint {
+    font-size: 10px;
+    color: var(--accent-danger, #ff4444);
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* Empty state */

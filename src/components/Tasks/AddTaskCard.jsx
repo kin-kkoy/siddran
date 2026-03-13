@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import styles from './TaskCard.module.css'
 import { toast } from '../../utils/toast'
 
@@ -64,6 +65,17 @@ function AddTaskCard({ addTask, viewMode }) {
         setShowForm(false) // then close
     }
 
+    const handleTitleKeyDown = (e) => {
+        if (taskType !== 'daily') return
+        if (e.key === 'Enter' && e.shiftKey) {
+            e.preventDefault()
+            submitDraft()
+        } else if (e.key === 'Enter') {
+            e.preventDefault()
+            addToDraft(e)
+        }
+    }
+
     // clicking outside the popup
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
@@ -81,7 +93,7 @@ function AddTaskCard({ addTask, viewMode }) {
           <h2>Add Task</h2>
         </div>
 
-        {showForm && (
+        {showForm && createPortal(
           <div className={styles.backdrop} onClick={handleBackdropClick}>
             <form className={styles.modalForm} onSubmit={handleSubmit}>
               <h2 style={{ marginTop: 0, marginBottom: 20, color: '#fff' }}>Create Task</h2>
@@ -100,8 +112,8 @@ function AddTaskCard({ addTask, viewMode }) {
                         onClick={() => setTaskType("daily")}
                     >Daily Tasks</button>
                 </div>
-              
-              <input 
+
+              <input
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
@@ -109,8 +121,9 @@ function AddTaskCard({ addTask, viewMode }) {
                 className={styles.input}
                 autoFocus
                 required
+                onKeyDown={handleTitleKeyDown}
               />
-              
+
               {taskType === 'normal' && (
                 <>
                     <textarea
@@ -121,8 +134,8 @@ function AddTaskCard({ addTask, viewMode }) {
                     />
 
                     <div className={styles.row}>
-                        <select 
-                        value={priority} 
+                        <select
+                        value={priority}
                         onChange={e => setPriority(e.target.value)}
                         className={styles.select}
                         >
@@ -131,7 +144,7 @@ function AddTaskCard({ addTask, viewMode }) {
                         <option value="high">High Priority</option>
                         </select>
 
-                        <input 
+                        <input
                         type="datetime-local"
                         value={dueDate}
                         onChange={e => setDueDate(e.target.value)}
@@ -143,15 +156,16 @@ function AddTaskCard({ addTask, viewMode }) {
 
               {taskType === 'daily' && (
                 <>
-                    <select 
-                        value={priority} 
+                    <p>Task's Priority: </p>
+                    <select
+                        value={priority}
                         onChange={e => setPriority(e.target.value)}
                         className={styles.select}
                         style={{ marginBottom: '16px' }}
                     >
-                        <option value="low">Low Priority</option>
-                        <option value="normal">Normal Priority</option>
-                        <option value="high">High Priority</option>
+                        <option value="low">Low</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
                     </select>
 
                     {/* Draft Preview List */}
@@ -162,7 +176,7 @@ function AddTaskCard({ addTask, viewMode }) {
                                 <div key={task.id} className={styles.draftItem}>
                                     <span className={styles.draftText}>{task.title}</span>
                                     <span className={`${styles.draftPriority} ${styles[task.priority]}`}>{task.priority}</span>
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => removeFromDraft(task.id)}
                                         className={styles.removeBtn}
@@ -180,7 +194,7 @@ function AddTaskCard({ addTask, viewMode }) {
                 <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
                   Cancel
                 </button>
-                
+
                 {taskType === 'normal' ? (
                     <button type="submit" className={styles.submitBtn}>Create Task</button>
                 ) : (
@@ -197,7 +211,8 @@ function AddTaskCard({ addTask, viewMode }) {
                 )}
               </div>
             </form>
-          </div>
+          </div>,
+          document.body
         )}
       </>
     )
@@ -211,7 +226,7 @@ function AddTaskCard({ addTask, viewMode }) {
         <h4>Add Task</h4>
       </div>
 
-      {showForm && (
+      {showForm && createPortal(
         <div className={styles.backdrop} onClick={handleBackdropClick}>
           <form className={styles.modalForm} onSubmit={handleSubmit}>
             <h2 style={{ marginTop: 0, marginBottom: 20, color: '#fff' }}>Create Task</h2>
@@ -230,8 +245,8 @@ function AddTaskCard({ addTask, viewMode }) {
                     onClick={() => setTaskType("daily")}
                 >Daily Tasks</button>
             </div>
-            
-            <input 
+
+            <input
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
@@ -239,8 +254,9 @@ function AddTaskCard({ addTask, viewMode }) {
               className={styles.input}
               autoFocus
               required
+              onKeyDown={handleTitleKeyDown}
             />
-            
+
             {taskType === 'normal' && (
                 <>
                     <textarea
@@ -251,8 +267,8 @@ function AddTaskCard({ addTask, viewMode }) {
                     />
 
                     <div className={styles.row}>
-                    <select 
-                        value={priority} 
+                    <select
+                        value={priority}
                         onChange={e => setPriority(e.target.value)}
                         className={styles.select}
                     >
@@ -261,7 +277,7 @@ function AddTaskCard({ addTask, viewMode }) {
                         <option value="high">High Priority</option>
                     </select>
 
-                    <input 
+                    <input
                         type="datetime-local"
                         value={dueDate}
                         onChange={e => setDueDate(e.target.value)}
@@ -273,8 +289,8 @@ function AddTaskCard({ addTask, viewMode }) {
 
             {taskType === 'daily' && (
                 <>
-                    <select 
-                        value={priority} 
+                    <select
+                        value={priority}
                         onChange={e => setPriority(e.target.value)}
                         className={styles.select}
                         style={{ marginBottom: '16px' }}
@@ -292,7 +308,7 @@ function AddTaskCard({ addTask, viewMode }) {
                                 <div key={task.id} className={styles.draftItem}>
                                     <span className={styles.draftText}>{task.title}</span>
                                     <span className={`${styles.draftPriority} ${styles[task.priority]}`}>{task.priority}</span>
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => removeFromDraft(task.id)}
                                         className={styles.removeBtn}
@@ -310,7 +326,7 @@ function AddTaskCard({ addTask, viewMode }) {
                 <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
                     Cancel
                 </button>
-                
+
                 {taskType === 'normal' ? (
                     <button type="submit" className={styles.submitBtn}>Create Task</button>
                 ) : (
@@ -327,7 +343,8 @@ function AddTaskCard({ addTask, viewMode }) {
                 )}
                 </div>
           </form>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

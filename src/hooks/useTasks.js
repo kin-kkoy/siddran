@@ -7,6 +7,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
     const [tasks, setTasks] = useState([])
     const [dailyTasks, setDailyTasks] = useState([])
+    const [checklistItems, setChecklistItems] = useState([])
     const [tasksPagination, setTasksPagination] = useState(null)
     const [dailyTasksPagination, setDailyTasksPagination] = useState(null)
     const [loadingMore, setLoadingMore] = useState(false)
@@ -286,6 +287,87 @@ export const useTasks = (authFetch, API, isAuthed) => {
         }
     }, [authFetch, API])
 
+    // Batch toggle completion for daily tasks
+    const batchToggleDailyTasks = useCallback(async (updates) => {
+        // updates: [{ id, is_completed }, ...]
+        if (!updates.length) return
+
+        try {
+            const res = await authFetch(`${API}/daily-tasks/batch-complete`, {
+                method: 'PATCH',
+                body: JSON.stringify({ tasks: updates })
+            })
+
+            if (!res.ok) throw new Error(`Batch toggle failed: ${res.status}`)
+
+            const updatedTasks = await res.json()
+            setDailyTasks(prev => prev.map(task => {
+                const updated = updatedTasks.find(u => u.id === task.id)
+                return updated ? { ...task, ...updated } : task
+            }))
+        } catch (error) {
+            logger.error("Error batch toggling daily tasks:", error)
+            throw error
+        }
+    }, [authFetch, API])
+
+    // Batch delete daily tasks
+    const batchDeleteDailyTasks = useCallback(async (ids) => {
+        // ids: [id1, id2, ...]
+        if (!ids.length) return
+
+        try {
+            const res = await authFetch(`${API}/daily-tasks/batch-delete`, {
+                method: 'DELETE',
+                body: JSON.stringify({ tasks: ids.map(id => ({ id })) })
+            })
+
+            if (!res.ok) throw new Error(`Batch delete failed: ${res.status}`)
+
+            setDailyTasks(prev => prev.filter(task => !ids.includes(task.id)))
+        } catch (error) {
+            logger.error("Error batch deleting daily tasks:", error)
+            throw error
+        }
+    }, [authFetch, API])
+
+
+    // ----------- Checklist Task Operations ===========================
+    const addChecklistItem = useCallback(async (taskId, {title, priority}) => {
+        if (title?.trim()){
+            toast.warning("Title cannot be empty")
+            return
+        }
+
+        try {
+            const res = await authFetch(`${API}/tasks/:taskId/checklist`, {
+                body: JSON.stringify({ checklistItem: [{title: title.trim(), priority}]})
+            }, taskId)
+
+            if(res.ok){
+                const newChecklistItem = await res.json()
+                setChecklistItems(prev => [...prev, ...newChecklistItem])
+            }
+
+        } catch (error) {
+            logger.error("Error adding checklist item:", error)
+            toast.error("Failed to create checklist item")
+        }
+
+    }, [authFetch, API])
+
+    const updateChecklistItem = useCallback(async () => {
+        
+    }, [authFetch, API])
+
+    const toggleChecklistItem = useCallback(async () => {
+        
+    }, [authFetch, API])
+
+    const deleteChecklistItem = useCallback(async () => {
+        
+    }, [authFetch, API])
+
 
     return {
         tasks,
@@ -303,6 +385,8 @@ export const useTasks = (authFetch, API, isAuthed) => {
         addDailyTask,
         updateDailyTask,
         deleteDailyTask,
-        toggleDailyTaskCompletion
+        toggleDailyTaskCompletion,
+        batchToggleDailyTasks,
+        batchDeleteDailyTasks
     }
 }

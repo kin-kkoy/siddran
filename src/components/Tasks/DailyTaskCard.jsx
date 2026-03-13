@@ -23,9 +23,10 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask, onOpenDetail, onOp
 
     // Sort tasks by priority: High -> Normal -> Low
     const priorityOrder = { high: 0, normal: 1, low: 2 }
-    const sortedTasks = [...tasks].sort((a, b) =>
-        (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1)
-    )
+    const sortedTasks = [...tasks].sort((a, b) => {
+        if (a.is_completed !== b.is_completed) return a.is_completed ? 1 : -1
+        return (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1)
+    })
     // const [timeRemaining, setTimeRemaining] = useState('')
 
     // // Calculate time remaining until expiration
@@ -87,9 +88,6 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask, onOpenDetail, onOp
                         {/* Task Content */}
                         <div className={styles.taskContent}>
                             <span className={styles.taskTitle}>{task.title}</span>
-                            <span className={`${styles.priority} ${styles[task.priority]}`}>
-                                {task.priority}
-                            </span>
                         </div>
 
                         {/* Delete Button */}
@@ -102,6 +100,10 @@ function DailyTaskCard({ tasks, toggleCompletion, deleteTask, onOpenDetail, onOp
                         >
                             <HiOutlineTrash size={14} />
                         </button>
+
+                        <span className={`${styles.priority} ${styles[task.priority]}`}>
+                            {task.priority}
+                        </span>
                     </li>
                 ))}
             </ul>

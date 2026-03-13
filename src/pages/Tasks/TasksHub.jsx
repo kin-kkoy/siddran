@@ -24,7 +24,9 @@ function TasksHub({
   addDailyTask,
   updateDailyTask,
   deleteDailyTask,
-  toggleDailyTaskCompletion
+  toggleDailyTaskCompletion,
+  batchToggleDailyTasks,
+  batchDeleteDailyTasks
 }) {
 
   // Persist view mode in localStorage
@@ -333,11 +335,13 @@ function TasksHub({
         </div>
 
         {/* Open task details Modal for DAILY TASK */}
-        {isDailyCardOpen && <DailyTaskModal 
+        {isDailyCardOpen && <DailyTaskModal
           tasks={dailyTasks}
           toggleCompletion={toggleDailyTaskCompletion}
           addDailyTask={addDailyTask}
           deleteTask={deleteDailyTask}
+          batchToggleDailyTasks={batchToggleDailyTasks}
+          batchDeleteDailyTasks={batchDeleteDailyTasks}
           onOpenDetail={openDailyCardDetails}
           onClose={() => setIsDailyCardOpen(false)}
         />}

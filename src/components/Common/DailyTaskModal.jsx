@@ -1,30 +1,83 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { FaCheck } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import styles from './DailyTaskModal.module.css'
 import ConfirmModal from './ConfirmModal'
+import { toast } from '../../utils/toast'
+import logger from '../../utils/logger'
 
-function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, onOpenDetail, onClose }) {
+function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, batchToggleDailyTasks, batchDeleteDailyTasks, onOpenDetail, onClose }) {
     const [taskTitle, setTaskTitle] = useState("")
     const [selectedPriority, setSelectedPriority] = useState('normal')
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-    const [taskToDelete, setTaskToDelete] = useState(null)
+    const [showUnsavedWarning, setShowUnsavedWarning] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
 
-    const handleDeleteClick = (task) => {
-        setTaskToDelete(task)
-        setDeleteModalOpen(true)
+    // Batch state: pending changes tracked locally
+    const [pendingCompletions, setPendingCompletions] = useState(new Map()) // Map<id, boolean>
+    const [pendingDeletions, setPendingDeletions] = useState(new Set())     // Set<id>
+
+    const hasPendingChanges = pendingCompletions.size > 0 || pendingDeletions.size > 0
+
+    // Compute effective tasks with pending changes merged in
+    const effectiveTasks = useMemo(() => {
+        return tasks.map(t => {
+            const isPendingDelete = pendingDeletions.has(t.id)
+            const isPendingToggle = pendingCompletions.has(t.id)
+            const effectiveCompleted = isPendingToggle ? pendingCompletions.get(t.id) : t.is_completed
+            return {
+                ...t,
+                is_completed: effectiveCompleted,
+                _pendingDelete: isPendingDelete,
+                _pendingToggle: isPendingToggle
+            }
+        })
+    }, [tasks, pendingCompletions, pendingDeletions])
+
+    // Progress bar uses effective state, excluding pending-deleted tasks
+    const visibleTasks = effectiveTasks.filter(t => !t._pendingDelete)
+    const completedCount = visibleTasks.filter(t => t.is_completed).length
+    const totalCount = visibleTasks.length
+
+    // Priority columns
+    const sortByCompletion = (a, b) => a.is_completed === b.is_completed ? 0 : a.is_completed ? 1 : -1
+    const lowTasks    = effectiveTasks.filter(t => t.priority === 'low').sort(sortByCompletion)
+    const normalTasks = effectiveTasks.filter(t => t.priority === 'normal').sort(sortByCompletion)
+    const highTasks   = effectiveTasks.filter(t => t.priority === 'high').sort(sortByCompletion)
+    const columns = [
+        { key: 'high',   label: 'High',   tasks: highTasks   },
+        { key: 'normal', label: 'Normal', tasks: normalTasks },
+        { key: 'low',    label: 'Low',    tasks: lowTasks    },
+    ].filter(col => col.tasks.length > 0)
+
+    // --- Handlers ---
+
+    const handleToggle = (taskId) => {
+        setPendingCompletions(prev => {
+            const next = new Map(prev)
+            const original = tasks.find(t => t.id === taskId)?.is_completed
+            const currentEffective = next.has(taskId) ? next.get(taskId) : original
+            const newValue = !currentEffective
+
+            // Net-zero: if toggling back to original, remove from pending
+            if (newValue === original) {
+                next.delete(taskId)
+            } else {
+                next.set(taskId, newValue)
+            }
+            return next
+        })
     }
 
-    const confirmDelete = () => {
-        if (taskToDelete) {
-            deleteTask(taskToDelete.id)
-        }
-        setDeleteModalOpen(false)
-        setTaskToDelete(null)
-    }
-
-    const handleBackdropClick = (e) => {
-        if (e.target === e.currentTarget) onClose()
+    const handleDelete = (taskId) => {
+        setPendingDeletions(prev => {
+            const next = new Set(prev)
+            if (next.has(taskId)) {
+                next.delete(taskId) // undo
+            } else {
+                next.add(taskId)
+            }
+            return next
+        })
     }
 
     const handleAdd = () => {
@@ -33,17 +86,54 @@ function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, onO
         setTaskTitle("")
     }
 
-    const lowTasks    = tasks.filter(t => t.priority === 'low')
-    const normalTasks = tasks.filter(t => t.priority === 'normal')
-    const highTasks   = tasks.filter(t => t.priority === 'high')
-    const columns = [
-        { key: 'high',   label: 'High',   tasks: highTasks   },
-        { key: 'normal', label: 'Normal', tasks: normalTasks },
-        { key: 'low',    label: 'Low',    tasks: lowTasks    },
-    ].filter(col => col.tasks.length > 0)
+    const handleSave = async () => {
+        if (!hasPendingChanges) {
+            onClose()
+            return
+        }
 
-    const completedCount = tasks.filter(t => t.is_completed).length
-    const totalCount = tasks.length
+        setIsSaving(true)
+
+        try {
+            const promises = []
+
+            // Batch toggle
+            const toggleUpdates = Array.from(pendingCompletions.entries()).map(
+                ([id, is_completed]) => ({ id, is_completed })
+            )
+            if (toggleUpdates.length > 0) {
+                promises.push(batchToggleDailyTasks(toggleUpdates))
+            }
+
+            // Batch delete
+            const deleteIds = Array.from(pendingDeletions)
+            if (deleteIds.length > 0) {
+                promises.push(batchDeleteDailyTasks(deleteIds))
+            }
+
+            await Promise.all(promises)
+
+            toast.success('Changes saved')
+            onClose()
+        } catch (error) {
+            logger.error('Batch save error:', error)
+            toast.error('Some changes failed to save. Please try again.')
+        } finally {
+            setIsSaving(false)
+        }
+    }
+
+    const handleCloseAttempt = () => {
+        if (hasPendingChanges) {
+            setShowUnsavedWarning(true)
+        } else {
+            onClose()
+        }
+    }
+
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) handleCloseAttempt()
+    }
 
     return (
         <div className={styles.backdrop} onClick={handleBackdropClick}>
@@ -52,7 +142,18 @@ function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, onO
                 {/* Header */}
                 <div className={styles.header}>
                     <h3 className={styles.title}>Today's Tasks</h3>
-                    <button className={styles.closeBtn} onClick={onClose}>✕</button>
+                    <div className={styles.headerActions}>
+                        {hasPendingChanges && (
+                            <button
+                                className={styles.saveBtn}
+                                onClick={handleSave}
+                                disabled={isSaving}
+                            >
+                                {isSaving ? 'Saving...' : 'Save'}
+                            </button>
+                        )}
+                        <button className={styles.closeBtn} onClick={handleCloseAttempt}>✕</button>
+                    </div>
                 </div>
 
                 {/* Progress */}
@@ -102,15 +203,20 @@ function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, onO
                                     {col.tasks.map(task => (
                                         <li
                                             key={task.id}
-                                            className={`${styles.taskItem} ${task.is_completed ? styles.completed : ''}`}
-                                            onClick={() => onOpenDetail(task)}
+                                            className={[
+                                                styles.taskItem,
+                                                task.is_completed ? styles.completed : '',
+                                                task._pendingDelete ? styles.pendingDelete : '',
+                                                task._pendingToggle ? styles.pendingToggle : '',
+                                            ].filter(Boolean).join(' ')}
+                                            onClick={() => !task._pendingDelete && onOpenDetail(task)}
                                         >
                                             {/* Checkbox */}
                                             <button
                                                 className={`${styles.checkbox} ${task.is_completed ? styles.checked : ''}`}
                                                 onClick={(e) => {
                                                     e.stopPropagation()
-                                                    toggleCompletion(task.id, !task.is_completed)
+                                                    if (!task._pendingDelete) handleToggle(task.id)
                                                 }}
                                             >
                                                 {task.is_completed && <FaCheck size={12} />}
@@ -119,15 +225,19 @@ function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, onO
                                             {/* Task Content */}
                                             <div className={styles.taskContent}>
                                                 <span className={styles.taskTitle}>{task.title}</span>
+                                                {task._pendingDelete && (
+                                                    <span className={styles.pendingHint}>Will be deleted</span>
+                                                )}
                                             </div>
 
-                                            {/* Delete Button */}
+                                            {/* Delete / Undo Button */}
                                             <button
-                                                className={styles.deleteBtn}
+                                                className={`${styles.deleteBtn} ${task._pendingDelete ? styles.undoBtn : ''}`}
                                                 onClick={(e) => {
                                                     e.stopPropagation()
-                                                    handleDeleteClick(task)
+                                                    handleDelete(task.id)
                                                 }}
+                                                title={task._pendingDelete ? 'Undo delete' : 'Mark for deletion'}
                                             >
                                                 <HiOutlineTrash size={14} />
                                             </button>
@@ -143,18 +253,21 @@ function DailyTaskModal({ tasks, toggleCompletion, addDailyTask, deleteTask, onO
 
             </div>
 
-            {/* Delete Confirmation Modal */}
+            {/* Unsaved Changes Warning */}
             <ConfirmModal
-                isOpen={deleteModalOpen}
+                isOpen={showUnsavedWarning}
                 onClose={() => {
-                    setDeleteModalOpen(false)
-                    setTaskToDelete(null)
+                    setShowUnsavedWarning(false)
+                    onClose()
                 }}
-                onConfirm={confirmDelete}
-                title="Delete Daily Task"
-                message={taskToDelete ? `Are you sure you want to delete "${taskToDelete.title}"? This action cannot be undone.` : ''}
-                confirmText="Delete"
-                cancelText="Cancel"
+                onConfirm={() => {
+                    setShowUnsavedWarning(false)
+                    handleSave()
+                }}
+                title="Unsaved Changes"
+                message="You have unsaved changes. Would you like to apply them before closing?"
+                confirmText="Apply & Close"
+                cancelText="Discard"
             />
         </div>
     )

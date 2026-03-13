@@ -271,7 +271,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.2s ease;
 }
 
 @keyframes fadeIn {
@@ -288,13 +288,13 @@
   width: 90%;
   max-width: 500px;
   box-shadow: 0 8px 32px var(--shadow-color);
-  animation: slideIn 0.3s ease-out;
+  animation: slideUp 0.3s ease;
 }
 
-@keyframes slideIn {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
