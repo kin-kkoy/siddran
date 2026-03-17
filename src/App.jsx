@@ -160,7 +160,7 @@ function App() {
 
   // ------------- TASKS DATA LOGIC ===================================
   const {
-    tasks, dailyTasks, tasksPagination, dailyTasksPagination, loadMoreTasks, loadMoreDailyTasks, loadingMore: tasksLoadingMore, loading: tasksLoading, addTask, updateTask, deleteTask, toggleTaskCompletion, addDailyTask, updateDailyTask, deleteDailyTask, toggleDailyTaskCompletion, batchToggleDailyTasks, batchDeleteDailyTasks
+    tasks, dailyTasks, projects, tasksPagination, dailyTasksPagination, projectsPagination, loadMoreTasks, loadMoreDailyTasks, loadMoreProjects, loadingMore: tasksLoadingMore, loading: tasksLoading, addTask, updateTask, deleteTask, toggleTaskCompletion, addDailyTask, updateDailyTask, deleteDailyTask, toggleDailyTaskCompletion, batchToggleDailyTasks, batchDeleteDailyTasks, addProject, updateProject, deleteProject, addProjectTasks, batchUpdateProjectTasks, toggleProjectTaskCompletion, batchDeleteProjectTasks
   } = useTasks(authFetch, API, isAuthed)
 
 
@@ -208,6 +208,16 @@ function App() {
       toggleDailyTaskCompletion={toggleDailyTaskCompletion}
       batchToggleDailyTasks={batchToggleDailyTasks}
       batchDeleteDailyTasks={batchDeleteDailyTasks}
+      projects={projects}
+      projectsPagination={projectsPagination}
+      loadMoreProjects={loadMoreProjects}
+      addProject={addProject}
+      updateProject={updateProject}
+      deleteProject={deleteProject}
+      addProjectTasks={addProjectTasks}
+      batchUpdateProjectTasks={batchUpdateProjectTasks}
+      toggleProjectTaskCompletion={toggleProjectTaskCompletion}
+      batchDeleteProjectTasks={batchDeleteProjectTasks}
     />
   )
 

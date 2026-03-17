@@ -2,13 +2,105 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "../utils/toast";
 import logger from "../utils/logger";
 
-// Custom hook for tasks and daily tasks
+
+// mini helper function for messages lol
+function whatMessage(action, subAction = null) {
+    const feedbackMessages = {
+        deleted: [
+            "Aaaand... it's history. 🦖",
+            "Poof! Into the digital abyss it goes.",
+            "Sent this one to a farm upstate. 🚜",
+            "Deleted. We don't know her anymore. 💅",
+            "Rest in pixels, old friend.",
+            "Yeeted into the recycle bin. ☄️"
+        ],
+        created: [
+            "It exists. Now what? 🤨",
+            "A fresh start. Don't mess this one up.",
+            "Brand new and already judging your progress.",
+            "Added to the pile. 📁",
+            "Witnessed. It's officially a thing now.",
+            "The canvas is no longer blank. Scared?",
+            "Birth certificate signed. ✍️"
+        ],
+        updated: [
+            "Changed it again, did we?",
+            "Applying the 'fix it' juice. 🧃",
+            "Consider it tweaked.",
+            "Polishing the edges. ✨",
+            "It's different now. Slightly.",
+            "Updated. The old version was mid anyway.",
+            "Wait, was that a typo? Fixed it."
+        ],
+        completed: [
+            "Finally. I was starting to worry. ☕",
+            "Yay it's done!!!!!!!!!!!!!!!!!!!!!",
+            "Off the to-do list and into the 'done' bin.",
+            "Manifested into reality. Yup.",
+            "You actually did the thing. Wow.",
+            "Checkmark acquired. Move along.",
+            "That's one less thing to ignore tomorrow."
+        ],
+        validation: {
+            noTitle: [
+                "A title would be nice, don't you think?",
+                "Untitled? Bold choice. Too bold.",
+                "Even 'Untitled' is a title. Try harder. 😤",
+                "The title field is feeling neglected.",
+            ],
+            noTasks: [
+                "You need at least one item. It's literally the point. 💨",
+                "Empty list detected. What are we even doing here?",
+                "No items? That's not a plan, that's a wish. 🌠",
+                "Add something first. Anything. We believe in you.",
+            ],
+        },
+        failed: {
+            create: [
+                "Birth certificate denied. 🚫",
+                "The universe says 'maybe later'.",
+                "It refused to be born. Re-evaluating life choices.",
+                "Error: Commitment issues detected."
+            ],
+            update: [
+                "The update didn't take. It likes its old self.",
+                "Refused to change. Stubborn, isn't it?",
+                "Nip/tuck failed. We're staying mid for now.",
+                "Changes discarded like last year's trends."
+            ],
+            delete: [
+                "It's fighting back. It won't leave. 🧟",
+                "Immortal item detected. Try again.",
+                "Deletion failed. It's too attached to you.",
+                "The abyss spit it back out. Awkward."
+            ],
+            complete: [
+                "Not so fast. Something's still broken.",
+                "Completion denied. Did you actually finish it though?",
+                "It's not over 'til the server sings. (It didn't).",
+                "The finish line just moved. Sorry."
+            ]
+        }
+    };
+
+    // Logic to handle nested "failed" messages or standard messages
+    const list = subAction
+        ? feedbackMessages[action][subAction]
+        : feedbackMessages[action];
+
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+
+// Custom hook for tasks, daily tasks, and projects
 export const useTasks = (authFetch, API, isAuthed) => {
 
     const [tasks, setTasks] = useState([])
     const [dailyTasks, setDailyTasks] = useState([])
+    const [projects, setProjects] = useState([])
     const [tasksPagination, setTasksPagination] = useState(null)
     const [dailyTasksPagination, setDailyTasksPagination] = useState(null)
+    const [projectsPagination, setProjectsPagination] = useState(null)
     const [loadingMore, setLoadingMore] = useState(false)
     const [loading, setLoading] = useState(true)
 
@@ -19,9 +111,10 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
         const fetchAllTasks = async () => {
             try {
-                const [res1, res2] = await Promise.all([
+                const [res1, res2, res3] = await Promise.all([
                     authFetch(`${API}/tasks`),
-                    authFetch(`${API}/daily-tasks`)
+                    authFetch(`${API}/daily-tasks`),
+                    authFetch(`${API}/projects`)
                 ])
 
                 if(res1.ok) {
@@ -33,6 +126,11 @@ export const useTasks = (authFetch, API, isAuthed) => {
                     const data2 = await res2.json()
                     setDailyTasks(data2.dailyTasks)
                     setDailyTasksPagination(data2.pagination)
+                }
+                if(res3.ok) {
+                    const data3 = await res3.json()
+                    setProjects(data3.projects)
+                    setProjectsPagination(data3.pagination)
                 }
 
             } catch (error) {
@@ -88,13 +186,34 @@ export const useTasks = (authFetch, API, isAuthed) => {
         }
     }, [authFetch, API, dailyTasksPagination, loadingMore])
 
+    const loadMoreProjects = useCallback(async () => {
+        if(!projectsPagination?.hasNextPage || loadingMore) return
+
+        setLoadingMore(true)
+        try {
+            const response = await authFetch(
+                `${API}/projects?cursor=${projectsPagination.nextCursor}&limit=${projectsPagination.limit}`
+            )
+            if(response.ok){
+                const data = await response.json()
+                setProjects(prev => [...prev, ...data.projects])
+                setProjectsPagination(data.pagination)
+            }
+        } catch (error) {
+            logger.error('Error loading more projects:', error);
+        }finally {
+            setLoadingMore(false)
+        }
+
+    }, [authFetch, API, projectsPagination, loadingMore])
+
 
     // ----------- Task Operations ===========================
     const addTask = useCallback(async (title, description, priority, dueDate, taskType) => {
         // if daily tasks
         if (taskType === 'daily') {
             if (!Array.isArray(title) || title.length === 0) {
-                toast.warning("No tasks to create")
+                toast.warning(whatMessage("validation", "noTasks"))
                 return
             }
 
@@ -111,7 +230,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
             } catch (error) {
                 logger.error("Error adding daily tasks:", error)
-                toast.error("Failed to create daily tasks")
+                toast.error(whatMessage("failed", "create"))
             }
 
             return
@@ -119,7 +238,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
         // if normal tasks
         if (!title.trim()) {
-            toast.warning("Task title cannot be empty")
+            toast.warning(whatMessage("validation", "noTitle"))
             return
         }
 
@@ -139,7 +258,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
         } catch (error) {
             logger.error("Error adding task:", error)
-            toast.error("Failed to add task")
+            toast.error(whatMessage("failed", "create"))
         }
     }, [authFetch, API])
 
@@ -154,7 +273,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 Object.entries(params).filter(([_dirname, v]) => v !== undefined)
             );
 
-            const res = await authFetch(`${API}/tasks/${id}`, { 
+            const res = await authFetch(`${API}/tasks/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(cleanParams)
             })
@@ -206,7 +325,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
     const addDailyTask = useCallback(async (title, priority) => {
 
         if (!title?.trim()) {
-            toast.warning("Task title cannot be empty")
+            toast.warning(whatMessage("validation", "noTitle"))
             return
         }
 
@@ -223,7 +342,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
 
         } catch (error) {
             logger.error("Error adding daily task:", error)
-            toast.error("Failed to create daily task")
+            toast.error(whatMessage("failed", "create"))
         }
 
         return
@@ -240,7 +359,7 @@ export const useTasks = (authFetch, API, isAuthed) => {
                 Object.entries(params).filter(([_dirname, v]) => v !== undefined)
             );
 
-            const res = await authFetch(`${API}/daily-tasks/${id}`, { 
+            const res = await authFetch(`${API}/daily-tasks/${id}`, {
                 method: "PUT",
                 body: JSON.stringify(cleanParams)
             });
@@ -331,13 +450,205 @@ export const useTasks = (authFetch, API, isAuthed) => {
     }, [authFetch, API])
 
 
+    // ----------- Project CRUD ===========================
+
+    // POST create a project with tasks
+    const addProject = useCallback(async (title, tasks, color) => {
+
+        // Validate - title
+        if(!title.trim()){
+            toast.warning(whatMessage("validation", "noTitle"))
+            return
+        }
+        // Validate - tasks
+        if (!Array.isArray(tasks) || tasks.length === 0) {
+            toast.warning(whatMessage("validation", "noTasks"))
+            return
+        }
+
+        try {
+
+            const res = await authFetch(`${API}/projects`, {
+                method: 'POST',
+                body: JSON.stringify({ title, tasks, color })   // although color is optional, in the modal it'll have a color by default
+            });
+
+            if (res.ok){
+                const newProject = await res.json();
+                setProjects(prev => [newProject, ...prev])
+                toast.success(whatMessage("created"))
+            }
+
+        } catch (error) {
+            logger.error("Error adding project:", error)
+            toast.error(whatMessage("failed", "create"))
+        }
+
+
+    }, [authFetch, API])
+
+    // PUT update project metadata (title, color, is_completed)
+    const updateProject = useCallback(async (id, { title, color, is_completed }) => {
+        try {
+
+            // -- (dynamically take the params that are only defined) ---
+            // get params first
+            const params = {title, color, is_completed};
+            // then clean the params
+            const cleanParams = Object.fromEntries(
+                Object.entries(params).filter(([_dirname, v]) => v !== undefined)
+            );
+
+            const res = await authFetch(`${API}/projects/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(cleanParams)
+            })
+
+            if(res.ok){
+                setProjects(prev => prev.map(p => p.id === id ? { ...p, ...cleanParams } : p))
+            }
+
+        } catch (error) {
+            logger.error("Error updating project:", error)
+            toast.error(whatMessage("failed", "update"))
+        }
+
+
+
+    }, [authFetch, API])
+
+    // DELETE delete project (cascades to its tasks)
+    const deleteProject = useCallback(async (id) => {
+        try {
+            const res = await authFetch(`${API}/projects/${id}`, { method: 'DELETE' })
+            if(res.ok){
+                toast.success(whatMessage("deleted"))
+                setProjects(prev => prev.filter(p => p.id !== id))
+            }
+        } catch (error) {
+            logger.error("Error deleting project:", error)
+            toast.error(whatMessage("failed", "delete"))
+        }
+    }, [authFetch, API])
+
+
+    // ----------- Project Task Operations ===========================
+
+    // POST batch add tasks to a project
+    const addProjectTasks = useCallback(async (projectId, tasks) => {
+        try {
+
+            // Validate - tasks
+            if (!Array.isArray(tasks) || tasks.length === 0) {
+                toast.warning(whatMessage("validation", "noTasks"))
+                return
+            }
+
+            const res = await authFetch(`${API}/projects/${projectId}/tasks`, {
+                method: 'POST',
+                body: JSON.stringify({ tasks })
+            })
+
+            if(res.ok){
+                const updatedProject = await res.json()
+                toast.success(whatMessage("created"));
+                setProjects(project => project.map( p => p.id === projectId ? { ...p, tasks: updatedProject.tasks } : p ));
+            }
+
+        } catch (error) {
+            logger.error("Error creating tasks in the project:", error)
+            toast.error(whatMessage("failed", "create"))
+        }
+    }, [authFetch, API])
+
+    // PUT batch update project tasks
+    const batchUpdateProjectTasks = useCallback(async (projectId, tasks) => {
+
+        try {
+
+            // Validate - tasks
+            if (!Array.isArray(tasks) || tasks.length === 0) {
+                toast.warning(whatMessage("validation", "noTasks"))
+                return
+            }
+
+            const res = await authFetch(`${API}/projects/${projectId}/tasks`, {
+                method: 'PUT',
+                body: JSON.stringify({ tasks })
+            });
+
+            if(res.ok){
+                const data = await res.json()
+                toast.success(whatMessage("updated"));
+                setProjects(project => project.map( p => p.id === projectId ? { ...p, tasks: data.allTasks } : p ))
+            }
+
+        } catch (error) {
+            logger.error("Error updating tasks in the project:", error)
+            toast.error(whatMessage("failed", "update"))
+        }
+    }, [authFetch, API])
+
+    // PUT toggle single task completion
+    const toggleProjectTaskCompletion = useCallback(async (projectId, taskId, isCompleted) => {
+
+        // Find the project, find the task inside it, flip is_completed
+        // On error, revert
+
+        try {
+            // optimistic update like toggleDailyTaskCompletion
+            setProjects(project => project.map( p => p.id === projectId ? { ...p, tasks: p.tasks.map( task => task.id === taskId ? {...task, is_completed: isCompleted} : task) } : p ))
+
+            await authFetch(`${API}/projects/${projectId}/tasks/${taskId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ is_completed: isCompleted })
+            })
+
+        } catch (error) {
+            // if failed then revert back (have to add this since we're going omptimistic update)
+            setProjects(project => project.map( p => p.id === projectId ? { ...p, tasks: p.tasks.map( task => task.id === taskId ? {...task, is_completed: !isCompleted} : task) } : p ))
+            logger.error("Error completing task in the project:", error)
+            toast.error(whatMessage("failed", "complete"))
+        }
+    }, [authFetch, API])
+
+    // DELETE batch delete project tasks
+    const batchDeleteProjectTasks = useCallback(async (projectId, taskIds) => {
+        try {
+
+            // Validate - task IDs
+            if (!Array.isArray(taskIds) || taskIds.length === 0) {
+                toast.warning(whatMessage("validation", "noTasks"))
+                return
+            }
+
+            const res = await authFetch(`${API}/projects/${projectId}/tasks`, {
+                method: 'DELETE',
+                body: JSON.stringify({ tasks: taskIds.map(id => ({ id })) })
+            })
+
+            if(res.ok){
+                toast.success(whatMessage("deleted"))
+                setProjects(project => project.map( p => p.id === projectId ? {...p, tasks: p.tasks.filter(task => !taskIds.includes(task.id))} : p ))
+            }
+
+        } catch (error) {
+            logger.error("Error deleting tasks in the project:", error)
+            toast.error(whatMessage("failed", "delete"))
+        }
+    }, [authFetch, API])
+
+
     return {
         tasks,
         dailyTasks,
+        projects,
         tasksPagination,
         dailyTasksPagination,
+        projectsPagination,
         loadMoreTasks,
         loadMoreDailyTasks,
+        loadMoreProjects,
         loadingMore,
         loading,
         addTask,
@@ -349,6 +660,13 @@ export const useTasks = (authFetch, API, isAuthed) => {
         deleteDailyTask,
         toggleDailyTaskCompletion,
         batchToggleDailyTasks,
-        batchDeleteDailyTasks
+        batchDeleteDailyTasks,
+        addProject,
+        updateProject,
+        deleteProject,
+        addProjectTasks,
+        batchUpdateProjectTasks,
+        toggleProjectTaskCompletion,
+        batchDeleteProjectTasks,
     }
 }

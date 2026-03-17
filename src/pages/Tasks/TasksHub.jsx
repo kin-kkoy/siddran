@@ -26,7 +26,17 @@ function TasksHub({
   deleteDailyTask,
   toggleDailyTaskCompletion,
   batchToggleDailyTasks,
-  batchDeleteDailyTasks
+  batchDeleteDailyTasks,
+  projects,
+  projectsPagination,
+  loadMoreProjects,
+  addProject,
+  updateProject,
+  deleteProject,
+  addProjectTasks,
+  batchUpdateProjectTasks,
+  toggleProjectTaskCompletion,
+  batchDeleteProjectTasks,
 }) {
 
   // Persist view mode in localStorage
