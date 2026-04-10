@@ -7,6 +7,7 @@ import ConfirmModal from "../../components/Common/ConfirmModal"
 import TaskDetailsModal from "../../components/Common/TaskDetailsModal"
 import DailyTaskModal from "../../components/Common/DailyTaskModal"
 import { HiOutlineTrash, HiOutlineViewGrid, HiOutlineViewList } from 'react-icons/hi'
+import ProjectCard from "../../components/Tasks/ProjectCard"
 
 function TasksHub({
   tasks,
@@ -296,7 +297,7 @@ function TasksHub({
         <div className={viewMode === "card" ? styles.gridView : styles.listView}>
 
           {/* Add Task Component */}
-          <AddTaskCard addTask={addTask} viewMode={viewMode} />
+          <AddTaskCard addTask={addTask} addProject={addProject} viewMode={viewMode} />
 
           {/* Daily Tasks Section */}
           <DailyTaskCard
@@ -313,6 +314,17 @@ function TasksHub({
               {loadingMore ? <span className={styles.loadingDots}>...</span> : <span className={styles.moreDots}>...</span>}
             </div>
           )}
+
+          {/* Project/s Section */}
+          {projects.length > 0 && projects.map(project => (
+            <ProjectCard 
+              key={project.id}
+              project={project}
+              toggleProjectTaskCompletion={toggleProjectTaskCompletion}
+              deleteProject={deleteProject}
+              onOpenDetail={() => {}} // TODO: wire up project detail modal (on step 3)
+            />
+          ))}
 
           {/* Normal Tasks Section - sorted by priority (High -> Normal -> Low) */}
           {loading ? (

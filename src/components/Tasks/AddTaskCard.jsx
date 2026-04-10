@@ -3,21 +3,26 @@ import { createPortal } from 'react-dom'
 import styles from './TaskCard.module.css'
 import { toast } from '../../utils/toast'
 
-function AddTaskCard({ addTask, viewMode }) {
-    const [taskType, setTaskType] = useState("normal") // normal: normal add task || daily: add daily tasks
+function AddTaskCard({ addTask, addProject, viewMode }) {
+    const [taskType, setTaskType] = useState("normal") // normal: normal add task || daily: add daily tasks || project: add a project card similar to daily tasks
     const [showForm, setShowForm] = useState(false)
     const [title, setTitle] = useState("")
+    const [projectTitle, setProjectTitle] = useState("")
     const [description, setDescription] = useState("")
     const [priority, setPriority] = useState("normal")
     const [dueDate, setDueDate] = useState("")
+    const [hue, setHue] = useState(120) // For Project color (hue 0-360)
+    const color = `hsl(${hue}, 70%, 50%)` // derived from hue for the API
 
     // For daily tasks to be created/submitted to API in a batch (or all at once) (array/list of tasks)
     const [dailyTasksDraft, setDailyTasksDraft] = useState([])
+    // Same thing as above but for project tasks this time
+    const [projectTasksDraft, setProjectTasksDraft] = useState([])
 
     // ---------- for normal tasks ----------
     const handleSubmit = async (e) => {
         e.preventDefault()
-        
+
         if(taskType === 'normal'){
             await addTask(title, description, priority, dueDate, taskType)
             // Clear form and close
@@ -30,7 +35,7 @@ function AddTaskCard({ addTask, viewMode }) {
     }
 
     // ---------- For daily tasks (draft style) ----------
-    const addToDraft = e => {
+    const addToDailyDraft = e => {
         e.preventDefault()
 
         if(!title.trim()){
@@ -49,11 +54,34 @@ function AddTaskCard({ addTask, viewMode }) {
         setPriority("normal")
     }
 
-    const removeFromDraft = id => {
-        setDailyTasksDraft(dailyTasksDraft.filter( task => task.id !== id))
+    // ---------- For project tasks (draft style) ----------
+    const addToProjectDraft = e => {
+        e.preventDefault()
+
+        if(!title.trim()){
+            toast.warning("Task title cannot be empty")
+            return
+        }
+
+        setProjectTasksDraft([...projectTasksDraft, {
+            id: Date.now(),
+            title: title.trim(),
+            priority
+        }])
+
+        // Clear inputs
+        setTitle("")
+        setPriority("normal")
     }
 
-    const submitDraft = async () => {
+    const removeFromDailyTaskDraft = id => {
+        setDailyTasksDraft(dailyTasksDraft.filter( task => task.id !== id ))
+    }
+    const removeFromProjectDraft = id => {
+        setProjectTasksDraft(projectTasksDraft.filter( task => task.id !== id ))
+    }
+
+    const submitDailyTaskDraft = async () => {
         if(dailyTasksDraft.length === 0){
             toast.warning("Add at least one task to the list")
             return
@@ -64,15 +92,34 @@ function AddTaskCard({ addTask, viewMode }) {
         setDailyTasksDraft([]) // submit
         setShowForm(false) // then close
     }
+    const submitProjectDraft = async () => {
+        if(projectTasksDraft.length === 0) {
+            toast.warning("Add at least one task to the list")
+            return
+        }
+
+        // title will be an array/list of the tasks instead of a usual string, this also happens to project tasks
+        await addProject(projectTitle, projectTasksDraft, color)
+        setProjectTasksDraft([])
+        setShowForm(false)
+    }
 
     const handleTitleKeyDown = (e) => {
-        if (taskType !== 'daily') return
+        if (taskType !== 'daily' && taskType !== 'project') return
         if (e.key === 'Enter' && e.shiftKey) {
             e.preventDefault()
-            submitDraft()
+            if(taskType === 'daily'){
+                submitDailyTaskDraft()
+            }else{
+                submitProjectDraft()
+            }
         } else if (e.key === 'Enter') {
             e.preventDefault()
-            addToDraft(e)
+            if(taskType === 'daily'){
+                addToDailyDraft(e)
+            }else{
+                addToProjectDraft(e)
+            }
         }
     }
 
@@ -83,22 +130,13 @@ function AddTaskCard({ addTask, viewMode }) {
         }
     }
 
-
-  // Card view (grid)
-  if (viewMode === "card") {
-    return (
-      <>
-        <div onClick={() => setShowForm(true)} className={styles.addCard}>
-          <span className={styles.addCardIcon}>+</span>
-          <h2>Add Task</h2>
-        </div>
-
-        {showForm && createPortal(
-          <div className={styles.backdrop} onClick={handleBackdropClick}>
+    // ========== Shared form (used by both card and list view) ==========
+    const formModal = (
+        <div className={styles.backdrop} onClick={handleBackdropClick}>
             <form className={styles.modalForm} onSubmit={handleSubmit}>
-              <h2 style={{ marginTop: 0, marginBottom: 20, color: '#fff' }}>Create Task</h2>
+                <h2 style={{ marginTop: 0, marginBottom: 20, color: '#fff' }}>Create Task</h2>
 
-                {/* Daily tasks or Normal tasks */}
+                {/* Task type toggle */}
                 <div className={styles.toggleContainer}>
                     {/* Normal */}
                     <button type="button"
@@ -111,243 +149,238 @@ function AddTaskCard({ addTask, viewMode }) {
                         className={`${styles.toggleBtn} ${taskType === 'daily' ? styles.active : ''}`}
                         onClick={() => setTaskType("daily")}
                     >Daily Tasks</button>
+
+                    {/* Project */}
+                    <button type='button'
+                        className={`${styles.toggleBtn} ${taskType === 'project' ? styles.active : ''}`}
+                        onClick={() => setTaskType("project")}
+                    >Project</button>
                 </div>
 
-              <input
-                type="text"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Task title..."
-                className={styles.input}
-                autoFocus
-                required
-                onKeyDown={handleTitleKeyDown}
-              />
-
-              {taskType === 'normal' && (
-                <>
-                    <textarea
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
-                        placeholder="Description (optional)"
-                        className={styles.textarea}
-                    />
-
-                    <div className={styles.row}>
-                        <select
-                        value={priority}
-                        onChange={e => setPriority(e.target.value)}
-                        className={styles.select}
-                        >
-                        <option value="low">Low Priority</option>
-                        <option value="normal">Normal Priority</option>
-                        <option value="high">High Priority</option>
-                        </select>
-
+                {/* Project title + color swatches */}
+                {taskType === 'project' && (
+                    <div className={styles.formContent}>
                         <input
-                        type="datetime-local"
-                        value={dueDate}
-                        onChange={e => setDueDate(e.target.value)}
-                        className={styles.input}
+                            type="text"
+                            value={projectTitle}
+                            onChange={e => setProjectTitle(e.target.value)}
+                            placeholder='Project title...'
+                            className={styles.input}
+                            autoFocus
+                            required
+                            onKeyDown={handleTitleKeyDown}
                         />
-                    </div>
-                </>
-              )}
-
-              {taskType === 'daily' && (
-                <>
-                    <p>Task's Priority: </p>
-                    <select
-                        value={priority}
-                        onChange={e => setPriority(e.target.value)}
-                        className={styles.select}
-                        style={{ marginBottom: '16px' }}
-                    >
-                        <option value="low">Low</option>
-                        <option value="normal">Normal</option>
-                        <option value="high">High</option>
-                    </select>
-
-                    {/* Draft Preview List */}
-                    {dailyTasksDraft.length > 0 && (
-                        <div className={styles.draftList}>
-                            <h4 style={{ margin: '0 0 12px 0', color: '#aaa', fontSize: '14px' }}>Tasks to create ({dailyTasksDraft.length}):</h4>
-                            {dailyTasksDraft.map(task => (
-                                <div key={task.id} className={styles.draftItem}>
-                                    <span className={styles.draftText}>{task.title}</span>
-                                    <span className={`${styles.draftPriority} ${styles[task.priority]}`}>{task.priority}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeFromDraft(task.id)}
-                                        className={styles.removeBtn}
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                            <input
+                                type="range"
+                                min="0"
+                                max="360"
+                                value={hue}
+                                onChange={e => setHue(Number(e.target.value))}
+                                className={styles.hueSlider}
+                            />
+                            <span
+                                style={{
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: '50%',
+                                    backgroundColor: color,
+                                    flexShrink: 0,
+                                    border: '2px solid var(--border-strong)',
+                                }}
+                            />
                         </div>
-                    )}
-                </>
-              )}
-
-              <div className={styles.actions}>
-                <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
-                  Cancel
-                </button>
-
-                {taskType === 'normal' ? (
-                    <button type="submit" className={styles.submitBtn}>Create Task</button>
-                ) : (
-                    <>
-                        <button type="button" onClick={addToDraft} className={styles.submitBtn}>
-                            Add to List
-                        </button>
-                        {dailyTasksDraft.length > 0 && (
-                            <button type="button" onClick={submitDraft} className={styles.createAllBtn}>
-                                Create All ({dailyTasksDraft.length})
-                            </button>
-                        )}
-                    </>
+                    </div>
                 )}
-              </div>
-            </form>
-          </div>,
-          document.body
-        )}
-      </>
-    )
-  }
 
-  // List view (horizontal)
-  return (
-    <>
-      <div onClick={() => setShowForm(true)} className={styles.addCardList}>
-        <span className={styles.addCardListIcon}>+</span>
-        <h4>Add Task</h4>
-      </div>
-
-      {showForm && createPortal(
-        <div className={styles.backdrop} onClick={handleBackdropClick}>
-          <form className={styles.modalForm} onSubmit={handleSubmit}>
-            <h2 style={{ marginTop: 0, marginBottom: 20, color: '#fff' }}>Create Task</h2>
-
-            {/* Daily tasks or Normal tasks */}
-            <div className={styles.toggleContainer}>
-                {/* Normal */}
-                <button type="button"
-                    className={`${styles.toggleBtn} ${taskType === 'normal' ? styles.active : ''}`}
-                    onClick={() => setTaskType("normal")}
-                >Normal Task</button>
-
-                {/* Daily */}
-                <button type='button'
-                    className={`${styles.toggleBtn} ${taskType === 'daily' ? styles.active : ''}`}
-                    onClick={() => setTaskType("daily")}
-                >Daily Tasks</button>
-            </div>
-
-            <input
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Task title..."
-              className={styles.input}
-              autoFocus
-              required
-              onKeyDown={handleTitleKeyDown}
-            />
-
-            {taskType === 'normal' && (
-                <>
-                    <textarea
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                    placeholder="Description (optional)"
-                    className={styles.textarea}
-                    />
-
-                    <div className={styles.row}>
-                    <select
-                        value={priority}
-                        onChange={e => setPriority(e.target.value)}
-                        className={styles.select}
-                    >
-                        <option value="low">Low Priority</option>
-                        <option value="normal">Normal Priority</option>
-                        <option value="high">High Priority</option>
-                    </select>
-
+                {/* Task title input */}
+                {taskType === 'normal' ? (
                     <input
-                        type="datetime-local"
-                        value={dueDate}
-                        onChange={e => setDueDate(e.target.value)}
+                        type="text"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        placeholder="Task title..."
                         className={styles.input}
+                        autoFocus
+                        required
+                        onKeyDown={handleTitleKeyDown}
                     />
-                    </div>
-                </>
-            )}
-
-            {taskType === 'daily' && (
-                <>
-                    <select
-                        value={priority}
-                        onChange={e => setPriority(e.target.value)}
-                        className={styles.select}
-                        style={{ marginBottom: '16px' }}
-                    >
-                        <option value="low">Low Priority</option>
-                        <option value="normal">Normal Priority</option>
-                        <option value="high">High Priority</option>
-                    </select>
-
-                    {/* Draft Preview List */}
-                    {dailyTasksDraft.length > 0 && (
-                        <div className={styles.draftList}>
-                            <h4 style={{ margin: '0 0 12px 0', color: '#aaa', fontSize: '14px' }}>Tasks to create ({dailyTasksDraft.length}):</h4>
-                            {dailyTasksDraft.map(task => (
-                                <div key={task.id} className={styles.draftItem}>
-                                    <span className={styles.draftText}>{task.title}</span>
-                                    <span className={`${styles.draftPriority} ${styles[task.priority]}`}>{task.priority}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeFromDraft(task.id)}
-                                        className={styles.removeBtn}
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </>
-            )}
-
-                <div className={styles.actions}>
-                <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
-                    Cancel
-                </button>
-
-                {taskType === 'normal' ? (
-                    <button type="submit" className={styles.submitBtn}>Create Task</button>
                 ) : (
-                    <>
-                        <button type="button" onClick={addToDraft} className={styles.submitBtn}>
-                            Add to List
+                    <div className={styles.inputWithBtn}>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            placeholder="Task title..."
+                            className={styles.input}
+                            autoFocus
+                            onKeyDown={handleTitleKeyDown}
+                        />
+                        <button
+                            type="button"
+                            className={styles.inlineAddBtn}
+                            onClick={taskType === 'daily' ? addToDailyDraft : addToProjectDraft}
+                        >
+                            +
                         </button>
-                        {dailyTasksDraft.length > 0 && (
-                            <button type="button" onClick={submitDraft} className={styles.createAllBtn}>
-                                Create All ({dailyTasksDraft.length})
-                            </button>
-                        )}
-                    </>
+                    </div>
                 )}
+
+                {/* Normal task fields */}
+                {taskType === 'normal' && (
+                    <div className={styles.formContent}>
+                        <textarea
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            placeholder="Description (optional)"
+                            className={styles.textarea}
+                        />
+
+                        <div className={styles.row}>
+                            <select
+                                value={priority}
+                                onChange={e => setPriority(e.target.value)}
+                                className={styles.select}
+                            >
+                                <option value="low">Low Priority</option>
+                                <option value="normal">Normal Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+
+                            <input
+                                type="datetime-local"
+                                value={dueDate}
+                                onChange={e => setDueDate(e.target.value)}
+                                className={styles.input}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Daily task fields */}
+                {taskType === 'daily' && (
+                    <div className={styles.formContent}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '14px', whiteSpace: 'nowrap' }}>Task's Priority:</span>
+                            <select
+                                value={priority}
+                                onChange={e => setPriority(e.target.value)}
+                                className={styles.select}
+                            >
+                                <option value="low">Low</option>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+
+                        {/* Draft Preview List */}
+                        {dailyTasksDraft.length > 0 && (
+                            <div className={styles.draftList}>
+                                <h4 style={{ margin: '0 0 12px 0', color: '#aaa', fontSize: '14px' }}>Tasks to create ({dailyTasksDraft.length}):</h4>
+                                {dailyTasksDraft.map(task => (
+                                    <div key={task.id} className={styles.draftItem}>
+                                        <span className={styles.draftText}>{task.title}</span>
+                                        <span className={`${styles.draftPriority} ${styles[task.priority]}`}>{task.priority}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeFromDailyTaskDraft(task.id)}
+                                            className={styles.removeBtn}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Project task fields */}
+                {taskType === 'project' && (
+                    <div className={styles.formContent}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '14px', whiteSpace: 'nowrap' }}>Task's Priority:</span>
+                            <select
+                                value={priority}
+                                onChange={e => setPriority(e.target.value)}
+                                className={styles.select}
+                            >
+                                <option value="low">Low</option>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+
+                        {/* Draft Preview List */}
+                        {projectTasksDraft.length > 0 && (
+                            <div className={styles.draftList}>
+                                <h4 style={{ margin: '0 0 12px 0', color: '#aaa', fontSize: '14px' }}>Tasks to create ({projectTasksDraft.length}):</h4>
+                                {projectTasksDraft.map(task => (
+                                    <div key={task.id} className={styles.draftItem}>
+                                        <span className={styles.draftText}>{task.title}</span>
+                                        <span className={`${styles.draftPriority} ${styles[task.priority]}`}>{task.priority}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeFromProjectDraft(task.id)}
+                                            className={styles.removeBtn}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Action buttons */}
+                <div className={styles.actions}>
+                    <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
+                        Cancel
+                    </button>
+
+                    {taskType === 'normal' && (
+                        <button type="submit" className={styles.submitBtn}>Create Task</button>
+                    )}
+                    {taskType === 'daily' && dailyTasksDraft.length > 0 && (
+                        <button type="button" onClick={submitDailyTaskDraft} className={styles.createAllBtn}>
+                            Create All ({dailyTasksDraft.length})
+                        </button>
+                    )}
+                    {taskType === 'project' && projectTasksDraft.length > 0 && (
+                        <button type="button" onClick={submitProjectDraft} className={styles.createAllBtn}>
+                            Create All ({projectTasksDraft.length})
+                        </button>
+                    )}
                 </div>
-          </form>
-        </div>,
-        document.body
-      )}
-    </>
-  )
+            </form>
+        </div>
+    )
+
+
+    // Card view (grid)
+    if (viewMode === "card") {
+        return (
+            <>
+                <div onClick={() => setShowForm(true)} className={styles.addCard}>
+                    <span className={styles.addCardIcon}>+</span>
+                    <h2>Add Task</h2>
+                </div>
+                {showForm && createPortal(formModal, document.body)}
+            </>
+        )
+    }
+
+    // List view (horizontal)
+    return (
+        <>
+            <div onClick={() => setShowForm(true)} className={styles.addCardList}>
+                <span className={styles.addCardListIcon}>+</span>
+                <h4>Add Task</h4>
+            </div>
+            {showForm && createPortal(formModal, document.body)}
+        </>
+    )
 }
 
 export default AddTaskCard
